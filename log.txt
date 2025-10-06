@@ -1,0 +1,25 @@
+sq/sq.go
+sq/fmt.go
+sq/row.go
+sq/fetch_exec.go
+stacktrace/stacktrace.go
+schema_database.json
+schema_files.json
+schema.go
+id.go
+
+documents is a markdown document with associated imgs/videos
+what about bookmarks? what is the best format for saving snippets from the web/various social media apps?
+photos is files
+
+files
+- documents
+- photos
+- website/pages
+- website/posts
+- website/output
+- website/output/themes
+- website/website.json
+- imports
+- exports
+- system
