@@ -1,4 +1,4 @@
-package nb2
+package main
 
 import (
 	"bytes"
