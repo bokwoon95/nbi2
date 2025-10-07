@@ -1,3 +1,378 @@
 <!DOCTYPE html>
-<title>dashboard</title>
-hello world
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Dashboard</title>
+
+  <!-- Tachyons CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css">
+
+  <!-- Quiet theme + autoloader -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@quietui/quiet-browser@1.1.1/dist/themes/quiet.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@quietui/quiet-browser@1.1.1/dist/quiet.loader.js"></script>
+
+  <!-- Optional CSS reset -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@quietui/quiet-browser@1.1.1/dist/themes/restyle.css">
+
+  <style>
+    :root {
+      --sidebar-width: 280px;
+    }
+
+    .custom-sidebar {
+      width: var(--sidebar-width);
+      transition: transform 0.3s ease;
+      position: static;
+    }
+
+    .custom-main-content {
+      margin-left: var(--sidebar-width);
+    }
+
+    @media (max-width: 1200px) {
+      .custom-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .custom-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .custom-main-content {
+        margin-left: 0;
+      }
+
+      .dn-mob {
+        display: block;
+      }
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .photo-item {
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: #f3f4f6;
+    }
+
+    .photo-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .custom-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .custom-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .custom-overlay img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 8px;
+    }
+
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Mobile Menu Overlay -->
+  <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-900 dn db-mob" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="custom-sidebar fixed left-0 top-0 h-100 bg-white shadow-lg flex flex-column z-1000">
+    <div class="pa4 border-bottom">
+      <div class="flex items-center justify-between">
+        <h1 class="f2 fw6 ma0">Photos</h1>
+        <button onclick="toggleSidebar()" class="dn db-l pa2 bg-transparent bn">
+          <quiet-icon name="x" size="24"></quiet-icon>
+        </button>
+      </div>
+    </div>
+
+    <nav class="flex-auto pa3">
+      <div class="mb4">
+        <quiet-text-field
+          placeholder="Search photos..."
+          size="sm"
+          class="w-100"
+          oninput="searchPhotos(this.value)">
+          <quiet-icon slot="prefix" name="search" size="16"></quiet-icon>
+        </quiet-text-field>
+      </div>
+
+      <div class="mb3">
+        <h3 class="f6 fw6 ttu gray-600 mb2">Library</h3>
+        <div class="flex flex-column gap-2">
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="photo" size="18" class="mr3"></quiet-icon>
+            <span>All Photos</span>
+            <span class="ml-auto gray-500">2,847</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="heart" size="18" class="mr3"></quiet-icon>
+            <span>Favorites</span>
+            <span class="ml-auto gray-500">126</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="users" size="18" class="mr3"></quiet-icon>
+            <span>People</span>
+            <span class="ml-auto gray-500">18</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="map-pin" size="18" class="mr3"></quiet-icon>
+            <span>Places</span>
+            <span class="ml-auto gray-500">42</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mb3">
+        <h3 class="f6 fw6 ttu gray-600 mb2">Albums</h3>
+        <div class="flex flex-column gap-2">
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="folder" size="18" class="mr3"></quiet-icon>
+            <span>Vacation 2024</span>
+            <span class="ml-auto gray-500">234</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="folder" size="18" class="mr3"></quiet-icon>
+            <span>Family</span>
+            <span class="ml-auto gray-500">567</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="folder" size="18" class="mr3"></quiet-icon>
+            <span>Work</span>
+            <span class="ml-auto gray-500">89</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mb3">
+        <h3 class="f6 fw6 ttu gray-600 mb2">Utilities</h3>
+        <div class="flex flex-column gap-2">
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="trash" size="18" class="mr3"></quiet-icon>
+            <span>Trash</span>
+            <span class="ml-auto gray-500">3</span>
+          </a>
+          <a href="#" class="flex items-center pa2 br3 hover-bg-gray-100 no-underline">
+            <quiet-icon name="settings" size="18" class="mr3"></quiet-icon>
+            <span>Settings</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="pa3 border-top">
+      <div class="mb3">
+        <div class="flex items-center justify-between mb2">
+          <span class="f6 fw6">Storage</span>
+          <span class="f6 gray-600">8.7 GB of 11 GB</span>
+        </div>
+        <quiet-progress
+          value="79"
+          max="100"
+          class="mb2"
+          style="--track-size: 10px;">
+        </quiet-progress>
+        <quiet-button variant="outline" size="sm" class="w-100">
+          <quiet-icon name="upload" size="16" class="mr2"></quiet-icon>
+          Upload Photos
+        </quiet-button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="custom-main-content min-vh-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm pa3 pa4-m">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <button onclick="toggleSidebar()" class="dn db-l pa2 bg-transparent bn mr3">
+            <quiet-icon name="menu" size="24"></quiet-icon>
+          </button>
+          <div>
+            <h2 class="f3 fw6 ma0">My Library</h2>
+            <p class="gray-600 ma0">2,847 photos • 42 videos</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <quiet-button variant="ghost" size="sm">
+            <quiet-icon name="filter" size="18"></quiet-icon>
+          </quiet-button>
+          <quiet-button variant="ghost" size="sm">
+            <quiet-icon name="layout-grid" size="18"></quiet-icon>
+          </quiet-button>
+          <quiet-dropdown>
+            <quiet-button variant="outline" size="sm" slot="trigger">
+              <quiet-icon name="plus" size="16" class="mr2"></quiet-icon>
+              New
+            </quiet-button>
+            <quiet-dropdown-item>
+              <quiet-icon name="upload" size="16" class="mr2"></quiet-icon>
+              Upload Photos
+            </quiet-dropdown-item>
+            <quiet-dropdown-item>
+              <quiet-icon name="folder-plus" size="16" class="mr2"></quiet-icon>
+              Create Album
+            </quiet-dropdown-item>
+            <quiet-dropdown-item>
+              <quiet-icon name="share" size="16" class="mr2"></quiet-icon>
+              Share Library
+            </quiet-dropdown-item>
+          </quiet-dropdown>
+        </div>
+      </div>
+    </header>
+
+    <!-- Photo Grid -->
+    <div class="pa4 bg-white br3 shadow-sm">
+      <div class="pb3 pb4-m border-bottom flex items-center justify-between">
+        <h3 class="f4 fw6 ma0">Recent Photos</h3>
+        <div class="flex items-center gap-3">
+          <quiet-select size="sm" onchange="sortPhotos(this.value)">
+            <option value="date">Date Added</option>
+            <option value="name">Name</option>
+            <option value="size">Size</option>
+          </quiet-select>
+          <quiet-button variant="ghost" size="sm">
+            <quiet-icon name="download" size="16" class="mr2"></quiet-icon>
+            Export
+          </quiet-button>
+        </div>
+      </div>
+
+      <div id="photoGrid" class="photo-grid">
+        <!-- Photos will be dynamically loaded here -->
+      </div>
+
+      <div class="pa4 border-top flex items-center justify-between">
+        <p class="f6 gray-600 ma0">Showing 1-24 of 2,847 photos</p>
+        <quiet-pagination current-page="1" total-pages="119"></quiet-pagination>
+      </div>
+    </div>
+  </main>
+
+  <!-- Photo Viewer Overlay -->
+  <div id="photoOverlay" class="custom-overlay" onclick="closePhotoViewer(event)">
+    <img id="overlayImage" src="" alt="">
+    <button class="absolute top-4 right-4 pa2 bg-white br3 shadow-lg bn" onclick="closePhotoViewer()">
+      <quiet-icon name="x" size="24"></quiet-icon>
+    </button>
+  </div>
+
+  <script>
+    // Sample photo data
+    const samplePhotos = Array.from({length: 24}, (_, i) => ({
+      id: i + 1,
+      url: `https://picsum.photos/seed/photo${i + 1}/400/400.jpg`,
+      title: `Photo ${i + 1}`,
+      date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+    }));
+
+    // Initialize photo grid
+    function initializePhotoGrid() {
+      const grid = document.getElementById('photoGrid');
+      grid.innerHTML = samplePhotos.map(photo => `
+        <div class="photo-item" onclick="openPhotoViewer('${photo.url}')">
+          <img src="${photo.url}" alt="${photo.title}" loading="lazy">
+        </div>
+      `).join('');
+    }
+
+    // Toggle sidebar for mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('db');
+    }
+
+    // Open photo viewer
+    function openPhotoViewer(photoUrl) {
+      const overlay = document.getElementById('photoOverlay');
+      const image = document.getElementById('overlayImage');
+      image.src = photoUrl.replace('400/400', '1200/1200');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close photo viewer
+    function closePhotoViewer(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const overlay = document.getElementById('photoOverlay');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // Search photos
+    function searchPhotos(query) {
+      console.log('Searching for:', query);
+      // Implement search functionality
+    }
+
+    // Filter by date
+    function filterByDate(period) {
+      console.log('Filtering by period:', period);
+      // Implement date filtering
+    }
+
+    // Filter by type
+    function filterByType(type) {
+      console.log('Filtering by type:', type);
+      // Implement type filtering
+    }
+
+    // Sort photos
+    function sortPhotos(sortBy) {
+      console.log('Sorting by:', sortBy);
+      // Implement sorting
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initializePhotoGrid);
+
+    // Handle escape key for photo viewer
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePhotoViewer();
+    });
+  </script>
+</body>
+</html>
