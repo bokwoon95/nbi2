@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Layout</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #2c3e50;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: white;
+      margin: 3px 0;
+      transition: 0.3s;
+    }
+
+    .header-title {
+      margin-left: 20px;
+      font-size: 20px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #34495e;
+      color: white;
+      padding-top: 60px;
+      transition: transform 0.3s ease;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 999;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 20px 0;
+    }
+
+    .sidebar li {
+      padding: 15px 25px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar li:hover {
+      background: #2c3e50;
+    }
+
+    .sidebar li.active {
+      background: #2c3e50;
+      border-left: 4px solid #3498db;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 80px 30px 30px;
+      margin-left: 250px;
+      background: #f5f5f5;
+      overflow-y: auto;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .main-content p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #555;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .sidebar.active ~ .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="hamburger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="header-title">My Application</div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <ul>
+        <li class="active" onclick="setActiveItem(this)">Dashboard</li>
+        <li onclick="setActiveItem(this)">Analytics</li>
+        <li onclick="setActiveItem(this)">Reports</li>
+        <li onclick="setActiveItem(this)">Settings</li>
+        <li onclick="setActiveItem(this)">Profile</li>
+        <li onclick="setActiveItem(this)">Logout</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Welcome to the Dashboard</h1>
+      <p>This is a responsive layout with a collapsible sidebar. When you resize your browser window to be narrower than 768px, the sidebar will fold into a hamburger menu icon.</p>
+
+      <h2>Features</h2>
+      <p>The layout includes:</p>
+      <ul style="margin-left: 20px; margin-bottom: 20px;">
+        <li>Fixed header with hamburger menu</li>
+        <li>Collapsible sidebar navigation</li>
+        <li>Responsive main content area</li>
+        <li>Smooth transitions and hover effects</li>
+      </ul>
+
+      <h2>How to Use</h2>
+      <p>On mobile devices or narrow screens, click the hamburger icon in the top-left corner to toggle the sidebar. Click on any menu item to navigate through different sections.</p>
+
+      <h2>Content Area</h2>
+      <p>This main content area scrolls independently and adapts to the available space. The sidebar remains accessible but doesn't take up precious screen real estate on smaller devices.</p>
+
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </main>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    function setActiveItem(element) {
+      // Remove active class from all items
+      const items = document.querySelectorAll('.sidebar li');
+      items.forEach(item => item.classList.remove('active'));
+
+      // Add active class to clicked item
+      element.classList.add('active');
+
+      // Close sidebar on mobile after selection
+      if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.remove('active');
+      }
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+      const sidebar = document.getElementById('sidebar');
+      const hamburger = document.querySelector('.hamburger');
+
+      if (window.innerWidth <= 768 &&
+          sidebar.classList.contains('active') &&
+          !sidebar.contains(event.target) &&
+          !hamburger.contains(event.target)) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -19,9 +19,10 @@ func main() {
 	serveMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		urlPath := path.Clean(strings.Trim(r.URL.Path, "/"))
 		name := "index.html"
-		if urlPath != "/" {
+		if urlPath != "." {
 			name = urlPath + ".html"
 		}
+		fmt.Println(name)
 		file, err := RuntimeFS.Open(name)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) {

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Layout with Tachyons</title>
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+  <style>
+    /* Custom styles for sidebar transitions and mobile behavior */
+    .sidebar-transition {
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 48em) {
+      .dn-mobile {
+        display: none;
+      }
+
+      .sidebar-mobile {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 999;
+      }
+
+      .sidebar-mobile.active {
+        transform: translateX(0);
+      }
+
+      .main-content-mobile {
+        margin-left: 0 !important;
+      }
+    }
+
+    @media (min-width: 48em) {
+      .sidebar-desktop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        z-index: 999;
+      }
+    }
+
+    .hamburger-line {
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      margin: 3px 0;
+      transition: 0.3s;
+    }
+
+    .sidebar-item {
+      transition: background-color 0.3s;
+    }
+
+    .sidebar-item:hover {
+      background-color: #2c3e50;
+    }
+
+    .sidebar-item.active {
+      background-color: #2c3e50;
+      border-left: 4px solid #3498db;
+    }
+  </style>
+</head>
+<body class="bg-light-gray">
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 h3 bg-mid-gray white flex items-center pa3 z-999">
+    <div class="hamburger dn db-l flex flex-column pointer pa2" onclick="toggleSidebar()">
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+    </div>
+    <div class="ml3 f4 fw6">My Application</div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar-mobile sidebar-desktop sidebar-transition bg-dark-gray white pt3" id="sidebar">
+    <div class="overflow-y-auto h-100 pb3">
+      <div class="fw6 ph4 pv3 bb b--mid-gray mb2">Navigation</div>
+
+      <div class="sidebar-item active ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-blue br-100 mr3"></div>
+          <span>Dashboard</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-green br-100 mr3"></div>
+          <span>Analytics</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-purple br-100 mr3"></div>
+          <span>Reports</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-red br-100 mr3"></div>
+          <span>Alerts</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-yellow br-100 mr3"></div>
+          <span>Messages</span>
+        </div>
+      </div>
+
+      <div class="fw6 ph4 pv3 bb b--mid-gray mb2 mt4">Projects</div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-orange br-100 mr3"></div>
+          <span>Project Alpha</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-teal br-100 mr3"></div>
+          <span>Project Beta</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-pink br-100 mr3"></div>
+          <span>Project Gamma</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-indigo br-100 mr3"></div>
+          <span>Project Delta</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-gray br-100 mr3"></div>
+          <span>Project Epsilon</span>
+        </div>
+      </div>
+
+      <div class="fw6 ph4 pv3 bb b--mid-gray mb2 mt4">Tools</div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-cyan br-100 mr3"></div>
+          <span>Data Export</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-lime br-100 mr3"></div>
+          <span>API Keys</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-light-blue br-100 mr3"></div>
+          <span>Settings</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-light-purple br-100 mr3"></div>
+          <span>Profile</span>
+        </div>
+      </div>
+
+      <div class="sidebar-item ph4 pv3 pointer" onclick="setActiveItem(this)">
+        <div class="flex items-center">
+          <div class="w2 h2 bg-dark-red br-100 mr3"></div>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content-mobile ml6-l pt4 pa3 pa4-l" style="margin-top: 60px;">
+    <div class="bg-white br3 shadow-4 pa4">
+      <h1 class="f2 fw6 dark-gray mb4">Welcome to the Dashboard</h1>
+      <p class="lh-copy gray mb4">
+        This is a responsive layout built with Tachyons CSS utility classes. When you resize your browser window to be narrower than 768px, the sidebar will fold into a hamburger menu icon.
+      </p>
+
+      <h2 class="f3 fw6 dark-gray mb3">Dashboard Overview</h2>
+      <div class="grid grid-cols-1 grid-cols-2-m grid-cols-3-l gap4 mb5">
+        <div class="bg-blue br3 pa4">
+          <div class="f6 fw6 white mb2">Total Users</div>
+          <div class="f2 fw2 white">12,458</div>
+          <div class="f7 light-blue mt2">↑ 12% from last month</div>
+        </div>
+        <div class="bg-green br3 pa4">
+          <div class="f6 fw6 white mb2">Revenue</div>
+          <div class="f2 fw2 white">$84,251</div>
+          <div class="f7 light-green mt2">↑ 8% from last month</div>
+        </div>
+        <div class="bg-purple br3 pa4">
+          <div class="f6 fw6 white mb2">Active Projects</div>
+          <div class="f2 fw2 white">24</div>
+          <div class="f7 light-purple mt2">↑ 3 new this week</div>
+        </div>
+      </div>
+
+      <h2 class="f3 fw6 dark-gray mb3">Recent Activity</h2>
+      <div class="bg-light-gray br3 pa4 mb5">
+        <div class="flex items-center mb3 pb3 bb b--moon-gray">
+          <div class="w3 h3 bg-blue br-100 mr3"></div>
+          <div class="flex-auto">
+            <div class="fw6 dark-gray">New user registration</div>
+            <div class="f7 gray">John Doe joined 2 minutes ago</div>
+          </div>
+          <div class="f7 gray">2m ago</div>
+        </div>
+        <div class="flex items-center mb3 pb3 bb b--moon-gray">
+          <div class="w3 h3 bg-green br-100 mr3"></div>
+          <div class="flex-auto">
+            <div class="fw6 dark-gray">Payment received</div>
+            <div class="f7 gray">$1,250 from Customer ABC</div>
+          </div>
+          <div class="f7 gray">15m ago</div>
+        </div>
+        <div class="flex items-center mb3 pb3 bb b--moon-gray">
+          <div class="w3 h3 bg-red br-100 mr3"></div>
+          <div class="flex-auto">
+            <div class="fw6 dark-gray">System alert</div>
+            <div class="f7 gray">Database connection timeout resolved</div>
+          </div>
+          <div class="f7 gray">1h ago</div>
+        </div>
+        <div class="flex items-center mb3 pb3 bb b--moon-gray">
+          <div class="w3 h3 bg-yellow br-100 mr3"></div>
+          <div class="flex-auto">
+            <div class="fw6 dark-gray">New comment</div>
+            <div class="f7 gray">Sarah replied to your post</div>
+          </div>
+          <div class="f7 gray">2h ago</div>
+        </div>
+        <div class="flex items-center">
+          <div class="w3 h3 bg-purple br-100 mr3"></div>
+          <div class="flex-auto">
+            <div class="fw6 dark-gray">Project updated</div>
+            <div class="f7 gray">Project Alpha milestone completed</div>
+          </div>
+          <div class="f7 gray">3h ago</div>
+        </div>
+      </div>
+
+      <h2 class="f3 fw6 dark-gray mb3">Team Members</h2>
+      <div class="grid grid-cols-1 grid-cols-2-m grid-cols-4-l gap4 mb5">
+        <div class="bg-white ba b--light-gray br3 pa3 tc">
+          <div class="w16 h16 bg-blue br-100 ma2 mb3"></div>
+          <div class="fw6 dark-gray">Alice Johnson</div>
+          <div class="f7 gray">Developer</div>
+          <div class="flex justify-center mt2">
+            <div class="w2 h2 bg-green br-100"></div>
+          </div>
+        </div>
+        <div class="bg-white ba b--light-gray br3 pa3 tc">
+          <div class="w16 h16 bg-red br-100 ma2 mb3"></div>
+          <div class="fw6 dark-gray">Bob Smith</div>
+          <div class="f7 gray">Designer</div>
+          <div class="flex justify-center mt2">
+            <div class="w2 h2 bg-gray br-100"></div>
+          </div>
+        </div>
+        <div class="bg-white ba b--light-gray br3 pa3 tc">
+          <div class="w16 h16 bg-yellow br-100 ma2 mb3"></div>
+          <div class="fw6 dark-gray">Carol White</div>
+          <div class="f7 gray">Manager</div>
+          <div class="flex justify-center mt2">
+            <div class="w2 h2 bg-green br-100"></div>
+          </div>
+        </div>
+        <div class="bg-white ba b--light-gray br3 pa3 tc">
+          <div class="w16 h16 bg-purple br-100 ma2 mb3"></div>
+          <div class="fw6 dark-gray">David Brown</div>
+          <div class="f7 gray">Analyst</div>
+          <div class="flex justify-center mt2">
+            <div class="w2 h2 bg-green br-100"></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="f3 fw6 dark-gray mb3">Performance Metrics</h2>
+      <div class="bg-light-gray br3 pa4 mb5">
+        <div class="mb4">
+          <div class="flex justify-between mb2">
+            <span class="fw6 dark-gray">Server Response Time</span>
+            <span class="gray">142ms</span>
+          </div>
+          <div class="w-100 bg-light-silver br-pill h1">
+            <div class="bg-green br-pill h1" style="width: 85%"></div>
+          </div>
+        </div>
+        <div class="mb4">
+          <div class="flex justify-between mb2">
+            <span class="fw6 dark-gray">Database Query Performance</span>
+            <span class="gray">89ms</span>
+          </div>
+          <div class="w-100 bg-light-silver br-pill h1">
+            <div class="bg-blue br-pill h1" style="width: 92%"></div>
+          </div>
+        </div>
+        <div class="mb4">
+          <div class="flex justify-between mb2">
+            <span class="fw6 dark-gray">API Response Rate</span>
+            <span class="gray">99.8%</span>
+          </div>
+          <div class="w-100 bg-light-silver br-pill h1">
+            <div class="bg-purple br-pill h1" style="width: 99%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between mb2">
+            <span class="fw6 dark-gray">User Satisfaction</span>
+            <span class="gray">4.7/5</span>
+          </div>
+          <div class="w-100 bg-light-silver br-pill h1">
+            <div class="bg-yellow br-pill h1" style="width: 94%"></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="f3 fw6 dark-gray mb3">Recent Blog Posts</h2>
+      <div class="grid grid-cols-1 grid-cols-2-m gap4 mb5">
+        <div class="bg-white ba b--light-gray br3 pa4">
+          <div class="f7 gray mb2">October 8, 2024</div>
+          <h3 class="f4 fw6 dark-gray mb3">Understanding Responsive Design Principles</h3>
+          <p class="lh-copy gray mb3">Learn the fundamentals of creating layouts that work across all devices and screen sizes using modern CSS techniques and utility-first frameworks.</p>
+          <a href="#" class="link blue hover-dark-blue">Read more →</a>
+        </div>
+        <div class="bg-white ba b--light-gray br3 pa4">
+          <div class="f7 gray mb2">October 7, 2024</div>
+          <h3 class="f4 fw6 dark-gray mb3">Optimizing Web Performance</h3>
+          <p class="lh-copy gray mb3">Discover practical strategies for improving your website's loading speed and user experience through code splitting and lazy loading techniques.</p>
+          <a href="#" class="link blue hover-dark-blue">Read more →</a>
+        </div>
+      </div>
+
+      <h2 class="f3 fw6 dark-gray mb3">Additional Content Sections</h2>
+      <p class="lh-copy gray mb4">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </p>
+
+      <p class="lh-copy gray mb4">
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <p class="lh-copy gray mb4">
+        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+      </p>
+
+      <p class="lh-copy gray mb4">
+        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+      </p>
+
+      <p class="lh-copy gray">
+        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    function setActiveItem(element) {
+      const items = document.querySelectorAll('.sidebar-item');
+      items.forEach(item => item.classList.remove('active'));
+      element.classList.add('active');
+
+      if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.remove('active');
+      }
+    }
+
+    document.addEventListener('click', function(event) {
+      const sidebar = document.getElementById('sidebar');
+      const hamburger = document.querySelector('.hamburger');
+
+      if (window.innerWidth <= 768 &&
+          sidebar.classList.contains('active') &&
+          !sidebar.contains(event.target) &&
+          !hamburger.contains(event.target)) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
