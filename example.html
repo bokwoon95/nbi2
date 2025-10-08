@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sidebar + Content MVP</title>
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css">
+  <style>
+    /* custom styles just for layout toggling */
+    /* sidebar default hidden on small, shown on wide */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 200px;
+      background: #eee;
+      overflow: auto;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 10;
+    }
+    #sidebar.show {
+      transform: translateX(0);
+    }
+    #content {
+      margin-left: 0;
+      transition: margin-left 0.2s ease;
+    }
+    /* when sidebar is visible in wide mode, shift content */
+    @media (min-width: 600px) {
+      #sidebar {
+        transform: translateX(0);
+      }
+      #content {
+        margin-left: 200px;
+      }
+      #hamburger {
+        display: none;
+      }
+    }
+    /* hamburger / close icon container */
+    #hamburger {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      width: 2rem;
+      height: 2rem;
+      z-index: 20;
+      cursor: pointer;
+      background: #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body class="vh-100">
+
+  <div id="sidebar">
+    <div class="pa3">
+      <h3>Sidebar</h3>
+      <ul class="list pl0">
+        <li class="pv1"><a href="#">Link 1</a></li>
+        <li class="pv1"><a href="#">Link 2</a></li>
+        <li class="pv1"><a href="#">Link 3</a></li>
+        <li class="pv1"><a href="#">Link 4</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="hamburger">☰</div>
+
+  <div id="content" class="pa4">
+    <h1>Main Content</h1>
+    <p>This is the content area.</p>
+    <p>Resize the browser to see sidebar collapse / expand.</p>
+  </div>
+
+  <script>
+    // inline minimal event logic
+    ;(function(){
+      var sb = document.getElementById('sidebar');
+      var hb = document.getElementById('hamburger');
+      var showing = false;
+      hb.onclick = function(){
+        showing = !showing;
+        if (showing) {
+          sb.classList.add('show');
+          hb.textContent = '✕';
+        } else {
+          sb.classList.remove('show');
+          hb.textContent = '☰';
+        }
+      }
+      // optional: when window is resized larger than threshold, reset state
+      window.onresize = function(){
+        if (window.innerWidth >= 600) {
+          sb.classList.add('show');
+          hb.textContent = '✕';  // won't show anyway per CSS, but state consistent
+          showing = true;
+        } else {
+          sb.classList.remove('show');
+          hb.textContent = '☰';
+          showing = false;
+        }
+      }
+      // initial setup
+      if (window.innerWidth >= 600) {
+        sb.classList.add('show');
+        hb.textContent = '✕';
+        showing = true;
+      }
+    })();
+  </script>
+
+</body>
+</html>

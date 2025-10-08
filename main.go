@@ -8,6 +8,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"path"
+	"strings"
 )
 
 var RuntimeFS = os.DirFS(".")
@@ -15,7 +17,12 @@ var RuntimeFS = os.DirFS(".")
 func main() {
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		file, err := RuntimeFS.Open("index.html")
+		urlPath := path.Clean(strings.Trim(r.URL.Path, "/"))
+		name := "index.html"
+		if urlPath != "/" {
+			name = urlPath + ".html"
+		}
+		file, err := RuntimeFS.Open(name)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
 				http.NotFound(w, r)
