@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content='width=device-width, initial-scale=1'>
 <link rel="stylesheet" href="/static/notebrew.css">
+<script type="module" src="/static/notebrew.js"></script>
 <script type="module" src="/static/basecoat/basecoat.js"></script>
 <script type="module" src="/static/basecoat/dropdown-menu-v2.js"></script>
 <title>test2</title>
@@ -92,6 +93,47 @@
     <div>Navigation Item 28</div>
     <div>Navigation Item 29</div>
     <div>Navigation Item 30</div>
+    <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
+        <a href="" class="grow flex items-center text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
+            <span>2025</span>
+        </a>
+        <div class="dropdown-menu">
+            <button type="button" id="demo-dropdown-menu-trigger" aria-haspopup="menu" aria-controls="demo-dropdown-menu-menu" aria-expanded="false" class="btn-outline">Open</button>
+            <div id="demo-dropdown-menu-popover" data-popover aria-hidden="true" class="min-w-56">
+                <div role="menu" id="demo-dropdown-menu-menu" aria-labelledby="demo-dropdown-menu-trigger">
+                    <div role="group" aria-labelledby="account-options">
+                        <div role="heading" id="account-options">My Account</div>
+                        <div role="menuitem">
+                            Profile
+                            <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+                        </div>
+                        <div role="menuitem">
+                            Billing
+                            <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘B</span>
+                        </div>
+                        <div role="menuitem">
+                            Settings
+                            <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘S</span>
+                        </div>
+                        <div role="menuitem">
+                            Keyboard shortcuts
+                            <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘K</span>
+                        </div>
+                    </div>
+                    <hr role="separator" />
+                    <div role="menuitem">GitHub</div>
+                    <div role="menuitem">Support</div>
+                    <div role="menuitem" aria-disabled="true">API</div>
+                    <hr role="separator" />
+                    <div role="menuitem">
+                        Logout
+                        <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div>Navigation Item 31</div>
     <div>Navigation Item 32</div>
     <div>Navigation Item 33</div>
