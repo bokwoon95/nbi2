@@ -1,0 +1,32 @@
+sq/sq.go
+sq/fmt.go
+sq/row.go
+sq/fetch_exec.go
+stacktrace/stacktrace.go
+schema_database.json
+schema_files.json
+schema.go
+id.go
+object_storage.go
+mailer.go
+notebrew.go
+
+wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/notebrew.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo run -verbose .
+
+TODO: import quiet.css stylesheet via /static and see if test2.html's dropdown web component finally works.
+
+documents is a markdown document with associated imgs/videos
+what about bookmarks? what is the best format for saving snippets from the web/various social media apps?
+photos is files
+
+notebrew.com/cms/
+notebrew.com/cms/notes/ => nbrew.notes()
+notebrew.com/cms/photos/ => nbrew.photos()
+notebrew.com/cms/blogs/swc
+notebrew.com/cms/blogs/bokwoon.com
+notebrew.com/cms/blogs/notebrew.com
+notebrew.com/users/
+
+pinned items for notes appear im the sidebar accordion. pinned items for photos appear in the sidebar accordion. all accordions have their expansion state stored in the user's cookies.
+
+all notes and photos and posts have a time map. and also uh, a name map? and a uhh storage map? 🤨
