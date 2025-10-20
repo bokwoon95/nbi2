@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"log/slog"
 	"net/http"
@@ -36,7 +37,32 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.ServeContent(w, r, path.Base(name), time.Time{}, file)
+		if !strings.HasSuffix(name, ".html") {
+			http.ServeContent(w, r, path.Base(name), time.Time{}, file)
+			return
+		}
+		buf := &bytes.Buffer{}
+		_, err = io.Copy(buf, file)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		funcMap := map[string]any{}
+		tmpl, err := template.New(name).Funcs(funcMap).Parse(buf.String())
+		if err != nil {
+			slog.Error(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		buf.Reset()
+		err = tmpl.ExecuteTemplate(buf, name, nil)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		buf.WriteTo(w)
 	})
 	serveMux.HandleFunc("/components", func(w http.ResponseWriter, r *http.Request) {
 		funcMap := map[string]any{}
@@ -46,14 +72,14 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b := &bytes.Buffer{}
-		err = tmpl.ExecuteTemplate(b, "components.html", nil)
+		buf := &bytes.Buffer{}
+		err = tmpl.ExecuteTemplate(buf, "components.html", nil)
 		if err != nil {
 			slog.Error(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b.WriteTo(w)
+		buf.WriteTo(w)
 	})
 	serveMux.HandleFunc("/skeleton", func(w http.ResponseWriter, r *http.Request) {
 		funcMap := map[string]any{}
@@ -62,14 +88,14 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b := &bytes.Buffer{}
+		buf := &bytes.Buffer{}
 		err = tmpl.ExecuteTemplate(w, "base.html", nil)
 		if err != nil {
 			slog.Error(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		b.WriteTo(w)
+		buf.WriteTo(w)
 	})
 	fmt.Println("listening on :8080")
 	http.ListenAndServe(":8080", serveMux)

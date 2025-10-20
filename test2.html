@@ -17,13 +17,13 @@
     <div id="notes-pane" class="p-2">
       <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
         <a href="" class="grow flex items-center text-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-notebook"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18" /><path d="M13 8l2 0" /><path d="M13 12l2 0" /></svg>
+          {{ template "tabler-notebook" }}
           <span>Notes</span>
         </a>
       </div>
       <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
         <a href="" class="grow flex items-center text-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
+          {{ template "tabler-folder" }}
           <span>2025</span>
         </a>
         <div class="dropdown-menu">
@@ -63,6 +63,14 @@
         </div>
       </div>
     </div>
+    <div id="photos-pane" class="p-2">
+      <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
+        <a href="" class="grow flex items-center text-gray-600">
+          {{ template "tabler-folder" }}
+          <span>Photos</span>
+        </a>
+      </div>
+    </div>
     <div>Navigation Item 1</div>
     <div>Navigation Item 2</div>
     <div>Navigation Item 3</div>
@@ -95,7 +103,6 @@
     <div>Navigation Item 30</div>
     <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
         <a href="" class="grow flex items-center text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
             <span>2025</span>
         </a>
         <div class="dropdown-menu">
@@ -156,8 +163,8 @@
     <div>Navigation Item 50</div>
     <div class="py-1 px-2 rounded-sm flex items-center hover:bg-gray-200">
         <a href="" class="grow flex items-center text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
-            <span>2025</span>
+          {{ template "tabler-folder" }}
+          <span>2025</span>
         </a>
         <div class="dropdown-menu">
             <button type="button" id="demo-dropdown-menu-trigger" aria-haspopup="menu" aria-controls="demo-dropdown-menu-menu" aria-expanded="false" class="btn-outline">Open</button>
@@ -278,3 +285,11 @@
     <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.</p>
   </div>
 </div>
+
+{{- define "tabler-notebook" }}
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-notebook"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18" /><path d="M13 8l2 0" /><path d="M13 12l2 0" /></svg>
+{{- end }}
+
+{{- define "tabler-folder" }}
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
+{{- end }}

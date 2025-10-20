@@ -3,11 +3,8 @@ const hamburgerMenuIcon = document.getElementById("hamburger-menu-icon");
 const sidePane = document.getElementById("side-pane");
 const menuPane = document.getElementById("menu-pane");
 const notMenuPane = document.getElementById("not-menu-pane");
-console.log({hamburgerMenuBtn, hamburgerMenuIcon, sidePane, notMenuPane});
 if (hamburgerMenuBtn && hamburgerMenuIcon && sidePane && notMenuPane) {
-  console.log("got here! 1");
   hamburgerMenuBtn.addEventListener("click", function() {
-    console.log("got here! 2");
     if (hamburgerMenuIcon.classList.contains("open")) {
       hamburgerMenuIcon.classList.remove("open");
       sidePane.classList.add("hidden");
