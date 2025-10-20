@@ -13,7 +13,7 @@ notebrew.go
 
 wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/notebrew.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo run -verbose .
 
-TODO: import quiet.css stylesheet via /static and see if test2.html's dropdown web component finally works.
+TODO: Make Notes and Photos into an accordion so that it can dropdown into the full list of pinned items. And it should also function as a link. Only clicking on the chevron (padded) will reveal the full list of items.
 
 documents is a markdown document with associated imgs/videos
 what about bookmarks? what is the best format for saving snippets from the web/various social media apps?
