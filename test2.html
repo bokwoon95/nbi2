@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<link rel='stylesheet' href='/static/notebrew.css'>
+<link rel='stylesheet' href='/static/styles.css'>
 <script type='module' src='/static/notebrew.js'></script>
 <script type='module' src='/static/basecoat/basecoat.js'></script>
 <script type='module' src='/static/basecoat/dropdown-menu-v2.js'></script>
@@ -15,6 +15,20 @@
 <div id='not-menu-pane'>
   <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50' data-click-event-stop-propagation>
     <div id='notes-pane'>
+      <details class='m-2 group border-b last:border-b-0'>
+        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md'>
+          <div class='flex flex-1 items-start justify-between gap-4 py-4 text-left text-sm font-medium hover:underline'>
+            <span class='flex items-center'>
+              {{ template "tabler-notebook" }}
+              <a class='mx-1'>Notes</a>
+            </span>
+            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
+          </div>
+        </summary>
+        <section class='pb-4'>
+          <p class='text-sm'>Yes. It adheres to the WAI-ARIA design pattern.</p>
+        </section>
+      </details>
       <div class='m-2 rounded-sm flex items-center hover:bg-gray-200'>
         <a href='' class='px-2 py-1 grow flex items-center text-gray-600'>
           {{ template "tabler-notebook" }}
@@ -91,6 +105,7 @@
         <section class='pb-4'>
           <p class='text-sm'>Yes. It adheres to the WAI-ARIA design pattern.</p>
         </section>
+      </details>
     </div>
   </div>
   <div id='not-side-pane' class=''>
