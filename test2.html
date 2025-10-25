@@ -15,87 +15,64 @@
 <div id='not-menu-pane'>
   <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50' data-click-event-stop-propagation>
     <div id='notes-pane'>
-      <details class='m-2 group border-b last:border-b-0'>
-        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md'>
-          <div class='flex flex-1 items-start justify-between gap-4 py-4 text-left text-sm font-medium hover:underline'>
-            <span class='flex items-center'>
-              {{ template "tabler-notebook" }}
-              <a class='mx-1'>Notes</a>
-            </span>
-            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
-          </div>
-        </summary>
-        <section class='pb-4'>
-          <p class='text-sm'>Yes. It adheres to the WAI-ARIA design pattern.</p>
-        </section>
-      </details>
-      <details class='m-2 group border-b last:border-b-0'>
-        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md hover:bg-gray-200'>
-          <div class='flex flex-1 items-start justify-between gap-4 py-1 text-left text-sm font-medium'>
-            <span class='flex items-center'>
-              {{ template "tabler-notebook" }}
-              <a class='mx-1'>show more</a>
-            </span>
-            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
-          </div>
-        </summary>
-        <section class='pb-4'>
-          <p class='text-sm'>Yes. It adheres to the WAI-ARIA design pattern.</p>
-        </section>
-      </details>
       <div class='m-2 rounded-sm flex items-center hover:bg-gray-200'>
         <a href='' class='px-2 py-1 grow flex items-center text-gray-600'>
           {{ template "tabler-notebook" }}
           <span class='mx-1'>Notes</span>
         </a>
       </div>
-      <div class='m-2 rounded-sm flex items-center hover:bg-gray-200'>
-        <a href='' class='px-2 py-1 grow flex items-center text-gray-600'>
-          {{ template "tabler-folder" }}
-          <span class='mx-1'>2025</span>
-        </a>
-        <div class='dropdown-menu'>
-          <button type='button' id='demo-dropdown-menu-trigger' aria-haspopup='menu' aria-controls='demo-dropdown-menu-menu' aria-expanded='false' class='btn-outline btn-thin mr-2'>{{ template "tabler-dots" }}</button>
-          <div id='demo-dropdown-menu-popover' data-popover aria-hidden='true' class='min-w-56'>
-            <div role='menu' id='demo-dropdown-menu-menu' aria-labelledby='demo-dropdown-menu-trigger'>
-              <div role='group' aria-labelledby='account-options'>
-                <div role='heading' id='account-options'>My Account</div>
-                <div role='menuitem'>
-                  Profile
-                  <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
+      <details class='m-2 group'>
+        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md bg-gray-200'>
+          <h2 class='flex flex-1 items-start justify-between gap-4 py-1 px-2 text-left text-sm font-medium hover:underline'>
+            pinned
+            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
+          </h2>
+        </summary>
+        <section class=''>
+          <p class='text-sm'>&nbsp;</p>
+          <div class='m-2 rounded-sm flex items-center hover:bg-gray-200'>
+            <a href='' class='px-2 py-1 grow flex items-center text-gray-600'>
+              {{ template "tabler-folder" }}
+              <span class='mx-1'>2025</span>
+            </a>
+            <div class='dropdown-menu'>
+              <button type='button' id='demo-dropdown-menu-trigger' aria-haspopup='menu' aria-controls='demo-dropdown-menu-menu' aria-expanded='false' class='btn-outline btn-thin mr-2'>{{ template "tabler-dots" }}</button>
+              <div id='demo-dropdown-menu-popover' data-popover aria-hidden='true' class='min-w-56'>
+                <div role='menu' id='demo-dropdown-menu-menu' aria-labelledby='demo-dropdown-menu-trigger'>
+                  <div role='group' aria-labelledby='account-options'>
+                    <div role='heading' id='account-options'>My Account</div>
+                    <div role='menuitem'>
+                      Profile
+                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
+                    </div>
+                    <div role='menuitem'>
+                      Billing
+                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘B</span>
+                    </div>
+                    <div role='menuitem'>
+                      Settings
+                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘S</span>
+                    </div>
+                    <div role='menuitem'>
+                      Keyboard shortcuts
+                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘K</span>
+                    </div>
+                  </div>
+                  <hr role='separator' />
+                  <div role='menuitem'>GitHub</div>
+                  <div role='menuitem'>Support</div>
+                  <div role='menuitem' aria-disabled='true'>API</div>
+                  <hr role='separator' />
+                  <div role='menuitem'>
+                    Logout
+                    <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
+                  </div>
                 </div>
-                <div role='menuitem'>
-                  Billing
-                  <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘B</span>
-                </div>
-                <div role='menuitem'>
-                  Settings
-                  <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘S</span>
-                </div>
-                <div role='menuitem'>
-                  Keyboard shortcuts
-                  <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘K</span>
-                </div>
-              </div>
-              <hr role='separator' />
-              <div role='menuitem'>GitHub</div>
-              <div role='menuitem'>Support</div>
-              <div role='menuitem' aria-disabled='true'>API</div>
-              <hr role='separator' />
-              <div role='menuitem'>
-                Logout
-                <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class='m-2'>
-        <button type='button' id='demo-dropdown-menu-trigger' aria-haspopup='menu' aria-controls='demo-dropdown-menu-menu' aria-expanded='false' class='btn-outline btn-thin w-full'>
-          <span>Show more</span>
-          {{ template "tabler-chevron-down" }}
-        </button>
-      </div>
+        </section>
+      </details>
     </div>
     <hr>
     <div id='photos-pane'>
