@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -20,10 +21,19 @@ import (
 	"github.com/bokwoon95/nbi2/stacktrace"
 )
 
+type ObjectStorageRange struct {
+	Unit       string
+	RangeStart int
+	RangeEnd   int
+	Size       int
+}
+
 // ObjectStorage represents an object storage provider.
 type ObjectStorage interface {
 	// Gets an object from a bucket.
 	Get(ctx context.Context, key string) (io.ReadCloser, error)
+
+	// GetRange gets an object from the bucket.
 
 	// Puts an object into a bucket. If key already exists, it should be
 	// replaced.
@@ -144,6 +154,57 @@ func (storage *S3ObjectStorage) Get(ctx context.Context, key string) (io.ReadClo
 		storage.values["httpcontentrange"] = *output.ContentRange
 	}
 	return output.Body, nil
+}
+
+func (storage *S3ObjectStorage) GetRange(ctx context.Context, key string, objectStorageRange ObjectStorageRange) (io.ReadCloser, ObjectStorageRange, error) {
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Range
+	var httpRange *string
+	if objectStorageRange.Unit != "" && objectStorageRange.RangeStart >= 0 {
+		var b strings.Builder
+		b.WriteString(objectStorageRange.Unit + "=" + strconv.Itoa(objectStorageRange.RangeStart) + "-")
+		if objectStorageRange.RangeEnd > 0 {
+			b.WriteString(strconv.Itoa(objectStorageRange.RangeEnd))
+		}
+		str := b.String()
+		httpRange = &str
+	}
+	output, err := storage.Client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: &storage.Bucket,
+		Key:    aws.String(key),
+		Range:  httpRange,
+	})
+	if err != nil {
+		var apiErr smithy.APIError
+		if errors.As(err, &apiErr) {
+			if apiErr.ErrorCode() == "NoSuchKey" {
+				return nil, ObjectStorageRange{}, &fs.PathError{Op: "get", Path: key, Err: fs.ErrNotExist}
+			}
+		}
+		return nil, ObjectStorageRange{}, stacktrace.New(err)
+	}
+	if output.ContentRange == nil {
+		return output.Body, ObjectStorageRange{}, nil
+	}
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Range
+	var contentRange ObjectStorageRange
+	head, tail, _ := strings.Cut(*output.ContentRange, " ")
+	contentRange.Unit = head
+	tailHead, tailTail, _ := strings.Cut(strings.TrimSpace(tail), "/")
+	if tailHead != "*" {
+		rangeStart, rangeEnd, _ := strings.Cut(tailHead, "-")
+		if n, err := strconv.Atoi(rangeStart); err == nil {
+			contentRange.RangeStart = n
+		}
+		if n, err := strconv.Atoi(rangeEnd); err == nil {
+			contentRange.RangeEnd = n
+		}
+	}
+	if tailTail != "*" {
+		if n, err := strconv.Atoi(tailTail); err == nil {
+			contentRange.Size = n
+		}
+	}
+	return output.Body, contentRange, nil
 }
 
 // Put implements the Put ObjectStorage operation for S3ObjectStorage.
@@ -372,4 +433,3 @@ func (storage *DirectoryObjectStorage) Copy(ctx context.Context, srcKey, destKey
 	}
 	return nil
 }
-
