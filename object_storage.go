@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"log/slog"
@@ -21,19 +22,46 @@ import (
 	"github.com/bokwoon95/nbi2/stacktrace"
 )
 
-type ObjectStorageRange struct {
-	Unit       string
-	RangeStart int
-	RangeEnd   int
-	Size       int
+// RangeNotSatisfiableError represents the HTTP 416 Range Not Satisfiable
+// error.
+type RangeNotSatisfiableError struct {
+	Key   string
+	Start int64
+	End   int64
+	Size  int64
+}
+
+// Error implements the error interface.
+func (e *RangeNotSatisfiableError) Error() string {
+	if e.Start < 0 {
+		return fmt.Sprintf("range not satisfiable: start cannot be less than 0: key=%s, start=%d", e.Key, e.Start)
+	}
+	if e.End < e.Start {
+		return fmt.Sprintf("range not satisfiable: end cannot be less than start: key=%s, start=%d, end=%d", e.Key, e.Start, e.End)
+	}
+	if e.Size >= 0 {
+		return fmt.Sprintf("range not satisfiable: start exceeds object size: key=%s, start=%d, size=%d", e.Key, e.Start, e.Size)
+	}
+	return fmt.Sprintf("range not satisfiable: start exceeds object size: key=%s, start=%d, size=unknown", e.Key, e.Start)
 }
 
 // ObjectStorage represents an object storage provider.
 type ObjectStorage interface {
-	// Gets an object from a bucket.
-	Get(ctx context.Context, key string) (io.ReadCloser, error)
-
-	// GetRange gets an object from the bucket.
+	// GetRange gets an object from the bucket, optionally for a given range of
+	// bytes. If no ranging is desired, wantRange should be the zero array
+	// [2]int64{}.
+	//
+	// If wantRange is not the zero array:
+	// - wantRange[0] is the desired starting byte index.
+	// - wantRange[1] is the desired ending byte index (inclusive). It can be
+	// left as 0 to indicate ranging to the end of the object.
+	//
+	// If gotRange is not the zero array:
+	// - gotRange[0] is the actual starting byte index of the readCloser.
+	// - gotRange[1] is the actual ending byte index of the readCloser.
+	// - gotRange[2] is the size (in bytes) of the readCloser. It is 0 if
+	// unknown.
+	GetRange(ctx context.Context, key string, wantRange [2]int64) (readCloser io.ReadCloser, gotRange [3]int64, err error)
 
 	// Puts an object into a bucket. If key already exists, it should be
 	// replaced.
@@ -62,12 +90,6 @@ type S3ObjectStorage struct {
 	// Logger is used for reporting errors that cannot be handled and are
 	// thrown away.
 	Logger *slog.Logger
-
-	// values is a key-value store containing values used by some S3 Object
-	// operations. Currently, the following values are recognized:
-	//
-	// - "httprange" => string (value of the HTTP Range header passed to GetObject)
-	values map[string]any
 }
 
 var _ ObjectStorage = (*S3ObjectStorage)(nil)
@@ -120,50 +142,22 @@ func NewS3Storage(ctx context.Context, config S3StorageConfig) (*S3ObjectStorage
 	return storage, nil
 }
 
-func (storage *S3ObjectStorage) WithValues(values map[string]any) ObjectStorage {
-	return &S3ObjectStorage{
-		Client:         storage.Client,
-		Bucket:         storage.Bucket,
-		ContentTypeMap: storage.ContentTypeMap,
-		Logger:         storage.Logger,
-		values:         values,
-	}
-}
-
-// Get implements the Get ObjectStorage operation for S3ObjectStorage.
-func (storage *S3ObjectStorage) Get(ctx context.Context, key string) (io.ReadCloser, error) {
-	var httpRange *string
-	if value, ok := storage.values["httprange"].(string); ok && value != "" {
-		httpRange = &value
-	}
-	output, err := storage.Client.GetObject(ctx, &s3.GetObjectInput{
-		Bucket: &storage.Bucket,
-		Key:    aws.String(key),
-		Range:  httpRange,
-	})
-	if err != nil {
-		var apiErr smithy.APIError
-		if errors.As(err, &apiErr) {
-			if apiErr.ErrorCode() == "NoSuchKey" {
-				return nil, &fs.PathError{Op: "get", Path: key, Err: fs.ErrNotExist}
-			}
-		}
-		return nil, stacktrace.New(err)
-	}
-	if output.ContentRange != nil {
-		storage.values["httpcontentrange"] = *output.ContentRange
-	}
-	return output.Body, nil
-}
-
-func (storage *S3ObjectStorage) GetRange(ctx context.Context, key string, objectStorageRange ObjectStorageRange) (io.ReadCloser, ObjectStorageRange, error) {
+// GetRange implements the GetRange ObjectStorage operation for
+// S3ObjectStorage.
+func (storage *S3ObjectStorage) GetRange(ctx context.Context, key string, wantRange [2]int64) (readCloser io.ReadCloser, gotRange [3]int64, err error) {
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Range
 	var httpRange *string
-	if objectStorageRange.Unit != "" && objectStorageRange.RangeStart >= 0 {
+	if wantRange != ([2]int64{}) {
+		if wantRange[0] < 0 {
+			return nil, [3]int64{}, &RangeNotSatisfiableError{Key: key, Start: wantRange[0], End: wantRange[1]}
+		}
 		var b strings.Builder
-		b.WriteString(objectStorageRange.Unit + "=" + strconv.Itoa(objectStorageRange.RangeStart) + "-")
-		if objectStorageRange.RangeEnd > 0 {
-			b.WriteString(strconv.Itoa(objectStorageRange.RangeEnd))
+		b.WriteString("bytes=" + strconv.FormatInt(wantRange[0], 10) + "-")
+		if wantRange[1] != 0 {
+			if wantRange[1] < wantRange[0] {
+				return nil, [3]int64{}, &RangeNotSatisfiableError{Key: key, Start: wantRange[0], End: wantRange[1]}
+			}
+			b.WriteString(strconv.FormatInt(wantRange[1], 10))
 		}
 		str := b.String()
 		httpRange = &str
@@ -176,35 +170,41 @@ func (storage *S3ObjectStorage) GetRange(ctx context.Context, key string, object
 	if err != nil {
 		var apiErr smithy.APIError
 		if errors.As(err, &apiErr) {
-			if apiErr.ErrorCode() == "NoSuchKey" {
-				return nil, ObjectStorageRange{}, &fs.PathError{Op: "get", Path: key, Err: fs.ErrNotExist}
+			errorCode := apiErr.ErrorCode()
+			switch errorCode {
+			case "NoSuchKey":
+				return nil, [3]int64{}, &fs.PathError{Op: "getrange", Path: key, Err: fs.ErrNotExist}
+			case "InvalidRange":
+				return nil, [3]int64{}, &RangeNotSatisfiableError{Key: key, Start: wantRange[0], End: wantRange[1], Size: -1}
 			}
 		}
-		return nil, ObjectStorageRange{}, stacktrace.New(err)
+		return nil, [3]int64{}, stacktrace.New(err)
 	}
 	if output.ContentRange == nil {
-		return output.Body, ObjectStorageRange{}, nil
+		return output.Body, [3]int64{}, nil
 	}
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Range
-	var contentRange ObjectStorageRange
 	head, tail, _ := strings.Cut(*output.ContentRange, " ")
-	contentRange.Unit = head
+	if head != "bytes" {
+		output.Body.Close()
+		return nil, [3]int64{}, fmt.Errorf("S3 Object Storage returned unit other than bytes: %s", head)
+	}
 	tailHead, tailTail, _ := strings.Cut(strings.TrimSpace(tail), "/")
 	if tailHead != "*" {
 		rangeStart, rangeEnd, _ := strings.Cut(tailHead, "-")
-		if n, err := strconv.Atoi(rangeStart); err == nil {
-			contentRange.RangeStart = n
+		if n, err := strconv.ParseInt(rangeStart, 10, 64); err == nil {
+			gotRange[0] = n
 		}
-		if n, err := strconv.Atoi(rangeEnd); err == nil {
-			contentRange.RangeEnd = n
+		if n, err := strconv.ParseInt(rangeEnd, 10, 64); err == nil {
+			gotRange[1] = n
 		}
 	}
 	if tailTail != "*" {
-		if n, err := strconv.Atoi(tailTail); err == nil {
-			contentRange.Size = n
+		if n, err := strconv.ParseInt(tailTail, 10, 64); err == nil {
+			gotRange[2] = n
 		}
 	}
-	return output.Body, contentRange, nil
+	return output.Body, gotRange, nil
 }
 
 // Put implements the Put ObjectStorage operation for S3ObjectStorage.
@@ -346,6 +346,85 @@ func (storage *DirectoryObjectStorage) Get(ctx context.Context, key string) (io.
 		return nil, stacktrace.New(err)
 	}
 	return file, nil
+}
+
+// A LimitedReaderCloser reads from ReadCloser but limits the amount of data
+// returned to just N bytes. Each call to Read updates N to reflect the new
+// amount remaining. Read returns EOF when N <= 0 or when the underlying
+// ReadCloser returns EOF.
+//
+// Its implementation is copied from io.LimitedReader.
+type LimitedReaderCloser struct {
+	ReadCloser io.ReadCloser
+	N          int64
+}
+
+// Read reads from the underlying ReadCloser, but not beyond N bytes.
+func (l *LimitedReaderCloser) Read(p []byte) (n int, err error) {
+	if l.N <= 0 {
+		return 0, io.EOF
+	}
+	if int64(len(p)) > l.N {
+		p = p[0:l.N]
+	}
+	n, err = l.ReadCloser.Read(p)
+	l.N -= int64(n)
+	return n, err
+}
+
+// Close closes the underlying ReadCloser.
+func (l *LimitedReaderCloser) Close() error {
+	return l.ReadCloser.Close()
+}
+
+// GetRange implements the GetRange ObjectStorage operation for
+// DirectoryObjectStorage.
+func (storage *DirectoryObjectStorage) GetRange(ctx context.Context, key string, wantRange [2]int64) (readCloser io.ReadCloser, gotRange [3]int64, err error) {
+	err = ctx.Err()
+	if err != nil {
+		return nil, [3]int64{}, err
+	}
+	if len(key) < 4 {
+		return nil, [3]int64{}, &fs.PathError{Op: "getrange", Path: key, Err: fs.ErrInvalid}
+	}
+	file, err := os.Open(filepath.Join(storage.RootDir, key[:4], key))
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil, [3]int64{}, &fs.PathError{Op: "getrange", Path: key, Err: fs.ErrNotExist}
+		}
+		return nil, [3]int64{}, stacktrace.New(err)
+	}
+	if wantRange == ([2]int64{}) {
+		return file, [3]int64{}, nil
+	}
+	if wantRange[0] < 0 {
+		return nil, [3]int64{}, &RangeNotSatisfiableError{Start: wantRange[0], End: wantRange[1]}
+	}
+	if wantRange[1] < wantRange[0] {
+		return nil, [3]int64{}, &RangeNotSatisfiableError{Start: wantRange[0], End: wantRange[1]}
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		file.Close()
+		return nil, [3]int64{}, stacktrace.New(err)
+	}
+	gotRange[2] = fileInfo.Size()
+	if wantRange[0] > 0 {
+		if wantRange[0] > gotRange[2]-1 {
+			return nil, [3]int64{}, &RangeNotSatisfiableError{Key: key, Start: wantRange[0], End: wantRange[1], Size: gotRange[2]}
+		}
+		gotRange[0], err = file.Seek(wantRange[0], io.SeekStart)
+		if err != nil {
+			file.Close()
+			return nil, [3]int64{}, stacktrace.New(err)
+		}
+	}
+	gotRange[1] = min(wantRange[1], gotRange[2]-1)
+	readCloser = &LimitedReaderCloser{
+		ReadCloser: file,
+		N:          gotRange[1] - gotRange[0] + 1,
+	}
+	return readCloser, gotRange, nil
 }
 
 // Put implements the Put ObjectStorage operation for DirectoryObjectStorage.
