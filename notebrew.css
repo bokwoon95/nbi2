@@ -85,6 +85,14 @@
   transition-timing-function: ease-in-out;
 }
 
+details summary [data-show-more-show-less]::before {
+  content: 'show more';
+}
+
+details[open] summary [data-show-more-show-less]::before {
+  content: 'show less';
+}
+
 /* background color */
 .bg-dark-cyan { background-color: #007d9c; }
 .hover\:bg-very-dark-cyan:hover { background-color: #005469; }
