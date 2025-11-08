@@ -194,7 +194,9 @@ func (mailer *Mailer) NewClient() (*smtp.Client, error) {
 func (mailer *Mailer) start() {
 	defer close(mailer.stopped)
 	timer := time.NewTimer(0)
-	<-timer.C
+	if !timer.Stop() {
+		<-timer.C
+	}
 	defer timer.Stop()
 	var buf bytes.Buffer
 	for {
