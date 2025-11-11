@@ -15,6 +15,7 @@ developer_mode.go
 TODO: notebrew.New(configdir) which leads to serve_http.go which leads to main.go
 TODO: all templates to use a static funcMap and all state to be stuffed inside the templateData. Use dynamic functions for state-specific closures.
     TODO: depending on devFlag bool, use sync.Once to parse all templates on startup or panic. Would it be possible to compile sq queries as well depending on devFlag?
+    TODO: we want to get this right; show as a proof of concept how easy it is to parse templates per request on devMode, but switch to parsed templates on startup in production.
 
 wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo run -verbose .
 
