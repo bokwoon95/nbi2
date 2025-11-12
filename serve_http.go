@@ -54,6 +54,9 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		nbrew.BadRequest(w, r, err)
 		return
 	}
+	// TODO: /cms/users/*
+	// TODO: /cms/notes/*
+	// TODO: /cms/photos/*
 }
 
 func (nbrew *Notebrew) RedirectToHTTPS(w http.ResponseWriter, r *http.Request) {
