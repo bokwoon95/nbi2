@@ -12,6 +12,8 @@ sqlite_nocgo.go
 mailer.go
 notebrew.go
 developer_mode.go
+serve_http.go
+notebrew/main.go
 
 TODO: serve_http.go which leads to main.go
 TODO: all templates to use a static funcMap and all state to be stuffed inside the templateData. Use dynamic functions for state-specific closures.
