@@ -4,10 +4,11 @@ sq/row.go
 sq/fetch_exec.go
 stacktrace/stacktrace.go
 schema_database.json
-schema_files.json
 schema.go
 id.go
 object_storage.go
+sqlite_cgo.go
+sqlite_nocgo.go
 mailer.go
 notebrew.go
 developer_mode.go
