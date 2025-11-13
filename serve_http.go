@@ -60,8 +60,16 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "users":
-			head3, tail3, _ := strings.Cut(tail2, "/")
-			_, _ = head3, tail3
+			switch tail2 {
+			case "login":
+				return
+			case "logout":
+				return
+			case "resetpassword":
+				return
+			case "invite":
+				return
+			}
 		case "notes":
 		case "photos":
 		}
