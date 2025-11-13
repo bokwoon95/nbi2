@@ -25,8 +25,8 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Redirect unclean paths to the clean path equivalent.
+	cleanPath := path.Clean(r.URL.Path)
 	if r.Method == "GET" || r.Method == "HEAD" {
-		cleanPath := path.Clean(r.URL.Path)
 		if cleanPath != r.URL.Path {
 			cleanURL := *r.URL
 			cleanURL.Path = cleanPath
@@ -53,6 +53,18 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		nbrew.BadRequest(w, r, err)
 		return
+	}
+	urlPath := strings.Trim(cleanPath, "/")
+	head, tail, _ := strings.Cut(urlPath, "/")
+	if head == "cms" {
+		tailHead, tailTail, _ := strings.Cut(tail, "/")
+		switch tailHead {
+		case "users":
+			tailTailHead, tailTailTail, _ := strings.Cut(tailTail, "/")
+			_, _ = tailTailHead, tailTailTail
+		case "notes":
+		case "photos":
+		}
 	}
 	// TODO: /cms/users/*
 	// TODO: /cms/notes/*
