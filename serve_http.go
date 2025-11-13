@@ -2,7 +2,10 @@ package nbi2
 
 import (
 	"context"
+	"database/sql"
 	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net"
@@ -11,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/bokwoon95/nbi2/sq"
+	"github.com/bokwoon95/nbi2/stacktrace"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -57,8 +61,67 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := strings.Trim(cleanPath, "/")
 	head, tail, _ := strings.Cut(urlPath, "/")
 	if head == "cms" {
+		var user User
+		_ = user
+		var sessionToken string
+		header := r.Header.Get("Authorization")
+		if header != "" {
+			if strings.HasPrefix(header, "Bearer ") {
+				sessionToken = strings.TrimPrefix(header, "Bearer ")
+			}
+		} else {
+			cookie, _ := r.Cookie("session")
+			if cookie != nil {
+				sessionToken = cookie.Value
+			}
+		}
+		if sessionToken != "" {
+			sessionTokenBytes, err := hex.DecodeString(fmt.Sprintf("%048s", sessionToken))
+			if err == nil && len(sessionTokenBytes) == 24 {
+				var sessionTokenHash [8 + blake2b.Size256]byte
+				checksum := blake2b.Sum256(sessionTokenBytes[8:])
+				copy(sessionTokenHash[:8], sessionTokenBytes[:8])
+				copy(sessionTokenHash[8:], checksum[:])
+				user, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+					Dialect: nbrew.Dialect,
+					Format: "SELECT {*}" +
+						" FROM session" +
+						" JOIN users ON users.user_id = session.user_id" +
+						" WHERE session.session_token_hash = {sessionTokenHash}",
+					Values: []any{
+						sq.BytesParam("sessionTokenHash", sessionTokenHash[:]),
+					},
+				}, func(row *sq.Row) User {
+					user := User{
+						UserID:                row.UUID("users.user_id"),
+						Username:              row.String("users.username"),
+						Email:                 row.String("users.email"),
+						TimezoneOffsetSeconds: row.Int("users.timezone_offset_seconds"),
+						DisableReason:         row.String("users.disable_reason"),
+						SiteLimit:             row.Int64("coalesce(users.site_limit, -1)"),
+						StorageLimit:          row.Int64("coalesce(users.storage_limit, -1)"),
+					}
+					b := row.Bytes(nil, "users.user_flags")
+					if len(b) > 0 {
+						err := json.Unmarshal(b, &user.UserFlags)
+						if err != nil {
+							panic(stacktrace.New(err))
+						}
+					}
+					return user
+				})
+				if err != nil {
+					if !errors.Is(err, sql.ErrNoRows) {
+						nbrew.GetLogger(r.Context()).Error(err.Error())
+						nbrew.InternalServerError(w, r, err)
+						return
+					}
+				}
+			}
+		}
 		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
+		case "":
 		case "users":
 			switch tail2 {
 			case "login":
@@ -70,10 +133,14 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			case "invite":
 				return
 			}
+			switch tail2 {
+			case "changepassword":
+			}
 		case "notes":
 		case "photos":
 		}
 	}
+	// TODO: /cms
 	// TODO: /cms/users/*
 	// TODO: /cms/notes/*
 	// TODO: /cms/photos/*
