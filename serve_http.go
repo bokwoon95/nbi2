@@ -57,11 +57,11 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := strings.Trim(cleanPath, "/")
 	head, tail, _ := strings.Cut(urlPath, "/")
 	if head == "cms" {
-		tailHead, tailTail, _ := strings.Cut(tail, "/")
-		switch tailHead {
+		head2, tail2, _ := strings.Cut(tail, "/")
+		switch head2 {
 		case "users":
-			tailTailHead, tailTailTail, _ := strings.Cut(tailTail, "/")
-			_, _ = tailTailHead, tailTailTail
+			head3, tail3, _ := strings.Cut(tail2, "/")
+			_, _ = head3, tail3
 		case "notes":
 		case "photos":
 		}
