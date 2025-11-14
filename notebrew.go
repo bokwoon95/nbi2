@@ -635,7 +635,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 	}
 
-	// Database. (CLOSE)
+	// Database.
 	b, err = os.ReadFile(filepath.Join(configDir, "database.json"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "database.json"), err)
@@ -886,12 +886,22 @@ func IsKeyViolation(dialect string, errorCode string) bool {
 func (nbrew *Notebrew) Close() error {
 	nbrew.backgroundCancel()
 	defer nbrew.BackgroundWaitGroup.Wait()
-	if nbrew.DB != nil {
-		if nbrew.Dialect == "sqlite" {
-			nbrew.DB.Exec("PRAGMA optimize")
+	var firstErr error
+	if nbrew.Dialect == "sqlite" {
+		_, err := nbrew.DB.Exec("PRAGMA optimize")
+		if err != nil && firstErr == nil {
+			firstErr = err
 		}
 	}
-	return nil
+	err := nbrew.DB.Close()
+	if err != nil && firstErr == nil {
+		firstErr = err
+	}
+	err = nbrew.MaxMindDBReader.Close()
+	if err != nil && firstErr == nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 // User represents a user in the users table.
