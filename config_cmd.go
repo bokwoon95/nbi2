@@ -86,6 +86,46 @@ func ConfigCommand(configDir string, args ...string) (*ConfigCmd, error) {
 	return &cmd, nil
 }
 
+func (cmd *ConfigCmd) readWriteTextFile(filePath string) error {
+	if cmd.Value.Valid {
+		err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+		if err != nil {
+			return err
+		}
+	} else {
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return err
+		}
+		io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+	}
+	return nil
+}
+
+func (cmd *ConfigCmd) readJSON(filePath string, target any) error {
+	b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	if len(b) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err = decoder.Decode(target)
+		if err != nil {
+			return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
+		}
+	}
+	return nil
+}
+
+// TODO: figure this shit out
+func (cmd *ConfigCmd) writeJSON(filePath string) error {
+	if cmd.Value.Valid {
+	} else {
+	}
+	return nil
+}
+
 func (cmd *ConfigCmd) Run() error {
 	if !cmd.Key.Valid {
 		io.WriteString(cmd.Stderr, configHelp)
@@ -96,83 +136,20 @@ func (cmd *ConfigCmd) Run() error {
 	case "":
 		return fmt.Errorf("key cannot be empty")
 	case "port":
-		if cmd.Value.Valid {
-			err := os.WriteFile(filepath.Join(cmd.ConfigDir, "port.txt"), []byte(cmd.Value.String), 0644)
-			if err != nil {
-				return err
-			}
-		} else {
-			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "port.txt"))
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return err
-			}
-			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-		}
+		return cmd.readWriteTextFile("port.txt")
 	case "cmsdomain":
-		if cmd.Value.Valid {
-			err := os.WriteFile(filepath.Join(cmd.ConfigDir, "cmsdomain.txt"), []byte(cmd.Value.String), 0644)
-			if err != nil {
-				return err
-			}
-		} else {
-			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "cmsdomain.txt"))
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return err
-			}
-			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-		}
+		return cmd.readWriteTextFile("cmsdomain.txt")
 	case "contentdomain":
-		if cmd.Value.Valid {
-			err := os.WriteFile(filepath.Join(cmd.ConfigDir, "contentdomain.txt"), []byte(cmd.Value.String), 0644)
-			if err != nil {
-				return err
-			}
-		} else {
-			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "contentdomain.txt"))
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return err
-			}
-			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-		}
+		return cmd.readWriteTextFile("contentdomain.txt")
 	case "cdndomain":
-		if cmd.Value.Valid {
-			err := os.WriteFile(filepath.Join(cmd.ConfigDir, "cdndomain.txt"), []byte(cmd.Value.String), 0644)
-			if err != nil {
-				return err
-			}
-		} else {
-			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "cdndomain.txt"))
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return err
-			}
-			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-		}
+		return cmd.readWriteTextFile("cdndomain.txt")
 	case "maxminddb":
-		if cmd.Value.Valid {
-			err := os.WriteFile(filepath.Join(cmd.ConfigDir, "maxminddb.txt"), []byte(cmd.Value.String), 0644)
-			if err != nil {
-				return err
-			}
-		} else {
-			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "maxminddb.txt"))
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return err
-			}
-			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-		}
+		return cmd.readWriteTextFile("maxminddb.txt")
 	case "database":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "database.json"))
-		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
 		var databaseConfig DatabaseConfig
-		if len(b) > 0 {
-			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&databaseConfig)
-			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "database.json"), err)
-			}
+		err := cmd.readJSON("database.json", &databaseConfig)
+		if err != nil && tail != "" {
+			return err
 		}
 		if databaseConfig.Params == nil {
 			databaseConfig.Params = map[string]string{}
