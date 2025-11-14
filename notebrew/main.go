@@ -84,7 +84,7 @@ func main() {
 			return err
 		}
 		defer nbrew.Close()
-		if nbrew.DB != nil && nbrew.Dialect == "sqlite" {
+		if nbrew.Dialect == "sqlite" {
 			_, err := nbrew.DB.ExecContext(context.Background(), "PRAGMA optimize(0x10002)")
 			if err != nil {
 				nbrew.Logger.Error(err.Error())
