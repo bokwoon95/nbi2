@@ -786,52 +786,52 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 	}
 
-	// Objects.
-	b, err = os.ReadFile(filepath.Join(configDir, "objects.json"))
+	// Object Storage.
+	b, err = os.ReadFile(filepath.Join(configDir, "objectstorage.json"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "objects.json"), err)
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "objectstorage.json"), err)
 	}
 	b = bytes.TrimSpace(b)
-	var objectsConfig ObjectsConfig
+	var objectstorageConfig ObjectstorageConfig
 	if len(b) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(b))
 		decoder.DisallowUnknownFields()
-		err = decoder.Decode(&objectsConfig)
+		err = decoder.Decode(&objectstorageConfig)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "objects.json"), err)
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "objectstorage.json"), err)
 		}
 	}
-	switch objectsConfig.Provider {
+	switch objectstorageConfig.Provider {
 	case "", "directory":
-		if objectsConfig.FilePath == "" {
-			objectsConfig.FilePath = filepath.Join(dataDir, "notebrew-objects")
+		if objectstorageConfig.FilePath == "" {
+			objectstorageConfig.FilePath = filepath.Join(dataDir, "notebrew-objectstorage")
 		} else {
-			objectsConfig.FilePath = filepath.Clean(objectsConfig.FilePath)
+			objectstorageConfig.FilePath = filepath.Clean(objectstorageConfig.FilePath)
 		}
-		err := os.MkdirAll(objectsConfig.FilePath, 0755)
+		err := os.MkdirAll(objectstorageConfig.FilePath, 0755)
 		if err != nil {
 			return nil, err
 		}
-		objectStorage, err := NewDirObjectStorage(objectsConfig.FilePath, os.TempDir())
+		objectStorage, err := NewDirObjectStorage(objectstorageConfig.FilePath, os.TempDir())
 		if err != nil {
 			return nil, err
 		}
 		nbrew.ObjectStorage = objectStorage
 	case "s3":
-		if objectsConfig.Endpoint == "" {
-			return nil, fmt.Errorf("%s: missing endpoint field", filepath.Join(configDir, "objects.json"))
+		if objectstorageConfig.Endpoint == "" {
+			return nil, fmt.Errorf("%s: missing endpoint field", filepath.Join(configDir, "objectstorage.json"))
 		}
-		if objectsConfig.Region == "" {
-			return nil, fmt.Errorf("%s: missing region field", filepath.Join(configDir, "objects.json"))
+		if objectstorageConfig.Region == "" {
+			return nil, fmt.Errorf("%s: missing region field", filepath.Join(configDir, "objectstorage.json"))
 		}
-		if objectsConfig.Bucket == "" {
-			return nil, fmt.Errorf("%s: missing bucket field", filepath.Join(configDir, "objects.json"))
+		if objectstorageConfig.Bucket == "" {
+			return nil, fmt.Errorf("%s: missing bucket field", filepath.Join(configDir, "objectstorage.json"))
 		}
-		if objectsConfig.AccessKeyID == "" {
-			return nil, fmt.Errorf("%s: missing accessKeyID field", filepath.Join(configDir, "objects.json"))
+		if objectstorageConfig.AccessKeyID == "" {
+			return nil, fmt.Errorf("%s: missing accessKeyID field", filepath.Join(configDir, "objectstorage.json"))
 		}
-		if objectsConfig.SecretAccessKey == "" {
-			return nil, fmt.Errorf("%s: missing secretAccessKey field", filepath.Join(configDir, "objects.json"))
+		if objectstorageConfig.SecretAccessKey == "" {
+			return nil, fmt.Errorf("%s: missing secretAccessKey field", filepath.Join(configDir, "objectstorage.json"))
 		}
 		contentTypeMap := map[string]string{
 			".jpeg": "image/jpeg",
@@ -845,11 +845,11 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 			".tgz":  "application/octet-stream",
 		}
 		objectStorage, err := NewS3Storage(context.Background(), S3StorageConfig{
-			Endpoint:        objectsConfig.Endpoint,
-			Region:          objectsConfig.Region,
-			Bucket:          objectsConfig.Bucket,
-			AccessKeyID:     objectsConfig.AccessKeyID,
-			SecretAccessKey: objectsConfig.SecretAccessKey,
+			Endpoint:        objectstorageConfig.Endpoint,
+			Region:          objectstorageConfig.Region,
+			Bucket:          objectstorageConfig.Bucket,
+			AccessKeyID:     objectstorageConfig.AccessKeyID,
+			SecretAccessKey: objectstorageConfig.SecretAccessKey,
 			ContentTypeMap:  contentTypeMap,
 			Logger:          nbrew.Logger,
 		})
@@ -858,7 +858,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 		nbrew.ObjectStorage = objectStorage
 	default:
-		return nil, fmt.Errorf("%s: unsupported provider %q (possible values: directory, s3)", filepath.Join(configDir, "objects.json"), objectsConfig.Provider)
+		return nil, fmt.Errorf("%s: unsupported provider %q (possible values: directory, s3)", filepath.Join(configDir, "objectstorage.json"), objectstorageConfig.Provider)
 	}
 	return nbrew, nil
 }
@@ -879,87 +879,6 @@ func IsKeyViolation(dialect string, errorCode string) bool {
 	default:
 		return false
 	}
-}
-
-const dnsHelp = `# == dns keys == #
-# Refer to ` + "`notebrew config`" + ` on how to get and set config values.
-# provider  - DNS provider (possible values: namecheap, cloudflare, porkbun, godaddy).
-# username  - DNS API username   (required by: namecheap).
-# apiKey    - DNS API key        (required by: namecheap, porkbun).
-# apiToken  - DNS API token      (required by: cloudflare, godaddy).
-# secretKey - DNS API secret key (required by: porkbun).
-`
-
-type DNSConfig struct {
-	Provider  string `json:"provider"`
-	Username  string `json:"username"`
-	APIKey    string `json:"apiKey"`
-	APIToken  string `json:"apiToken"`
-	SecretKey string `json:"secretKey"`
-}
-
-const certmagicHelp = `# == certmagic keys == #
-# Refer to ` + "`notebrew config`" + ` on how to get and set config values.
-# directoryPath - Directory to store certmagic certificates in.
-# terseLogger   - If true, omit info logs from certmagic (recommended to keep this off when first starting out).
-`
-
-type CertmagicConfig struct {
-	DirectoryPath string `json:"directoryPath"`
-	TerseLogger   bool   `json:"terseLogger"`
-}
-
-const databaseHelp = `# == database keys == #
-# Refer to ` + "`notebrew config`" + ` on how to get and set config values.
-# dialect         - Database dialect (possible values: sqlite, postgres, mysql).
-# filePath        - File path to the sqlite file (if dialect is sqlite).
-# user            - Database user.
-# password        - Database password.
-# host            - Database host.
-# port            - Database port.
-# dbName          - Database name.
-# params          - Database-specific connection parameters (see https://example.com for more info).
-# maxOpenConns    - Max open connections to the database (0 means unset, default is unlimited).
-# maxIdleConns    - Max idle connections to the database (0 means unset, default is 2).
-# connMaxLifetime - Connection max lifetime. e.g. 5m, 10m30s
-# connMaxIdleTime - Connection max idle time. e.g. 5m, 10m30s
-`
-
-type DatabaseConfig struct {
-	Dialect         string            `json:"dialect"`
-	FilePath        string            `json:"filePath"`
-	User            string            `json:"user"`
-	Password        string            `json:"password"`
-	Host            string            `json:"host"`
-	Port            string            `json:"port"`
-	DBName          string            `json:"dbName"`
-	Params          map[string]string `json:"params"`
-	MaxOpenConns    int               `json:"maxOpenConns"`
-	MaxIdleConns    int               `json:"maxIdleConns"`
-	ConnMaxLifetime string            `json:"connMaxLifetime"`
-	ConnMaxIdleTime string            `json:"connMaxIdleTime"`
-}
-
-const objectsHelp = `# == objects keys == #
-# Choose between using a directory or an S3-compatible provider to store objects.
-# Refer to ` + "`notebrew config`" + ` on how to get and set config values.
-# provider        - Object storage provider (possible values: directory, s3).
-# filePath        - Object storage directory filePath (if using a directory).
-# endpoint        - Object storage provider endpoint (if using s3). e.g. https://s3.us-east-1.amazonaws.com, https://s3.us-west-004.backblazeb2.com
-# region          - S3 region. e.g. us-east-1, us-west-004
-# bucket          - S3 bucket.
-# accessKeyID     - S3 access key ID.
-# secretAccessKey - S3 secret access key.
-`
-
-type ObjectsConfig struct {
-	Provider        string `json:"provider"`
-	FilePath        string `json:"filePath"`
-	Endpoint        string `json:"endpoint"`
-	Region          string `json:"region"`
-	Bucket          string `json:"bucket"`
-	AccessKeyID     string `json:"accessKeyID"`
-	SecretAccessKey string `json:"secretAccessKey"`
 }
 
 // Close shuts down the notebrew instance as well as any background jobs it may
