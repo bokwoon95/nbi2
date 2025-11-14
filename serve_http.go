@@ -1,20 +1,29 @@
 package nbi2
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"path"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bokwoon95/nbi2/sq"
 	"github.com/bokwoon95/nbi2/stacktrace"
+	"github.com/caddyserver/certmagic"
+	"github.com/klauspost/cpuid/v2"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -144,6 +153,203 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: /cms/users/*
 	// TODO: /cms/notes/*
 	// TODO: /cms/photos/*
+}
+
+func (nbrew *Notebrew) NewServer() (*http.Server, error) {
+	server := &http.Server{
+		ErrorLog: log.New(&LogFilter{Stderr: os.Stderr}, "", log.LstdFlags),
+		Handler:  nbrew,
+	}
+	var onEvent func(ctx context.Context, event string, data map[string]any) error
+	if nbrew.ErrorlogConfig.Email != "" && nbrew.Mailer != nil {
+		onEvent = func(ctx context.Context, event string, data map[string]any) error {
+			if event == "tls_get_certificate" {
+				return nil
+			}
+			data["certmagic.event"] = event
+			b, err := json.Marshal(data)
+			if err != nil {
+				fmt.Println(err)
+				return nil
+			}
+			fmt.Println(string(b))
+			if event != "cert_failed" {
+				return nil
+			}
+			renewal := fmt.Sprint(data["renewal"])
+			identifier := fmt.Sprint(data["identifier"])
+			remaining := fmt.Sprint(data["remaining"])
+			issuers := fmt.Sprint(data["issuers"])
+			errmsg := fmt.Sprint(data["error"])
+			nbrew.BackgroundWaitGroup.Add(1)
+			go func() {
+				defer func() {
+					if v := recover(); v != nil {
+						fmt.Println(stacktrace.New(fmt.Errorf("panic: %v", v)))
+					}
+				}()
+				defer nbrew.BackgroundWaitGroup.Done()
+				mail := Mail{
+					MailFrom: nbrew.MailFrom,
+					RcptTo:   nbrew.ErrorlogConfig.Email,
+					Headers: []string{
+						"Subject", "notebrew: certificate renewal for " + identifier + " failed: " + errmsg,
+						"Content-Type", "text/plain; charset=utf-8",
+					},
+					Body: strings.NewReader("Certificate renewal failed." +
+						"\r\nRenewal: " + renewal +
+						"\r\nThe name on the certificate: " + identifier +
+						"\r\nThe issuer(s) tried: " + issuers +
+						"\r\nTime left on the certificate: " + remaining +
+						"\r\nError: " + errmsg,
+					),
+				}
+				select {
+				case <-ctx.Done():
+				case <-nbrew.BackgroundContext.Done():
+				case nbrew.Mailer.C <- mail:
+				}
+			}()
+			return nil
+		}
+	}
+	switch nbrew.Port {
+	case 443:
+		server.Addr = ":443"
+		server.ReadHeaderTimeout = 5 * time.Minute
+		server.WriteTimeout = 60 * time.Minute
+		server.IdleTimeout = 5 * time.Minute
+		staticCertConfig := certmagic.NewDefault()
+		staticCertConfig.OnEvent = onEvent
+		staticCertConfig.Storage = nbrew.CertStorage
+		staticCertConfig.Logger = nbrew.CertLogger
+		if nbrew.DNSProvider != nil {
+			staticCertConfig.Issuers = []certmagic.Issuer{
+				certmagic.NewACMEIssuer(staticCertConfig, certmagic.ACMEIssuer{
+					CA:        certmagic.DefaultACME.CA,
+					TestCA:    certmagic.DefaultACME.TestCA,
+					Logger:    nbrew.CertLogger,
+					HTTPProxy: certmagic.DefaultACME.HTTPProxy,
+					DNS01Solver: &certmagic.DNS01Solver{
+						DNSManager: certmagic.DNSManager{
+							DNSProvider: nbrew.DNSProvider,
+							Logger:      nbrew.CertLogger,
+						},
+					},
+				}),
+			}
+		} else {
+			staticCertConfig.Issuers = []certmagic.Issuer{
+				certmagic.NewACMEIssuer(staticCertConfig, certmagic.ACMEIssuer{
+					CA:        certmagic.DefaultACME.CA,
+					TestCA:    certmagic.DefaultACME.TestCA,
+					Logger:    nbrew.CertLogger,
+					HTTPProxy: certmagic.DefaultACME.HTTPProxy,
+				}),
+			}
+		}
+		if len(nbrew.ManagingDomains) == 0 {
+			fmt.Printf("WARNING: notebrew is listening on port 443 but no domains are pointing at this current machine's IP address (%s/%s). It means no traffic can reach this current machine. Please configure your DNS correctly.\n", nbrew.IP4.String(), nbrew.IP6.String())
+		}
+		err := staticCertConfig.ManageSync(context.Background(), nbrew.ManagingDomains)
+		if err != nil {
+			return nil, err
+		}
+		dynamicCertConfig := certmagic.NewDefault()
+		dynamicCertConfig.OnEvent = onEvent
+		dynamicCertConfig.Storage = nbrew.CertStorage
+		dynamicCertConfig.Logger = nbrew.CertLogger
+		dynamicCertConfig.OnDemand = &certmagic.OnDemandConfig{
+			DecisionFunc: func(ctx context.Context, name string) error {
+				var siteName string
+				if certmagic.MatchWildcard(name, "*."+nbrew.ContentDomain) {
+					siteName = strings.TrimSuffix(name, "."+nbrew.ContentDomain)
+				} else {
+					siteName = name
+				}
+				exists, err := sq.FetchExists(ctx, nbrew.DB, sq.Query{
+					Dialect: nbrew.Dialect,
+					Format:  "SELECT 1 FROM site WHERE site_name = {}",
+					Values:  []any{siteName},
+				})
+				if err != nil {
+					return err
+				}
+				if !exists {
+					return fmt.Errorf("site does not exist")
+				}
+				return nil
+			},
+		}
+		server.TLSConfig = &tls.Config{
+			NextProtos: []string{"h2", "http/1.1", "acme-tls/1"},
+			GetCertificate: func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+				if clientHello.ServerName == "" {
+					return nil, fmt.Errorf("server name required")
+				}
+				for _, domain := range nbrew.ManagingDomains {
+					if certmagic.MatchWildcard(clientHello.ServerName, domain) {
+						certificate, err := staticCertConfig.GetCertificate(clientHello)
+						if err != nil {
+							return nil, err
+						}
+						return certificate, nil
+					}
+				}
+				certificate, err := dynamicCertConfig.GetCertificate(clientHello)
+				if err != nil {
+					return nil, err
+				}
+				return certificate, nil
+			},
+			MinVersion: tls.VersionTLS12,
+			CurvePreferences: []tls.CurveID{
+				tls.X25519,
+				tls.CurveP256,
+			},
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			},
+			PreferServerCipherSuites: true,
+		}
+		if cpuid.CPU.Supports(cpuid.AESNI) {
+			server.TLSConfig.CipherSuites = []uint16{
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+			}
+		}
+	case 80:
+		server.Addr = ":80"
+	default:
+		if len(nbrew.ProxyConfig.RealIPHeaders) == 0 && len(nbrew.ProxyConfig.ProxyIPs) == 0 {
+			server.Addr = "localhost:" + strconv.Itoa(nbrew.Port)
+		} else {
+			server.Addr = ":" + strconv.Itoa(nbrew.Port)
+		}
+	}
+	return server, nil
+}
+
+type LogFilter struct {
+	Stderr io.Writer
+}
+
+func (logFilter *LogFilter) Write(p []byte) (n int, err error) {
+	if bytes.Contains(p, []byte("http: TLS handshake error from ")) ||
+		bytes.Contains(p, []byte("http2: RECEIVED GOAWAY")) ||
+		bytes.Contains(p, []byte("http2: server: error reading preface from client")) {
+		return 0, nil
+	}
+	return logFilter.Stderr.Write(p)
 }
 
 func (nbrew *Notebrew) RedirectToHTTPS(w http.ResponseWriter, r *http.Request) {

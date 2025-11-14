@@ -7,12 +7,12 @@ schema_database.json
 schema.go
 id.go
 config_cmd.go
-createinvite_cmd.go
-createuser_cmd.go
-deleteinvite_cmd.go
-deleteuser_cmd.go
-hashpassword_cmd.go
-resetpassword_cmd.go
+TODO: createinvite_cmd.go
+TODO: createuser_cmd.go
+TODO: deleteinvite_cmd.go
+TODO: deleteuser_cmd.go
+TODO: hashpassword_cmd.go
+TODO: resetpassword_cmd.go
 object_storage.go
 sqlite_cgo.go
 sqlite_nocgo.go
