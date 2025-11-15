@@ -326,7 +326,7 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "objectstorage":
-		const filePath = "database.json"
+		const filePath = "objectstorage.json"
 		const help = objectstorageHelp
 		var config ObjectstorageConfig
 		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
@@ -1096,17 +1096,6 @@ type CaptchaConfig struct {
 	CSP               map[string]string `json:"csp"`
 }
 
-type SMTPConfig struct {
-	Username      string `json:"username"`
-	Password      string `json:"password"`
-	Host          string `json:"host"`
-	Port          string `json:"port"`
-	MailFrom      string `json:"mailFrom"`
-	ReplyTo       string `json:"replyTo"`
-	LimitInterval string `json:"limitInterval"`
-	LimitBurst    int    `json:"limitBurst"`
-}
-
 const smtpHelp = `# == smtp keys == #
 # username      - SMTP username.
 # password      - SMTP password.
@@ -1117,6 +1106,17 @@ const smtpHelp = `# == smtp keys == #
 # limitInterval - Interval for replenishing one token back to the rate limiter bucket. e.g 3m -> 480 emails per day, 5m -> 8760 emails per month, 1s -> 1 email per second (default is 3m)
 # limitBurst    - Maximum tokens that can be held by the rate limiter bucket at any time. (default is 20)
 `
+
+type SMTPConfig struct {
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	Host          string `json:"host"`
+	Port          string `json:"port"`
+	MailFrom      string `json:"mailFrom"`
+	ReplyTo       string `json:"replyTo"`
+	LimitInterval string `json:"limitInterval"`
+	LimitBurst    int    `json:"limitBurst"`
+}
 
 const proxyHelp = `# == proxy keys == #
 # Refer to ` + "`notebrew config`" + ` on how to get and set config values.
