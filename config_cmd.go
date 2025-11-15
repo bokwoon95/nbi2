@@ -86,7 +86,7 @@ func ConfigCommand(configDir string, args ...string) (*ConfigCmd, error) {
 	return &cmd, nil
 }
 
-func (cmd *ConfigCmd) readWriteTextFile(filePath string) error {
+func (cmd *ConfigCmd) textFile(filePath string) error {
 	if cmd.Value.Valid {
 		err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
 		if err != nil {
@@ -102,7 +102,36 @@ func (cmd *ConfigCmd) readWriteTextFile(filePath string) error {
 	return nil
 }
 
-func (cmd *ConfigCmd) readJSON(filePath string, target any) error {
+func (cmd *ConfigCmd) unmarshalJSONFile(filePath string, target any) error {
+	b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	if len(b) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err = decoder.Decode(target)
+		if err != nil {
+			return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
+		}
+	}
+	if cmd.Value.Valid {
+	} else {
+	}
+	return nil
+}
+
+// TODO: figure this shit out
+func (cmd *ConfigCmd) readWriteJSONValue(filePath string) error {
+	if cmd.Value.Valid {
+	} else {
+	}
+	return nil
+}
+
+// TODO: use generic functions. textFile(cmd, filePath), jsonFile[T any](cmd, filePath), jsonValue[T any](cmd, filePath, func(*T) error). Instead of *ConfigCmd being a receiver, make it the first parameter. Modifications to a field in the struct is done via the callback function.
+
+func (cmd *ConfigCmd) jsonFile(filePath string, target any) error {
 	b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
@@ -118,14 +147,6 @@ func (cmd *ConfigCmd) readJSON(filePath string, target any) error {
 	return nil
 }
 
-// TODO: figure this shit out
-func (cmd *ConfigCmd) writeJSON(filePath string) error {
-	if cmd.Value.Valid {
-	} else {
-	}
-	return nil
-}
-
 func (cmd *ConfigCmd) Run() error {
 	if !cmd.Key.Valid {
 		io.WriteString(cmd.Stderr, configHelp)
@@ -136,18 +157,18 @@ func (cmd *ConfigCmd) Run() error {
 	case "":
 		return fmt.Errorf("key cannot be empty")
 	case "port":
-		return cmd.readWriteTextFile("port.txt")
+		return cmd.textFile("port.txt")
 	case "cmsdomain":
-		return cmd.readWriteTextFile("cmsdomain.txt")
+		return cmd.textFile("cmsdomain.txt")
 	case "contentdomain":
-		return cmd.readWriteTextFile("contentdomain.txt")
+		return cmd.textFile("contentdomain.txt")
 	case "cdndomain":
-		return cmd.readWriteTextFile("cdndomain.txt")
+		return cmd.textFile("cdndomain.txt")
 	case "maxminddb":
-		return cmd.readWriteTextFile("maxminddb.txt")
+		return cmd.textFile("maxminddb.txt")
 	case "database":
 		var databaseConfig DatabaseConfig
-		err := cmd.readJSON("database.json", &databaseConfig)
+		err := cmd.unmarshalJSONFile("database.json", &databaseConfig)
 		if err != nil && tail != "" {
 			return err
 		}
