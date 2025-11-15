@@ -273,21 +273,21 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		case "maxOpenConns":
 			if cmd.Value.Valid {
-				maxOpenConns, err := strconv.Atoi(cmd.Value.String)
+				n, err := strconv.Atoi(cmd.Value.String)
 				if err != nil {
 					return fmt.Errorf("invalid value: %w", err)
 				}
-				config.MaxOpenConns = maxOpenConns
+				config.MaxOpenConns = n
 			} else {
 				io.WriteString(cmd.Stdout, strconv.Itoa(config.MaxOpenConns)+"\n")
 			}
 		case "maxIdleConns":
 			if cmd.Value.Valid {
-				maxIdleConns, err := strconv.Atoi(cmd.Value.String)
+				n, err := strconv.Atoi(cmd.Value.String)
 				if err != nil {
 					return fmt.Errorf("invalid value: %w", err)
 				}
-				config.MaxIdleConns = maxIdleConns
+				config.MaxIdleConns = n
 			} else {
 				io.WriteString(cmd.Stdout, strconv.Itoa(config.MaxIdleConns)+"\n")
 			}
