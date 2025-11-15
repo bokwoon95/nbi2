@@ -194,7 +194,6 @@ func main() {
 		if err != nil {
 			return err
 		}
-		server.Handler = nbrew
 		listener, err := net.Listen("tcp", server.Addr)
 		if err != nil {
 			var errno syscall.Errno
