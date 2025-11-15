@@ -213,11 +213,11 @@ func (cmd *ConfigCmd) Run() error {
 			} else {
 				io.WriteString(cmd.Stdout, config.Dialect+"\n")
 			}
-		case "filePath":
+		case "sqliteFilePath":
 			if cmd.Value.Valid {
-				config.FilePath = cmd.Value.String
+				config.SQLiteFilePath = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, config.FilePath+"\n")
+				io.WriteString(cmd.Stdout, config.SQLiteFilePath+"\n")
 			}
 		case "user":
 			if cmd.Value.Valid {
@@ -370,11 +370,11 @@ func (cmd *ConfigCmd) Run() error {
 			} else {
 				io.WriteString(cmd.Stdout, config.Provider+"\n")
 			}
-		case "filePath":
+		case "directoryPath":
 			if cmd.Value.Valid {
-				config.FilePath = cmd.Value.String
+				config.DirectoryPath = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, config.FilePath+"\n")
+				io.WriteString(cmd.Stdout, config.DirectoryPath+"\n")
 			}
 		case "endpoint":
 			if cmd.Value.Valid {
@@ -1025,7 +1025,7 @@ type CertmagicConfig struct {
 const databaseHelp = `# == database keys == #
 # Refer to ` + "`notebrew config`" + ` on how to get and set config values.
 # dialect         - Database dialect (possible values: sqlite, postgres, mysql).
-# filePath        - File path to the sqlite file (if dialect is sqlite).
+# sqliteFilePath  - SQLite file path (if dialect is sqlite).
 # user            - Database user.
 # password        - Database password.
 # host            - Database host.
@@ -1040,7 +1040,7 @@ const databaseHelp = `# == database keys == #
 
 type DatabaseConfig struct {
 	Dialect         string            `json:"dialect"`
-	FilePath        string            `json:"filePath"`
+	SQLiteFilePath  string            `json:"sqliteFilePath"`
 	User            string            `json:"user"`
 	Password        string            `json:"password"`
 	Host            string            `json:"host"`
@@ -1057,7 +1057,7 @@ const objectstorageHelp = `# == objects keys == #
 # Choose between using a directory or an S3-compatible provider to store objects.
 # Refer to ` + "`notebrew config`" + ` on how to get and set config values.
 # provider        - Object storage provider (possible values: directory, s3).
-# filePath        - Object storage directory filePath (if using a directory).
+# directoryPath   - Object storage directory path (if using a directory).
 # endpoint        - Object storage provider endpoint (if using s3). e.g. https://s3.us-east-1.amazonaws.com, https://s3.us-west-004.backblazeb2.com
 # region          - S3 region. e.g. us-east-1, us-west-004
 # bucket          - S3 bucket.
@@ -1067,7 +1067,7 @@ const objectstorageHelp = `# == objects keys == #
 
 type ObjectstorageConfig struct {
 	Provider        string `json:"provider"`
-	FilePath        string `json:"filePath"`
+	DirectoryPath   string `json:"directoryPath"`
 	Endpoint        string `json:"endpoint"`
 	Region          string `json:"region"`
 	Bucket          string `json:"bucket"`

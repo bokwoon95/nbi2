@@ -654,14 +654,14 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		var dataSourceName string
 		switch databaseConfig.Dialect {
 		case "", "sqlite":
-			if databaseConfig.FilePath == "" {
-				databaseConfig.FilePath = filepath.Join(dataDir, "notebrew-database.db")
+			if databaseConfig.SQLiteFilePath == "" {
+				databaseConfig.SQLiteFilePath = filepath.Join(dataDir, "notebrew-database.db")
 			}
-			databaseConfig.FilePath, err = filepath.Abs(databaseConfig.FilePath)
+			databaseConfig.SQLiteFilePath, err = filepath.Abs(databaseConfig.SQLiteFilePath)
 			if err != nil {
 				return nil, fmt.Errorf("%s: sqlite: %w", filepath.Join(configDir, "database.json"), err)
 			}
-			dataSourceName = databaseConfig.FilePath + "?" + sqliteQueryString(databaseConfig.Params)
+			dataSourceName = databaseConfig.SQLiteFilePath + "?" + sqliteQueryString(databaseConfig.Params)
 			nbrew.Dialect = "sqlite"
 			nbrew.DB, err = sql.Open(sqliteDriverName, dataSourceName)
 			if err != nil {
@@ -803,16 +803,16 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	}
 	switch objectstorageConfig.Provider {
 	case "", "directory":
-		if objectstorageConfig.FilePath == "" {
-			objectstorageConfig.FilePath = filepath.Join(dataDir, "notebrew-objectstorage")
+		if objectstorageConfig.DirectoryPath == "" {
+			objectstorageConfig.DirectoryPath = filepath.Join(dataDir, "notebrew-objectstorage")
 		} else {
-			objectstorageConfig.FilePath = filepath.Clean(objectstorageConfig.FilePath)
+			objectstorageConfig.DirectoryPath = filepath.Clean(objectstorageConfig.DirectoryPath)
 		}
-		err := os.MkdirAll(objectstorageConfig.FilePath, 0755)
+		err := os.MkdirAll(objectstorageConfig.DirectoryPath, 0755)
 		if err != nil {
 			return nil, err
 		}
-		objectStorage, err := NewDirObjectStorage(objectstorageConfig.FilePath, os.TempDir())
+		objectStorage, err := NewDirObjectStorage(objectstorageConfig.DirectoryPath, os.TempDir())
 		if err != nil {
 			return nil, err
 		}
