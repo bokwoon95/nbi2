@@ -205,7 +205,7 @@ func main() {
 			const WSAEADDRINUSE = syscall.Errno(10048)
 			if errno == syscall.EADDRINUSE || runtime.GOOS == "windows" && errno == WSAEADDRINUSE {
 				if !nbrew.CMSDomainHTTPS {
-					fmt.Println("notebrew is already running on http://" + nbrew.CMSDomain + "/files/")
+					fmt.Println("notebrew is already running on http://" + nbrew.CMSDomain + "/cms/")
 				} else {
 					fmt.Println("notebrew is already running (run `notebrew stop` to stop the process)")
 				}
@@ -234,7 +234,7 @@ func main() {
 				}
 			}()
 			if !nbrew.CMSDomainHTTPS {
-				fmt.Printf("notebrew is running on %s\n", "http://"+nbrew.CMSDomain+"/files/")
+				fmt.Printf("notebrew is running on %s\n", "http://"+nbrew.CMSDomain+"/cms/")
 			} else {
 				fmt.Printf("notebrew is running on %s\n", server.Addr)
 			}
