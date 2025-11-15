@@ -86,67 +86,6 @@ func ConfigCommand(configDir string, args ...string) (*ConfigCmd, error) {
 	return &cmd, nil
 }
 
-func (cmd *ConfigCmd) textFile(filePath string) error {
-	if cmd.Value.Valid {
-		err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
-		if err != nil {
-			return err
-		}
-	} else {
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
-		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
-		io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
-	}
-	return nil
-}
-
-func (cmd *ConfigCmd) unmarshalJSONFile(filePath string, target any) error {
-	b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
-	}
-	if len(b) > 0 {
-		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
-		err = decoder.Decode(target)
-		if err != nil {
-			return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
-		}
-	}
-	if cmd.Value.Valid {
-	} else {
-	}
-	return nil
-}
-
-// TODO: figure this shit out
-func (cmd *ConfigCmd) readWriteJSONValue(filePath string) error {
-	if cmd.Value.Valid {
-	} else {
-	}
-	return nil
-}
-
-// TODO: use generic functions. textFile(cmd, filePath), jsonFile[T any](cmd, filePath), jsonValue[T any](cmd, filePath, func(*T) error). Instead of *ConfigCmd being a receiver, make it the first parameter. Modifications to a field in the struct is done via the callback function.
-
-func (cmd *ConfigCmd) jsonFile(filePath string, target any) error {
-	b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
-	}
-	if len(b) > 0 {
-		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
-		err = decoder.Decode(target)
-		if err != nil {
-			return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
-		}
-	}
-	return nil
-}
-
 func (cmd *ConfigCmd) Run() error {
 	if !cmd.Key.Valid {
 		io.WriteString(cmd.Stderr, configHelp)
@@ -157,107 +96,177 @@ func (cmd *ConfigCmd) Run() error {
 	case "":
 		return fmt.Errorf("key cannot be empty")
 	case "port":
-		return cmd.textFile("port.txt")
+		const filePath = "port.txt"
+		if cmd.Value.Valid {
+			err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+		}
 	case "cmsdomain":
-		return cmd.textFile("cmsdomain.txt")
+		const filePath = "cmsdomain.txt"
+		if cmd.Value.Valid {
+			err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+		}
 	case "contentdomain":
-		return cmd.textFile("contentdomain.txt")
+		const filePath = "contentdomain.txt"
+		if cmd.Value.Valid {
+			err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+		}
 	case "cdndomain":
-		return cmd.textFile("cdndomain.txt")
+		const filePath = "cdndomain.txt"
+		if cmd.Value.Valid {
+			err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+		}
 	case "maxminddb":
-		return cmd.textFile("maxminddb.txt")
+		const filePath = "maxminddb.txt"
+		if cmd.Value.Valid {
+			err := os.WriteFile(filepath.Join(cmd.ConfigDir, filePath), []byte(cmd.Value.String), 0644)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+			io.WriteString(cmd.Stdout, string(bytes.TrimSpace(b))+"\n")
+		}
 	case "database":
-		var databaseConfig DatabaseConfig
-		err := cmd.unmarshalJSONFile("database.json", &databaseConfig)
-		if err != nil && tail != "" {
+		const filePath = "database.json"
+		const help = databaseHelp
+		var config DatabaseConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		if databaseConfig.Params == nil {
-			databaseConfig.Params = map[string]string{}
+		if len(b) > 0 {
+			decoder := json.NewDecoder(bytes.NewReader(b))
+			decoder.DisallowUnknownFields()
+			err = decoder.Decode(&config)
+			if err != nil && tail != "" {
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
+			}
+		}
+		if config.Params == nil {
+			config.Params = map[string]string{}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newDatabaseConfig DatabaseConfig
+				var newConfig DatabaseConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newDatabaseConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return fmt.Errorf("invalid value: %w", err)
 					}
 				}
-				databaseConfig = newDatabaseConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, databaseHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(databaseConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "dialect":
 			if cmd.Value.Valid {
-				databaseConfig.Dialect = cmd.Value.String
+				config.Dialect = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.Dialect+"\n")
+				io.WriteString(cmd.Stdout, config.Dialect+"\n")
 			}
 		case "filePath":
 			if cmd.Value.Valid {
-				databaseConfig.FilePath = cmd.Value.String
+				config.FilePath = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.FilePath+"\n")
+				io.WriteString(cmd.Stdout, config.FilePath+"\n")
 			}
 		case "user":
 			if cmd.Value.Valid {
-				databaseConfig.User = cmd.Value.String
+				config.User = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.User+"\n")
+				io.WriteString(cmd.Stdout, config.User+"\n")
 			}
 		case "password":
 			if cmd.Value.Valid {
-				databaseConfig.Password = cmd.Value.String
+				config.Password = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.Password+"\n")
+				io.WriteString(cmd.Stdout, config.Password+"\n")
 			}
 		case "host":
 			if cmd.Value.Valid {
-				databaseConfig.Host = cmd.Value.String
+				config.Host = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.Host+"\n")
+				io.WriteString(cmd.Stdout, config.Host+"\n")
 			}
 		case "port":
 			if cmd.Value.Valid {
-				databaseConfig.Port = cmd.Value.String
+				config.Port = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.Port+"\n")
+				io.WriteString(cmd.Stdout, config.Port+"\n")
 			}
 		case "dbName":
 			if cmd.Value.Valid {
-				databaseConfig.Port = cmd.Value.String
+				config.Port = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.DBName+"\n")
+				io.WriteString(cmd.Stdout, config.DBName+"\n")
 			}
-			databaseConfig.DBName = cmd.Value.String
+			config.DBName = cmd.Value.String
 		case "params":
 			if cmd.Value.Valid {
-				var params map[string]string
+				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&params)
+					err := decoder.Decode(&dict)
 					if err != nil {
 						return fmt.Errorf("invalid value: %w", err)
 					}
 				}
-				databaseConfig.Params = params
+				config.Params = dict
 			} else {
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(databaseConfig.Params)
+				err := encoder.Encode(config.Params)
 				if err != nil {
 					return err
 				}
@@ -268,9 +277,9 @@ func (cmd *ConfigCmd) Run() error {
 				if err != nil {
 					return fmt.Errorf("invalid value: %w", err)
 				}
-				databaseConfig.MaxOpenConns = maxOpenConns
+				config.MaxOpenConns = maxOpenConns
 			} else {
-				io.WriteString(cmd.Stdout, strconv.Itoa(databaseConfig.MaxOpenConns)+"\n")
+				io.WriteString(cmd.Stdout, strconv.Itoa(config.MaxOpenConns)+"\n")
 			}
 		case "maxIdleConns":
 			if cmd.Value.Valid {
@@ -278,28 +287,28 @@ func (cmd *ConfigCmd) Run() error {
 				if err != nil {
 					return fmt.Errorf("invalid value: %w", err)
 				}
-				databaseConfig.MaxIdleConns = maxIdleConns
+				config.MaxIdleConns = maxIdleConns
 			} else {
-				io.WriteString(cmd.Stdout, strconv.Itoa(databaseConfig.MaxIdleConns)+"\n")
+				io.WriteString(cmd.Stdout, strconv.Itoa(config.MaxIdleConns)+"\n")
 			}
 		case "connMaxLifetime":
 			if cmd.Value.Valid {
-				databaseConfig.ConnMaxLifetime = cmd.Value.String
+				config.ConnMaxLifetime = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.ConnMaxLifetime+"\n")
+				io.WriteString(cmd.Stdout, config.ConnMaxLifetime+"\n")
 			}
 		case "connMaxIdleTime":
 			if cmd.Value.Valid {
-				databaseConfig.ConnMaxIdleTime = cmd.Value.String
+				config.ConnMaxIdleTime = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, databaseConfig.ConnMaxIdleTime+"\n")
+				io.WriteString(cmd.Stdout, config.ConnMaxIdleTime+"\n")
 			}
 		default:
-			io.WriteString(cmd.Stderr, databaseHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "database.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -307,7 +316,7 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(databaseConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -317,90 +326,92 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "objectstorage":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "objectstorage.json"))
+		const filePath = "database.json"
+		const help = objectstorageHelp
+		var config ObjectstorageConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var objectstorageConfig ObjectstorageConfig
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&objectstorageConfig)
+			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "objectstorage.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newObjectstorageConfig ObjectstorageConfig
+				var newConfig ObjectstorageConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newObjectstorageConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				objectstorageConfig = newObjectstorageConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, objectsHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(objectstorageConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "provider":
 			if cmd.Value.Valid {
-				objectstorageConfig.Provider = cmd.Value.String
+				config.Provider = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.Provider+"\n")
+				io.WriteString(cmd.Stdout, config.Provider+"\n")
 			}
 		case "filePath":
 			if cmd.Value.Valid {
-				objectstorageConfig.FilePath = cmd.Value.String
+				config.FilePath = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.FilePath+"\n")
+				io.WriteString(cmd.Stdout, config.FilePath+"\n")
 			}
 		case "endpoint":
 			if cmd.Value.Valid {
-				objectstorageConfig.Endpoint = cmd.Value.String
+				config.Endpoint = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.Endpoint+"\n")
+				io.WriteString(cmd.Stdout, config.Endpoint+"\n")
 			}
 		case "region":
 			if cmd.Value.Valid {
-				objectstorageConfig.Region = cmd.Value.String
+				config.Region = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.Region+"\n")
+				io.WriteString(cmd.Stdout, config.Region+"\n")
 			}
 		case "bucket":
 			if cmd.Value.Valid {
-				objectstorageConfig.Bucket = cmd.Value.String
+				config.Bucket = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.Bucket+"\n")
+				io.WriteString(cmd.Stdout, config.Bucket+"\n")
 			}
 		case "accessKeyID":
 			if cmd.Value.Valid {
-				objectstorageConfig.AccessKeyID = cmd.Value.String
+				config.AccessKeyID = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.AccessKeyID+"\n")
+				io.WriteString(cmd.Stdout, config.AccessKeyID+"\n")
 			}
 		case "secretAccessKey":
 			if cmd.Value.Valid {
-				objectstorageConfig.SecretAccessKey = cmd.Value.String
+				config.SecretAccessKey = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, objectstorageConfig.SecretAccessKey+"\n")
+				io.WriteString(cmd.Stdout, config.SecretAccessKey+"\n")
 			}
 		default:
-			io.WriteString(cmd.Stderr, objectsHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "objectstorage.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -408,7 +419,7 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(objectstorageConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -418,108 +429,110 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "captcha":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "captcha.json"))
+		const filePath = "captcha.json"
+		const help = captchaHelp
+		var config CaptchaConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var captchaConfig CaptchaConfig
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&captchaConfig)
+			err = decoder.Decode(&config)
 			if err != nil {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "captcha.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
 		}
-		if captchaConfig.CSP == nil {
-			captchaConfig.CSP = make(map[string]string)
+		if config.CSP == nil {
+			config.CSP = make(map[string]string)
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newCaptchaConfig CaptchaConfig
+				var newConfig CaptchaConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newCaptchaConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				captchaConfig = newCaptchaConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, captchaHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(captchaConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "widgetScriptSrc":
 			if cmd.Value.Valid {
-				captchaConfig.WidgetScriptSrc = cmd.Value.String
+				config.WidgetScriptSrc = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.WidgetScriptSrc+"\n")
+				io.WriteString(cmd.Stdout, config.WidgetScriptSrc+"\n")
 			}
 		case "widgetClass":
 			if cmd.Value.Valid {
-				captchaConfig.WidgetClass = cmd.Value.String
+				config.WidgetClass = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.WidgetClass+"\n")
+				io.WriteString(cmd.Stdout, config.WidgetClass+"\n")
 			}
 		case "verificationURL":
 			if cmd.Value.Valid {
-				captchaConfig.VerificationURL = cmd.Value.String
+				config.VerificationURL = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.VerificationURL+"\n")
+				io.WriteString(cmd.Stdout, config.VerificationURL+"\n")
 			}
 		case "responseTokenName":
 			if cmd.Value.Valid {
-				captchaConfig.ResponseTokenName = cmd.Value.String
+				config.ResponseTokenName = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.ResponseTokenName+"\n")
+				io.WriteString(cmd.Stdout, config.ResponseTokenName+"\n")
 			}
 		case "siteKey":
 			if cmd.Value.Valid {
-				captchaConfig.SiteKey = cmd.Value.String
+				config.SiteKey = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.SiteKey+"\n")
+				io.WriteString(cmd.Stdout, config.SiteKey+"\n")
 			}
 		case "secretKey":
 			if cmd.Value.Valid {
-				captchaConfig.SecretKey = cmd.Value.String
+				config.SecretKey = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, captchaConfig.SecretKey+"\n")
+				io.WriteString(cmd.Stdout, config.SecretKey+"\n")
 			}
 		case "csp":
 			if cmd.Value.Valid {
-				var csp map[string]string
+				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&csp)
+					err := decoder.Decode(&dict)
 					if err != nil {
 						return err
 					}
 				}
-				captchaConfig.CSP = csp
+				config.CSP = dict
 			} else {
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(captchaConfig.CSP)
+				err := encoder.Encode(config.CSP)
 				if err != nil {
 					return err
 				}
 			}
 		default:
-			io.WriteString(cmd.Stderr, captchaHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "captcha.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -527,7 +540,7 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(captchaConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -537,106 +550,108 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "smtp":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "smtp.json"))
+		const filePath = "smtp.json"
+		const help = smtpHelp
+		var config SMTPConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var smtpConfig SMTPConfig
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&smtpConfig)
+			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "smtp.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newSMTPConfig SMTPConfig
+				var newConfig SMTPConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newSMTPConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				smtpConfig = newSMTPConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, smtpHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
-				err := encoder.Encode(smtpConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "username":
 			if cmd.Value.Valid {
-				smtpConfig.Username = cmd.Value.String
+				config.Username = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.Username+"\n")
+				io.WriteString(cmd.Stdout, config.Username+"\n")
 			}
 		case "password":
 			if cmd.Value.Valid {
-				smtpConfig.Password = cmd.Value.String
+				config.Password = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.Password+"\n")
+				io.WriteString(cmd.Stdout, config.Password+"\n")
 			}
 		case "host":
 			if cmd.Value.Valid {
-				smtpConfig.Host = cmd.Value.String
+				config.Host = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.Host+"\n")
+				io.WriteString(cmd.Stdout, config.Host+"\n")
 			}
 		case "port":
 			if cmd.Value.Valid {
-				smtpConfig.Port = cmd.Value.String
+				config.Port = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.Port+"\n")
+				io.WriteString(cmd.Stdout, config.Port+"\n")
 			}
 		case "mailFrom":
 			if cmd.Value.Valid {
-				smtpConfig.MailFrom = cmd.Value.String
+				config.MailFrom = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.MailFrom+"\n")
+				io.WriteString(cmd.Stdout, config.MailFrom+"\n")
 			}
 		case "replyTo":
 			if cmd.Value.Valid {
-				smtpConfig.ReplyTo = cmd.Value.String
+				config.ReplyTo = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.ReplyTo+"\n")
+				io.WriteString(cmd.Stdout, config.ReplyTo+"\n")
 			}
 		case "limitInterval":
 			if cmd.Value.Valid {
-				smtpConfig.LimitInterval = cmd.Value.String
+				config.LimitInterval = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, smtpConfig.LimitInterval+"\n")
+				io.WriteString(cmd.Stdout, config.LimitInterval+"\n")
 			}
 		case "limitBurst":
 			if cmd.Value.Valid {
-				limitBurst, err := strconv.Atoi(cmd.Value.String)
+				n, err := strconv.Atoi(cmd.Value.String)
 				if err != nil {
 					return fmt.Errorf("%s: %q is not an integer", cmd.Key.String, cmd.Value.String)
 				}
-				smtpConfig.LimitBurst = limitBurst
+				config.LimitBurst = n
 			} else {
-				io.WriteString(cmd.Stdout, strconv.Itoa(smtpConfig.LimitBurst)+"\n")
+				io.WriteString(cmd.Stdout, strconv.Itoa(config.LimitBurst)+"\n")
 			}
 		default:
-			io.WriteString(cmd.Stderr, smtpHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "smtp.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
 			defer file.Close()
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
-			err = encoder.Encode(smtpConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -646,92 +661,98 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "proxy":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "proxy.json"))
+		const filePath = "proxy.json"
+		const help = proxyHelp
+		var config ProxyConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var proxyConfig ProxyConfig
-		proxyConfig.RealIPHeaders = map[string]string{}
-		proxyConfig.ProxyIPs = []string{}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&proxyConfig)
+			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "proxy.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
+		}
+		if config.RealIPHeaders == nil {
+			config.RealIPHeaders = map[string]string{}
+		}
+		if config.ProxyIPs == nil {
+			config.ProxyIPs = []string{}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newProxyConfig ProxyConfig
+				var newConfig ProxyConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newProxyConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				proxyConfig = newProxyConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, proxyHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(proxyConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "realIPHeaders":
 			if cmd.Value.Valid {
-				var newRealIPHeaders map[string]string
+				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newRealIPHeaders)
+					err := decoder.Decode(&dict)
 					if err != nil {
 						return err
 					}
 				}
-				proxyConfig.RealIPHeaders = newRealIPHeaders
+				config.RealIPHeaders = dict
 			} else {
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(proxyConfig.RealIPHeaders)
+				err := encoder.Encode(config.RealIPHeaders)
 				if err != nil {
 					return err
 				}
 			}
 		case "proxies":
 			if cmd.Value.Valid {
-				var newProxyIPs []string
+				var list []string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newProxyIPs)
+					err := decoder.Decode(&list)
 					if err != nil {
 						return err
 					}
 				}
-				proxyConfig.ProxyIPs = newProxyIPs
+				config.ProxyIPs = list
 			} else {
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(proxyConfig.ProxyIPs)
+				err := encoder.Encode(config.ProxyIPs)
 				if err != nil {
 					return err
 				}
 			}
 		default:
-			io.WriteString(cmd.Stderr, proxyHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "proxy.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -739,7 +760,7 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(proxyConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -749,78 +770,80 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "dns":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "dns.json"))
+		const filePath = "dns.json"
+		const help = dnsHelp
+		var config DNSConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var dnsConfig DNSConfig
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&dnsConfig)
+			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "dns.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newDNSConfig DNSConfig
+				var newConfig DNSConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newDNSConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				dnsConfig = newDNSConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, dnsHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(dnsConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "provider":
 			if cmd.Value.Valid {
-				dnsConfig.Provider = cmd.Value.String
+				config.Provider = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, dnsConfig.Provider+"\n")
+				io.WriteString(cmd.Stdout, config.Provider+"\n")
 			}
 		case "username":
 			if cmd.Value.Valid {
-				dnsConfig.Username = cmd.Value.String
+				config.Username = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, dnsConfig.Username+"\n")
+				io.WriteString(cmd.Stdout, config.Username+"\n")
 			}
 		case "apiKey":
 			if cmd.Value.Valid {
-				dnsConfig.APIKey = cmd.Value.String
+				config.APIKey = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, dnsConfig.APIKey+"\n")
+				io.WriteString(cmd.Stdout, config.APIKey+"\n")
 			}
 		case "apiToken":
 			if cmd.Value.Valid {
-				dnsConfig.APIToken = cmd.Value.String
+				config.APIToken = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, dnsConfig.APIToken+"\n")
+				io.WriteString(cmd.Stdout, config.APIToken+"\n")
 			}
 		case "secretKey":
 			if cmd.Value.Valid {
-				dnsConfig.SecretKey = cmd.Value.String
+				config.SecretKey = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, dnsConfig.SecretKey+"\n")
+				io.WriteString(cmd.Stdout, config.SecretKey+"\n")
 			}
 		default:
-			io.WriteString(cmd.Stderr, dnsHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "dns.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -828,7 +851,7 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(dnsConfig)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -838,111 +861,66 @@ func (cmd *ConfigCmd) Run() error {
 			}
 		}
 	case "certmagic":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "certmagic.json"))
+		const filePath = "certmagic.json"
+		const help = certmagicHelp
+		var config CertmagicConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
-		var certmagicConfig CertmagicConfig
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
 			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&certmagicConfig)
+			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "certmagic.json"), err)
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
 			}
 		}
 		switch tail {
 		case "":
 			if cmd.Value.Valid {
-				var newCertmagicConfig CertmagicConfig
+				var newConfig CertmagicConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
 					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newCertmagicConfig)
+					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
 					}
 				}
-				certmagicConfig = newCertmagicConfig
+				config = newConfig
 			} else {
-				io.WriteString(cmd.Stderr, monitoringHelp)
+				io.WriteString(cmd.Stderr, help)
 				encoder := json.NewEncoder(cmd.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(certmagicConfig)
+				err := encoder.Encode(config)
 				if err != nil {
 					return err
 				}
 			}
 		case "directoryPath":
 			if cmd.Value.Valid {
-				certmagicConfig.DirectoryPath = cmd.Value.String
+				config.DirectoryPath = cmd.Value.String
 			} else {
-				io.WriteString(cmd.Stdout, certmagicConfig.DirectoryPath+"\n")
+				io.WriteString(cmd.Stdout, config.DirectoryPath+"\n")
 			}
 		case "terseLogger":
 			if cmd.Value.Valid {
-				terseLogger, err := strconv.ParseBool(cmd.Value.String)
+				b, err := strconv.ParseBool(cmd.Value.String)
 				if err != nil {
 					return fmt.Errorf("invalid value: %w", err)
 				}
-				certmagicConfig.TerseLogger = terseLogger
+				config.TerseLogger = b
 			} else {
-				io.WriteString(cmd.Stdout, strconv.FormatBool(certmagicConfig.TerseLogger)+"\n")
+				io.WriteString(cmd.Stdout, strconv.FormatBool(config.TerseLogger)+"\n")
 			}
 		default:
-			io.WriteString(cmd.Stderr, certmagicHelp)
-			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
-		}
-	case "monitoring":
-		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, "monitoring.json"))
-		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
-		var monitoringConfig MonitoringConfig
-		if len(b) > 0 {
-			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
-			err = decoder.Decode(&monitoringConfig)
-			if err != nil && tail != "" {
-				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, "monitoring.json"), err)
-			}
-		}
-		switch tail {
-		case "":
-			if cmd.Value.Valid {
-				var newMonitoringConfig MonitoringConfig
-				if cmd.Value.String != "" {
-					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
-					err := decoder.Decode(&newMonitoringConfig)
-					if err != nil {
-						return err
-					}
-				}
-				monitoringConfig = newMonitoringConfig
-			} else {
-				io.WriteString(cmd.Stderr, monitoringHelp)
-				encoder := json.NewEncoder(cmd.Stdout)
-				encoder.SetIndent("", "  ")
-				encoder.SetEscapeHTML(false)
-				err := encoder.Encode(monitoringConfig)
-				if err != nil {
-					return err
-				}
-			}
-		case "email":
-			if cmd.Value.Valid {
-				monitoringConfig.Email = cmd.Value.String
-			} else {
-				io.WriteString(cmd.Stdout, monitoringConfig.Email+"\n")
-			}
-		default:
-			io.WriteString(cmd.Stderr, monitoringHelp)
+			io.WriteString(cmd.Stderr, help)
 			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
 		}
 		if cmd.Value.Valid {
-			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, "monitoring.json"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
 				return err
 			}
@@ -950,7 +928,74 @@ func (cmd *ConfigCmd) Run() error {
 			encoder := json.NewEncoder(file)
 			encoder.SetIndent("", "  ")
 			encoder.SetEscapeHTML(false)
-			err = encoder.Encode(monitoringConfig)
+			err = encoder.Encode(config)
+			if err != nil {
+				return err
+			}
+			err = file.Close()
+			if err != nil {
+				return err
+			}
+		}
+	case "monitoring":
+		const filePath = "monitoring.json"
+		const help = monitoringHelp
+		var config MonitoringConfig
+		b, err := os.ReadFile(filepath.Join(cmd.ConfigDir, filePath))
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return err
+		}
+		if len(b) > 0 {
+			decoder := json.NewDecoder(bytes.NewReader(b))
+			decoder.DisallowUnknownFields()
+			err = decoder.Decode(&config)
+			if err != nil && tail != "" {
+				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
+			}
+		}
+		switch tail {
+		case "":
+			if cmd.Value.Valid {
+				var newConfig MonitoringConfig
+				if cmd.Value.String != "" {
+					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
+					decoder.DisallowUnknownFields()
+					err := decoder.Decode(&newConfig)
+					if err != nil {
+						return err
+					}
+				}
+				config = newConfig
+			} else {
+				io.WriteString(cmd.Stderr, help)
+				encoder := json.NewEncoder(cmd.Stdout)
+				encoder.SetIndent("", "  ")
+				encoder.SetEscapeHTML(false)
+				err := encoder.Encode(config)
+				if err != nil {
+					return err
+				}
+			}
+		case "email":
+			if cmd.Value.Valid {
+				config.Email = cmd.Value.String
+			} else {
+				io.WriteString(cmd.Stdout, config.Email+"\n")
+			}
+		default:
+			io.WriteString(cmd.Stderr, help)
+			return fmt.Errorf("%s: invalid key %q", cmd.Key.String, tail)
+		}
+		if cmd.Value.Valid {
+			file, err := os.OpenFile(filepath.Join(cmd.ConfigDir, filePath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+			encoder := json.NewEncoder(file)
+			encoder.SetIndent("", "  ")
+			encoder.SetEscapeHTML(false)
+			err = encoder.Encode(config)
 			if err != nil {
 				return err
 			}
@@ -1008,7 +1053,7 @@ type DatabaseConfig struct {
 	ConnMaxIdleTime string            `json:"connMaxIdleTime"`
 }
 
-const objectsHelp = `# == objects keys == #
+const objectstorageHelp = `# == objects keys == #
 # Choose between using a directory or an S3-compatible provider to store objects.
 # Refer to ` + "`notebrew config`" + ` on how to get and set config values.
 # provider        - Object storage provider (possible values: directory, s3).
