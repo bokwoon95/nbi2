@@ -241,8 +241,8 @@ type Notebrew struct {
 	// addresses to their countries using a maxmind GeoIP database.
 	MaxMindDBReader *maxminddb.Reader
 
-	// Error Logging configuration.
-	ErrorlogConfig struct {
+	// Monitoring configuration.
+	MonitoringConfig struct {
 		// Email address to notify for errors.
 		Email string
 	}
@@ -523,9 +523,9 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	}
 
 	// Certmagic.
-	b, err = os.ReadFile(filepath.Join(configDir, "certmagic.txt"))
+	b, err = os.ReadFile(filepath.Join(configDir, "certmagic.json"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.txt"), err)
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
 	}
 	b = bytes.TrimSpace(b)
 	var certmagicConfig CertmagicConfig
@@ -534,7 +534,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&certmagicConfig)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.txt"), err)
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
 		}
 	}
 	if certmagicConfig.DirectoryPath == "" {
@@ -860,7 +860,131 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	default:
 		return nil, fmt.Errorf("%s: unsupported provider %q (possible values: directory, s3)", filepath.Join(configDir, "objectstorage.json"), objectstorageConfig.Provider)
 	}
+
+	// Captcha.
+	b, err = os.ReadFile(filepath.Join(configDir, "captcha.json"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "captcha.json"), err)
+	}
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 {
+		var captchaConfig CaptchaConfig
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&captchaConfig)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "captcha.json"), err)
+		}
+		nbrew.CaptchaConfig.WidgetScriptSrc = template.URL(captchaConfig.WidgetScriptSrc)
+		nbrew.CaptchaConfig.WidgetClass = captchaConfig.WidgetClass
+		nbrew.CaptchaConfig.VerificationURL = captchaConfig.VerificationURL
+		nbrew.CaptchaConfig.ResponseTokenName = captchaConfig.ResponseTokenName
+		nbrew.CaptchaConfig.SiteKey = captchaConfig.SiteKey
+		nbrew.CaptchaConfig.SecretKey = captchaConfig.SecretKey
+		nbrew.CaptchaConfig.CSP = captchaConfig.CSP
+	}
+
+	// SMTP.
+	b, err = os.ReadFile(filepath.Join(configDir, "smtp.json"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "smtp.json"), err)
+	}
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 {
+		var smtpConfig SMTPConfig
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&smtpConfig)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "smtp.json"), err)
+		}
+		if smtpConfig.Host != "" && smtpConfig.Port != "" && smtpConfig.Username != "" && smtpConfig.Password != "" {
+			mailerConfig := MailerConfig{
+				Username: smtpConfig.Username,
+				Password: smtpConfig.Password,
+				Host:     smtpConfig.Host,
+				Port:     smtpConfig.Port,
+				Logger:   nbrew.Logger,
+			}
+			nbrew.MailFrom = smtpConfig.MailFrom
+			nbrew.ReplyTo = smtpConfig.ReplyTo
+			if smtpConfig.LimitInterval == "" {
+				mailerConfig.LimitInterval = 3 * time.Minute
+			} else {
+				limitInterval, err := time.ParseDuration(smtpConfig.LimitInterval)
+				if err != nil {
+					return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "smtp.json"), err)
+				}
+				mailerConfig.LimitInterval = limitInterval
+			}
+			if smtpConfig.LimitBurst <= 0 {
+				mailerConfig.LimitBurst = 20
+			} else {
+				mailerConfig.LimitBurst = smtpConfig.LimitBurst
+			}
+			mailer, err := NewMailer(mailerConfig)
+			if err != nil {
+				return nil, err
+			}
+			nbrew.Mailer = mailer
+		}
+	}
+
+	// Proxy.
+	b, err = os.ReadFile(filepath.Join(configDir, "proxy.json"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "proxy.json"), err)
+	}
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 {
+		var proxyConfig ProxyConfig
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&proxyConfig)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "proxy.json"), err)
+		}
+		nbrew.ProxyConfig.RealIPHeaders = make(map[netip.Addr]string)
+		for ip, header := range proxyConfig.RealIPHeaders {
+			addr, err := netip.ParseAddr(ip)
+			if err != nil {
+				return nil, fmt.Errorf("%s: realIPHeaders: %s: %w", filepath.Join(configDir, "proxy.json"), ip, err)
+			}
+			nbrew.ProxyConfig.RealIPHeaders[addr] = header
+		}
+		nbrew.ProxyConfig.ProxyIPs = make(map[netip.Addr]struct{})
+		for _, ip := range proxyConfig.ProxyIPs {
+			addr, err := netip.ParseAddr(ip)
+			if err != nil {
+				return nil, fmt.Errorf("%s: proxyIPs: %s: %w", filepath.Join(configDir, "proxy.json"), ip, err)
+			}
+			nbrew.ProxyConfig.ProxyIPs[addr] = struct{}{}
+		}
+	}
+
+	// Monitoring.
+	b, err = os.ReadFile(filepath.Join(configDir, "monitoring.json"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "monitoring.json"), err)
+	}
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 {
+		var monitoringConfig MonitoringConfig
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&monitoringConfig)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "monitoring.json"), err)
+		}
+		nbrew.MonitoringConfig.Email = monitoringConfig.Email
+	}
 	return nbrew, nil
+}
+
+type ResponseContext struct {
+	ContentBaseURL string
+	CDNDomain      string
+	User           User
 }
 
 // IsKeyViolation returns true if the provided errorCode matches the
@@ -886,14 +1010,19 @@ func IsKeyViolation(dialect string, errorCode string) bool {
 func (nbrew *Notebrew) Close() error {
 	nbrew.backgroundCancel()
 	defer nbrew.BackgroundWaitGroup.Wait()
+	var err error
 	var firstErr error
 	if nbrew.Dialect == "sqlite" {
-		_, err := nbrew.DB.Exec("PRAGMA optimize")
+		_, err = nbrew.DB.Exec("PRAGMA optimize")
 		if err != nil && firstErr == nil {
 			firstErr = err
 		}
 	}
-	err := nbrew.DB.Close()
+	err = nbrew.Mailer.Close()
+	if err != nil && firstErr == nil {
+		firstErr = err
+	}
+	err = nbrew.DB.Close()
 	if err != nil && firstErr == nil {
 		firstErr = err
 	}
@@ -907,31 +1036,31 @@ func (nbrew *Notebrew) Close() error {
 // User represents a user in the users table.
 type User struct {
 	// UserID uniquely identifies a user. It cannot be changed.
-	UserID ID
+	UserID ID `json:"userID"`
 
 	// Username uniquely identifies a user. It can be changed.
-	Username string
+	Username string `json:"username"`
 
 	// Email uniquely identifies a user. It can be changed.
-	Email string
+	Email string `json:"email"`
 
 	// TimezoneOffsetSeconds represents a user's preferred timezone offset in
 	// seconds.
-	TimezoneOffsetSeconds int
+	TimezoneOffsetSeconds int `json:"timezoneOffsetSeconds"`
 
 	// Is not empty, DisableReason is the reason why the user's account is
 	// marked as disabled.
-	DisableReason string
+	DisableReason string `json:"disableReason"`
 
 	// SiteLimit is the limit on the number of sites the user can create.
-	SiteLimit int64
+	SiteLimit int64 `json:"siteLimit"`
 
 	// StorageLimit is the limit on the amount of storage the user can use.
-	StorageLimit int64
+	StorageLimit int64 `json:"storageLimit"`
 
 	// UserFlags are various properties on a user that may be enabled or
 	// disabled e.g. UploadImages.
-	UserFlags map[string]bool
+	UserFlags map[string]bool `json:"userFlags"`
 }
 
 type contextKey struct{}
@@ -1717,7 +1846,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	}
 	isDeadlineExceeded := errors.Is(serverErr, context.DeadlineExceeded)
 	isCanceled := errors.Is(serverErr, context.Canceled)
-	if nbrew.ErrorlogConfig.Email != "" && nbrew.Mailer != nil && !isDeadlineExceeded && !isCanceled {
+	if nbrew.MonitoringConfig.Email != "" && nbrew.Mailer != nil && !isDeadlineExceeded && !isCanceled {
 		nbrew.BackgroundWaitGroup.Add(1)
 		go func() {
 			defer func() {
@@ -1738,7 +1867,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 			b.WriteString("\r\n")
 			mail := Mail{
 				MailFrom: nbrew.MailFrom,
-				RcptTo:   nbrew.ErrorlogConfig.Email,
+				RcptTo:   nbrew.MonitoringConfig.Email,
 				Headers: []string{
 					"Subject", "notebrew: " + nbrew.CMSDomain + ": internal server error: " + errmsg,
 					"Content-Type", "text/plain; charset=utf-8",
