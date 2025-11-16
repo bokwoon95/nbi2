@@ -131,6 +131,8 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "":
+			w.Write([]byte("hello world!"))
+			return
 		case "users":
 			switch tail2 {
 			case "login":
@@ -149,6 +151,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case "photos":
 		}
 	}
+	nbrew.NotFound(w, r)
 	// TODO: /cms
 	// TODO: /cms/users/*
 	// TODO: /cms/notes/*

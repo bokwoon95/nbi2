@@ -37,6 +37,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/bokwoon95/nbi2/godaddy"
+	"github.com/bokwoon95/nbi2/namecheap"
 	"github.com/bokwoon95/nbi2/sq"
 	"github.com/bokwoon95/nbi2/stacktrace"
 	"github.com/bokwoon95/sqddl/ddl"
@@ -44,9 +46,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgconn"
 	"github.com/libdns/cloudflare"
-	"github.com/libdns/godaddy"
 	"github.com/libdns/libdns"
-	"github.com/libdns/namecheap"
 	"github.com/libdns/porkbun"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/yuin/goldmark/ast"
@@ -988,7 +988,8 @@ type ResponseContext struct {
 	User           User           `json:"user"`
 	StylesCSS      template.CSS   `json:"-"`
 	NotebrewJS     template.JS    `json:"-"`
-	TemplateFuncs  map[string]any `json:"-"`
+	Referer        string         `json:"-"`
+	TemplateData   map[string]any `json:"-"`
 }
 
 // IsKeyViolation returns true if the provided errorCode matches the
@@ -1487,26 +1488,71 @@ var errorTemplate = template.Must(template.
 	}).
 	ParseFS(runtimeFS, "embed/error.html"),
 )
-
-// TODO: parse all embed/*.html on startup
-// TODO: wrap base.html in a {{ block "base" }} and we can invoke that in login.html :o. So login.html can either use base.html piecemeal or use base.html entirely and only override specific blocks in it.
 var (
-	templates    = map[string]*template.Template{}
-	templateDeps = map[string][]string{
-		"login":  {"embed/base.html", "embed/login.html"},
-		"logout": {"embed/logout.html", "embed/base.html"}, // the problem with this is that base.html will override logout.html
-		// how do I express:
-		// - execute login.html?
-		// - execute base.html, but parse login.html first?
-		// login.base.html -> base.html, login.html, execute base.html
-		// logout.html -> base.html, logout.html, execute logout.html
-	}
-	templateFuncs = map[string]any{
-		"join": path.Join,
+	templates = map[string]*template.Template{}
+	funcMap   = map[string]any{
+		"join":                  path.Join,
+		"dir":                   path.Dir,
+		"base":                  path.Base,
+		"ext":                   path.Ext,
+		"hasPrefix":             strings.HasPrefix,
+		"hasSuffix":             strings.HasSuffix,
+		"trimPrefix":            strings.TrimPrefix,
+		"trimSuffix":            strings.TrimSuffix,
+		"contains":              strings.Contains,
+		"joinStrings":           strings.Join,
+		"humanReadableFileSize": HumanReadableFileSize,
+		"safeHTML":              func(s string) template.HTML { return template.HTML(s) },
+		"float64ToInt64":        func(n float64) int64 { return int64(n) },
+		"incr":                  func(n int) int { return n + 1 },
+		"formatTime": func(t time.Time, layout string, offset int) string {
+			return t.In(time.FixedZone("", offset)).Format(layout)
+		},
+		"formatTimezone": func(offset int) string {
+			sign := "+"
+			seconds := offset
+			if offset < 0 {
+				sign = "-"
+				seconds = -offset
+			}
+			hours := seconds / 3600
+			minutes := (seconds % 3600) / 60
+			return fmt.Sprintf("%s%02d:%02d", sign, hours, minutes)
+		},
+		"head": func(s string) string {
+			head, _, _ := strings.Cut(s, "/")
+			return head
+		},
+		"tail": func(s string) string {
+			_, tail, _ := strings.Cut(s, "/")
+			return tail
+		},
+		"jsonArray": func(s []string) (string, error) {
+			b, err := json.Marshal(s)
+			if err != nil {
+				return "", err
+			}
+			return string(b), nil
+		},
 	}
 )
 
 func init() {
+	dirEntries, err := fs.ReadDir(runtimeFS, "embed")
+	if err != nil {
+		panic(err)
+	}
+	for _, dirEntry := range dirEntries {
+		name := dirEntry.Name()
+		if !strings.HasSuffix(name, ".html") || name == "base.html" {
+			continue
+		}
+		tmpl, err := template.New(name).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/"+name)
+		if err != nil {
+			panic("embed/" + name + ": " + err.Error())
+		}
+		templates["embed/"+name] = tmpl
+	}
 }
 
 // HumanReadableFileSize returns a human readable file size of an int64 size in
@@ -2226,4 +2272,100 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+var chromaStyles = map[string]bool{
+	"abap": true, "algol": true, "algol_nu": true, "api": true, "arduino": true,
+	"autumn": true, "average": true, "base16-snazzy": true, "borland": true, "bw": true,
+	"catppuccin-frappe": true, "catppuccin-latte": true, "catppuccin-macchiato": true,
+	"catppuccin-mocha": true, "colorful": true, "compat": true, "doom-one": true,
+	"doom-one2": true, "dracula": true, "emacs": true, "friendly": true, "fruity": true,
+	"github-dark": true, "github": true, "gruvbox-light": true, "gruvbox": true,
+	"hr_high_contrast": true, "hrdark": true, "igor": true, "lovelace": true, "manni": true,
+	"modus-operandi": true, "modus-vivendi": true, "monokai": true, "monokailight": true,
+	"murphy": true, "native": true, "nord": true, "onedark": true, "onesenterprise": true,
+	"paraiso-dark": true, "paraiso-light": true, "pastie": true, "perldoc": true,
+	"pygments": true, "rainbow_dash": true, "rose-pine-dawn": true, "rose-pine-moon": true,
+	"rose-pine": true, "rrt": true, "solarized-dark": true, "solarized-dark256": true,
+	"solarized-light": true, "swapoff": true, "tango": true, "trac": true, "vim": true,
+	"vs": true, "vulcan": true, "witchhazel": true, "xcode-dark": true, "xcode": true,
+}
+
+var timezoneOffsets = map[string]bool{
+	"-12:00": true, "-11:00": true, "-10:00": true, "-09:30": true, "-09:00": true,
+	"-08:00": true, "-07:00": true, "-06:00": true, "-05:00": true, "-04:00": true,
+	"-03:00": true, "-02:00": true, "-01:00": true, "+00:00": true, "+01:00": true,
+	"+02:00": true, "+03:00": true, "+03:30": true, "+04:00": true, "+04:30": true,
+	"+05:00": true, "+05:30": true, "+05:45": true, "+06:00": true, "+06:30": true,
+	"+07:00": true, "+08:00": true, "+08:45": true, "+09:00": true, "+09:30": true,
+	"+10:00": true, "+10:30": true, "+11:00": true, "+12:00": true, "+12:45": true,
+	"+13:00": true, "+14:00": true,
+}
+
+var languageCodes = map[string]bool{
+	"aa": true, "ab": true, "af": true, "ak": true, "am": true, "an": true, "ar": true,
+	"as": true, "av": true, "ay": true, "az": true, "ba": true, "be": true, "bg": true,
+	"bi": true, "bm": true, "bn": true, "bo": true, "br": true, "bs": true, "ca": true,
+	"ce": true, "ch": true, "co": true, "cr": true, "cs": true, "cv": true, "cy": true,
+	"da": true, "de": true, "dv": true, "dz": true, "ee": true, "el": true, "en": true,
+	"eo": true, "es": true, "et": true, "eu": true, "fa": true, "ff": true, "fi": true,
+	"fj": true, "fo": true, "fr": true, "fy": true, "ga": true, "gd": true, "gl": true,
+	"gn": true, "gu": true, "gv": true, "ha": true, "he": true, "hi": true, "ho": true,
+	"hr": true, "ht": true, "hu": true, "hy": true, "hz": true, "ia": true, "id": true,
+	"ie": true, "ig": true, "ii": true, "ik": true, "io": true, "is": true, "it": true,
+	"iu": true, "ja": true, "jv": true, "ka": true, "kg": true, "ki": true, "kj": true,
+	"kk": true, "kl": true, "km": true, "kn": true, "ko": true, "kr": true, "ks": true,
+	"ku": true, "kv": true, "kw": true, "ky": true, "lb": true, "lg": true, "li": true,
+	"ln": true, "lo": true, "lt": true, "lu": true, "lv": true, "mg": true, "mh": true,
+	"mi": true, "mk": true, "ml": true, "mn": true, "mr": true, "ms": true, "mt": true,
+	"my": true, "na": true, "nb": true, "nd": true, "ne": true, "ng": true, "nl": true,
+	"nn": true, "no": true, "nr": true, "nv": true, "ny": true, "oc": true, "oj": true,
+	"om": true, "or": true, "os": true, "pa": true, "pl": true, "ps": true, "pt": true,
+	"qu": true, "rm": true, "rn": true, "ro": true, "ru": true, "rw": true, "sc": true,
+	"sd": true, "se": true, "sg": true, "si": true, "sk": true, "sl": true, "sm": true,
+	"sn": true, "so": true, "sq": true, "sr": true, "ss": true, "st": true, "su": true,
+	"sv": true, "sw": true, "ta": true, "te": true, "tg": true, "th": true, "ti": true,
+	"tk": true, "tl": true, "tn": true, "to": true, "tr": true, "ts": true, "tt": true,
+	"tw": true, "ty": true, "ug": true, "uk": true, "ur": true, "uz": true, "ve": true,
+	"vi": true, "vo": true, "wa": true, "wo": true, "xh": true, "yi": true, "yo": true,
+	"za": true, "zh": true, "zu": true,
+}
+
+var languageNames = map[string]string{
+	"aa": "Afar", "ab": "Abkhazian", "af": "Afrikaans", "ak": "Akan", "am": "Amharic",
+	"an": "Aragonese", "ar": "Arabic", "as": "Assamese", "av": "Avaric", "ay": "Aymara",
+	"az": "Azerbaijani", "ba": "Bashkir", "be": "Belarusian", "bg": "Bulgarian",
+	"bi": "Bislama", "bm": "Bambara", "bn": "Bengali", "bo": "Tibetan", "br": "Breton",
+	"bs": "Bosnian", "ca": "Catalan", "ce": "Chechen", "ch": "Chamorro", "co": "Corsican",
+	"cr": "Cree", "cs": "Czech", "cv": "Chuvash", "cy": "Welsh", "da": "Danish",
+	"de": "German", "dv": "Divehi", "dz": "Dzongkha", "ee": "Ewe", "el": "Greek",
+	"en": "English", "eo": "Esperanto", "es": "Spanish", "et": "Estonian", "eu": "Basque",
+	"fa": "Persian", "ff": "Fulah", "fi": "Finnish", "fj": "Fijian", "fo": "Faroese",
+	"fr": "French", "fy": "Western Frisian", "ga": "Irish", "gd": "Gaelic", "gl": "Galician",
+	"gn": "Guarani", "gu": "Gujarati", "gv": "Manx", "ha": "Hausa", "he": "Hebrew",
+	"hi": "Hindi", "ho": "Hiri Motu", "hr": "Croatian", "ht": "Haitian", "hu": "Hungarian",
+	"hy": "Armenian", "hz": "Herero", "ia": "Interlingua", "id": "Indonesian",
+	"ie": "Interlingue", "ig": "Igbo", "ii": "Sichuan Yi", "ik": "Inupiaq", "io": "Ido",
+	"is": "Icelandic", "it": "Italian", "iu": "Inuktitut", "ja": "Japanese", "jv": "Javanese",
+	"ka": "Georgian", "kg": "Kongo", "ki": "Kikuyu", "kj": "Kuanyama", "kk": "Kazakh",
+	"kl": "Kalaallisut", "km": "Central Khmer", "kn": "Kannada", "ko": "Korean", "kr": "Kanuri",
+	"ks": "Kashmiri", "ku": "Kurdish", "kv": "Komi", "kw": "Cornish", "ky": "Kirghiz",
+	"lb": "Luxembourgish", "lg": "Ganda", "li": "Limburgan", "ln": "Lingala", "lo": "Lao",
+	"lt": "Lithuanian", "lu": "Luba-Katanga", "lv": "Latvian", "mg": "Malagasy", "mh": "Marshallese",
+	"mi": "Maori", "mk": "Macedonian", "ml": "Malayalam", "mn": "Mongolian", "mr": "Marathi",
+	"ms": "Malay", "mt": "Maltese", "my": "Burmese", "na": "Nauru", "nb": "Norwegian Bokmål",
+	"nd": "North Ndebele", "ne": "Nepali", "ng": "Ndonga", "nl": "Dutch; Flemish",
+	"nn": "Norwegian Nynorsk", "no": "Norwegian", "nr": "South Ndebele", "nv": "Navajo",
+	"ny": "Chichewa", "oc": "Occitan", "oj": "Ojibwa", "om": "Oromo", "or": "Oriya", "os": "Ossetian",
+	"pa": "Panjabi", "pl": "Polish", "ps": "Pushto", "pt": "Portuguese", "qu": "Quechua",
+	"rm": "Romansh", "rn": "Rundi", "ro": "Romanian", "ru": "Russian", "rw": "Kinyarwanda",
+	"sc": "Sardinian", "sd": "Sindhi", "se": "Northern Sami", "sg": "Sango", "si": "Sinhala",
+	"sk": "Slovak", "sl": "Slovenian", "sm": "Samoan", "sn": "Shona", "so": "Somali",
+	"sq": "Albanian", "sr": "Serbian", "ss": "Swati", "st": "Southern Sotho", "su": "Sundanese",
+	"sv": "Swedish", "sw": "Swahili", "ta": "Tamil", "te": "Telugu", "tg": "Tajik", "th": "Thai",
+	"ti": "Tigrinya", "tk": "Turkmen", "tl": "Tagalog", "tn": "Tswana", "to": "Tonga", "tr": "Turkish",
+	"ts": "Tsonga", "tt": "Tatar", "tw": "Twi", "ty": "Tahitian", "ug": "Uighur", "uk": "Ukrainian",
+	"ur": "Urdu", "uz": "Uzbek", "ve": "Venda", "vi": "Vietnamese", "vo": "Volapük", "wa": "Walloon",
+	"wo": "Wolof", "xh": "Xhosa", "yi": "Yiddish", "yo": "Yoruba", "za": "Zhuang",
+	"zh": "Chinese", "zu": "Zulu",
 }

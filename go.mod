@@ -10,11 +10,11 @@ require (
 	github.com/bokwoon95/sqddl v0.4.16
 	github.com/caddyserver/certmagic v0.25.0
 	github.com/go-sql-driver/mysql v1.9.3
+	github.com/google/go-cmp v0.6.0
 	github.com/jackc/pgconn v1.14.3
+	github.com/klauspost/cpuid/v2 v2.3.0
 	github.com/libdns/cloudflare v0.2.2
-	github.com/libdns/godaddy v1.1.0
 	github.com/libdns/libdns v1.1.1
-	github.com/libdns/namecheap v0.1.0
 	github.com/libdns/porkbun v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/oschwald/maxminddb-golang v1.13.1
@@ -36,15 +36,16 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.8.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.9 // indirect
+	github.com/bokwoon95/wgo v0.6.2 // indirect
 	github.com/caddyserver/zerossl v0.1.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mholt/acmez/v3 v3.1.3 // indirect
 	github.com/miekg/dns v1.1.68 // indirect
@@ -63,3 +64,5 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
+
+tool github.com/bokwoon95/wgo
