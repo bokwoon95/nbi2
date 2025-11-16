@@ -76,9 +76,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var sessionToken string
 		header := r.Header.Get("Authorization")
 		if header != "" {
-			if strings.HasPrefix(header, "Bearer ") {
-				sessionToken = strings.TrimPrefix(header, "Bearer ")
-			}
+			sessionToken, _ = strings.CutPrefix(header, "Bearer")
 		} else {
 			cookie, _ := r.Cookie("session")
 			if cookie != nil {
