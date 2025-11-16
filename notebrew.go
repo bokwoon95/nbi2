@@ -27,6 +27,7 @@ import (
 	"net/netip"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -982,9 +983,12 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 }
 
 type ResponseContext struct {
-	ContentBaseURL string
-	CDNDomain      string
-	User           User
+	ContentBaseURL string         `json:"contentBaseURL"`
+	CDNDomain      string         `json:"cdnDomain"`
+	User           User           `json:"user"`
+	StylesCSS      template.CSS   `json:"-"`
+	NotebrewJS     template.JS    `json:"-"`
+	TemplateFuncs  map[string]any `json:"-"`
 }
 
 // IsKeyViolation returns true if the provided errorCode matches the
@@ -1485,7 +1489,21 @@ var errorTemplate = template.Must(template.
 )
 
 // TODO: parse all embed/*.html on startup
-var templates *template.Template
+var (
+	templates    = map[string]*template.Template{}
+	templateDeps = map[string][]string{
+		"login":  {"embed/base.html", "embed/login.html"},
+		"logout": {"embed/logout.html", "embed/base.html"}, // the problem with this is that base.html will override logout.html
+		// how do I express:
+		// - execute login.html?
+		// - execute base.html, but parse login.html first?
+		// login.base.html -> base.html, login.html, execute base.html
+		// logout.html -> base.html, logout.html, execute logout.html
+	}
+	templateFuncs = map[string]any{
+		"join": path.Join,
+	}
+)
 
 func init() {
 }

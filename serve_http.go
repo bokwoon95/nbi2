@@ -161,7 +161,7 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 		Handler:  nbrew,
 	}
 	var onEvent func(ctx context.Context, event string, data map[string]any) error
-	if nbrew.ErrorlogConfig.Email != "" && nbrew.Mailer != nil {
+	if nbrew.MonitoringConfig.Email != "" && nbrew.Mailer != nil {
 		onEvent = func(ctx context.Context, event string, data map[string]any) error {
 			if event == "tls_get_certificate" {
 				return nil
@@ -191,7 +191,7 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 				defer nbrew.BackgroundWaitGroup.Done()
 				mail := Mail{
 					MailFrom: nbrew.MailFrom,
-					RcptTo:   nbrew.ErrorlogConfig.Email,
+					RcptTo:   nbrew.MonitoringConfig.Email,
 					Headers: []string{
 						"Subject", "notebrew: certificate renewal for " + identifier + " failed: " + errmsg,
 						"Content-Type", "text/plain; charset=utf-8",
