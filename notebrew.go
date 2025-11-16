@@ -1489,6 +1489,7 @@ var errorTemplate = template.Must(template.
 )
 
 // TODO: parse all embed/*.html on startup
+// TODO: wrap base.html in a {{ block "base" }} and we can invoke that in login.html :o. So login.html can either use base.html piecemeal or use base.html entirely and only override specific blocks in it.
 var (
 	templates    = map[string]*template.Template{}
 	templateDeps = map[string][]string{
