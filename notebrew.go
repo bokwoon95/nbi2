@@ -1484,6 +1484,12 @@ var errorTemplate = template.Must(template.
 	ParseFS(runtimeFS, "embed/error.html"),
 )
 
+// TODO: parse all embed/*.html on startup
+var templates *template.Template
+
+func init() {
+}
+
 // HumanReadableFileSize returns a human readable file size of an int64 size in
 // bytes.
 func HumanReadableFileSize(size int64) string {
