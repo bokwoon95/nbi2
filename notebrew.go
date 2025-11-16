@@ -451,7 +451,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	var dnsConfig DNSConfig
 	if len(b) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&dnsConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "dns.json"), err)
@@ -532,7 +531,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	var certmagicConfig CertmagicConfig
 	if len(b) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&certmagicConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
@@ -605,13 +603,14 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		if err != nil {
 			return nil, err
 		}
-		if nbrew.Port == 80 {
+		switch nbrew.Port {
+		case 80:
 			for i, domain := range nbrew.Domains {
 				if matched[i] {
 					nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
 				}
 			}
-		} else if nbrew.Port == 443 {
+		case 443:
 			cmsDomainWildcard := "*." + nbrew.CMSDomain
 			cmsDomainWildcardAdded := false
 			contentDomainWildcard := "*." + nbrew.ContentDomain
@@ -645,7 +644,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	var databaseConfig DatabaseConfig
 	if len(b) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&databaseConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "database.json"), err)
@@ -796,7 +794,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	var objectstorageConfig ObjectstorageConfig
 	if len(b) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err = decoder.Decode(&objectstorageConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "objectstorage.json"), err)
@@ -871,7 +868,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	if len(b) > 0 {
 		var captchaConfig CaptchaConfig
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&captchaConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "captcha.json"), err)
@@ -894,7 +890,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	if len(b) > 0 {
 		var smtpConfig SMTPConfig
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&smtpConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "smtp.json"), err)
@@ -940,7 +935,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	if len(b) > 0 {
 		var proxyConfig ProxyConfig
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&proxyConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "proxy.json"), err)
@@ -972,7 +966,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	if len(b) > 0 {
 		var monitoringConfig MonitoringConfig
 		decoder := json.NewDecoder(bytes.NewReader(b))
-		decoder.DisallowUnknownFields()
 		err := decoder.Decode(&monitoringConfig)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "monitoring.json"), err)
@@ -1015,25 +1008,30 @@ func IsKeyViolation(dialect string, errorCode string) bool {
 func (nbrew *Notebrew) Close() error {
 	nbrew.backgroundCancel()
 	defer nbrew.BackgroundWaitGroup.Wait()
-	var err error
 	var firstErr error
 	if nbrew.Dialect == "sqlite" {
-		_, err = nbrew.DB.Exec("PRAGMA optimize")
+		_, err := nbrew.DB.Exec("PRAGMA optimize")
+		if err != nil {
+			firstErr = err
+		}
+	}
+	if nbrew.Mailer != nil {
+		err := nbrew.Mailer.Close()
 		if err != nil && firstErr == nil {
 			firstErr = err
 		}
 	}
-	err = nbrew.Mailer.Close()
-	if err != nil && firstErr == nil {
-		firstErr = err
+	if nbrew.DB != nil {
+		err := nbrew.DB.Close()
+		if err != nil && firstErr == nil {
+			firstErr = err
+		}
 	}
-	err = nbrew.DB.Close()
-	if err != nil && firstErr == nil {
-		firstErr = err
-	}
-	err = nbrew.MaxMindDBReader.Close()
-	if err != nil && firstErr == nil {
-		firstErr = err
+	if nbrew.MaxMindDBReader != nil {
+		err := nbrew.MaxMindDBReader.Close()
+		if err != nil && firstErr == nil {
+			firstErr = err
+		}
 	}
 	return firstErr
 }
@@ -1167,7 +1165,7 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, v
 			return false, nil
 		}
 		creationTime := time.Unix(int64(binary.BigEndian.Uint64(flashToken[:8])), 0).UTC()
-		if time.Now().Sub(creationTime) > 5*time.Minute {
+		if time.Since(creationTime) > 5*time.Minute {
 			return false, nil
 		}
 		var flashTokenHash [8 + blake2b.Size256]byte
@@ -1411,7 +1409,7 @@ func (nbrew *Notebrew) ExecuteTemplate(w http.ResponseWriter, r *http.Request, t
 	err := tmpl.Execute(gzipWriter, data)
 	if err != nil {
 		nbrew.GetLogger(r.Context()).Error(err.Error())
-		fmt.Printf(fmt.Sprintf("%#v", data))
+		fmt.Printf("%#v", data)
 		nbrew.InternalServerError(w, r, err)
 		return
 	}
@@ -1472,22 +1470,6 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 	return referer
 }
 
-// errorTemplate is the template used for all error responses i.e.
-// InternalServerError, NotFound, NotAuthorized, etc. It is parsed once at
-// package initialization time so any changes to the error template require
-// recompiling the notebrew binary.
-var errorTemplate = template.Must(template.
-	New("error.html").
-	Funcs(map[string]any{
-		"safeHTML": func(v any) template.HTML {
-			if str, ok := v.(string); ok {
-				return template.HTML(str)
-			}
-			return ""
-		},
-	}).
-	ParseFS(runtimeFS, "embed/error.html"),
-)
 var (
 	templates = map[string]*template.Template{}
 	funcMap   = map[string]any{
@@ -1549,9 +1531,9 @@ func init() {
 		}
 		tmpl, err := template.New(name).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/"+name)
 		if err != nil {
-			panic("embed/" + name + ": " + err.Error())
+			panic(name + ": " + err.Error())
 		}
-		templates["embed/"+name] = tmpl
+		templates[name] = tmpl
 	}
 }
 
@@ -1583,11 +1565,12 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 	} else {
 		contentType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 		if contentType == "application/json" {
-			if serverErr == io.EOF {
+			switch serverErr {
+			case io.EOF:
 				message = "missing JSON body"
-			} else if serverErr == io.ErrUnexpectedEOF {
+			case io.ErrUnexpectedEOF:
 				message = "malformed JSON"
-			} else {
+			default:
 				message = serverErr.Error()
 			}
 		} else {
@@ -1619,7 +1602,11 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Title":    `400 bad request`,
 		"Headline": "400 bad request",
 		"Byline":   message,
@@ -1671,7 +1658,11 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 			query = "?redirect=" + url.QueryEscape(r.URL.Path)
 		}
 	}
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Title":    "401 unauthorized",
 		"Headline": "401 unauthorized",
 		"Byline":   fmt.Sprintf("You are not authenticated, please <a href='/users/login/%s'>log in</a>.", query),
@@ -1722,7 +1713,11 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 	} else {
 		byline = "You do not have permission to perform that action (try logging in to a different account)."
 	}
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "403 forbidden",
 		"Headline": "403 forbidden",
@@ -1767,7 +1762,11 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "404 not found",
 		"Headline": "404 not found",
@@ -1813,7 +1812,11 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "405 method not allowed",
 		"Headline": "405 method not allowed: " + r.Method,
@@ -1866,7 +1869,11 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "415 unsupported media type",
 		"Headline": message,
@@ -1996,7 +2003,11 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 			"Callers":  callers,
 		}
 	}
-	err := errorTemplate.Execute(buf, data)
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, data)
 	if err != nil {
 		nbrew.GetLogger(r.Context()).Error(err.Error())
 		http.Error(w, "ServerError", http.StatusInternalServerError)
@@ -2040,7 +2051,11 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  r.Referer(),
 		"Title":    "507 insufficient storage",
 		"Headline": "507 insufficient storage",
@@ -2083,7 +2098,11 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 			bufPool.Put(buf)
 		}
 	}()
-	err := errorTemplate.Execute(buf, map[string]any{
+	tmpl := templates["error.html"]
+	if developerMode {
+		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
+	}
+	err := tmpl.Execute(buf, map[string]any{
 		"Referer":  r.Referer(),
 		"Title":    "403 Forbidden",
 		"Headline": "403 Forbidden",

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"log/slog"
@@ -39,8 +40,8 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// Redirect unclean paths to the clean path equivalent.
 	cleanPath := path.Clean(r.URL.Path)
-	if r.Method == "GET" || r.Method == "HEAD" {
-		if cleanPath != r.URL.Path {
+	if cleanPath != r.URL.Path {
+		if r.Method == "GET" || r.Method == "HEAD" {
 			cleanURL := *r.URL
 			cleanURL.Path = cleanPath
 			http.Redirect(w, r, cleanURL.String(), http.StatusMovedPermanently)
@@ -128,6 +129,23 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+		responseContext := ResponseContext{
+			ContentBaseURL: "", // TODO: something to do with sitePrefix?
+			CDNDomain:      nbrew.CDNDomain,
+			User:           user,
+			StylesCSS:      template.CSS(stylesCSS),
+			NotebrewJS:     template.JS(notebrewJS),
+			Referer:        r.Referer(),
+			TemplateData:   make(map[string]any),
+		}
+		uri := *r.URL
+		uri.Scheme = scheme
+		uri.Host = r.Host
+		uri.Fragment = ""
+		uri.User = nil
+		if uri.String() == responseContext.Referer {
+			responseContext.Referer = ""
+		}
 		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "":
@@ -136,6 +154,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case "users":
 			switch tail2 {
 			case "login":
+				nbrew.login(w, r, responseContext)
 				return
 			case "logout":
 				return
