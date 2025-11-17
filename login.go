@@ -102,7 +102,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 				}
 				return
 			}
-			tmpl := templates["embed/login.html"]
+			tmpl := templates["login.html"]
 			if devMode {
 				tmpl = template.Must(template.New("login.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/login.html"))
 			}

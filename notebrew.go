@@ -1525,11 +1525,11 @@ func init() {
 		panic(err)
 	}
 	for _, match := range matches {
-		tmpl, err := template.New("").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", match)
+		tmpl, err := template.New(path.Base(match)).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", match)
 		if err != nil {
 			panic(match + ": " + err.Error())
 		}
-		templates[match] = tmpl.Lookup(match)
+		templates[path.Base(match)] = tmpl.Lookup(path.Base(match))
 	}
 }
 
@@ -1598,7 +1598,7 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1654,7 +1654,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 			query = "?redirect=" + url.QueryEscape(r.URL.Path)
 		}
 	}
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1709,7 +1709,7 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 	} else {
 		byline = "You do not have permission to perform that action (try logging in to a different account)."
 	}
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1758,7 +1758,7 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1808,7 +1808,7 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1865,7 +1865,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -1999,7 +1999,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 			"Callers":  callers,
 		}
 	}
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -2047,7 +2047,7 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
@@ -2094,7 +2094,7 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["embed/error.html"]
+	tmpl := templates["error.html"]
 	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
