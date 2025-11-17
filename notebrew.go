@@ -1051,9 +1051,9 @@ type ResponseContext struct {
 	ContentBaseURL string         `json:"contentBaseURL"`
 	CDNDomain      string         `json:"cdnDomain"`
 	User           User           `json:"user"`
-	StylesCSS      template.CSS   `json:"stylesCSS"`
-	NotebrewJS     template.JS    `json:"notebrewJS"`
-	Referer        string         `json:"referer"`
+	StylesCSS      template.CSS   `json:"-"`
+	NotebrewJS     template.JS    `json:"-"`
+	Referer        string         `json:"-"`
 	TemplateData   map[string]any `json:"-"`
 }
 
