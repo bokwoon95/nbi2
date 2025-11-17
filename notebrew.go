@@ -1103,7 +1103,7 @@ func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, v
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	}
-	if developerMode {
+	if devMode {
 		os.Stderr.WriteString(buf.String())
 	}
 	if nbrew.DB == nil {
@@ -1603,7 +1603,7 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -1659,7 +1659,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -1714,7 +1714,7 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 		byline = "You do not have permission to perform that action (try logging in to a different account)."
 	}
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -1763,7 +1763,7 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -1813,7 +1813,7 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -1870,7 +1870,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -2004,7 +2004,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	}
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, data)
@@ -2052,7 +2052,7 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -2099,7 +2099,7 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 		}
 	}()
 	tmpl := templates["error.html"]
-	if developerMode {
+	if devMode {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
@@ -2209,9 +2209,9 @@ var (
 	// operation.
 	runtimeFS fs.FS = embedFS
 
-	// developerMode indicates if the developer mode is enabled for the current
+	// devMode indicates if the developer mode is enabled for the current
 	// binary.
-	developerMode = false
+	devMode = false
 
 	// stylesCSS is the contents of the styles.css file in the embed/
 	// directory.
@@ -2249,7 +2249,7 @@ func init() {
 	hash := sha256.Sum256(b)
 	stylesCSS = string(b)
 	stylesCSSHash = "'sha256-" + base64.StdEncoding.EncodeToString(hash[:]) + "'"
-	// baseline.js
+	// notebrew.js
 	b, err = fs.ReadFile(embedFS, "static/notebrew.js")
 	if err != nil {
 		panic(err)

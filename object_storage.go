@@ -45,6 +45,8 @@ func (e *RangeNotSatisfiableError) Error() string {
 	return fmt.Sprintf("range not satisfiable: start exceeds object size: key=%s, start=%d, size=unknown", e.Key, e.Start)
 }
 
+// Object keys should follow this format: 2001/2001-02-03/0123456789 2001-02-03 040506.123 +0800.jpeg
+
 // ObjectStorage represents an object storage provider.
 type ObjectStorage interface {
 	// GetRange gets an object from the bucket, optionally for a given range of

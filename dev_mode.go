@@ -20,5 +20,5 @@ func init() {
 		fmt.Printf("developer mode: source root directory determined to be %s which is likely wrong and will cause problems. Please check if -trimpath flag was used in building the binary.\n", filepath.Dir(file))
 	}
 	runtimeFS = os.DirFS(filepath.Dir(file))
-	developerMode = true
+	devMode = true
 }
