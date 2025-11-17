@@ -1520,20 +1520,16 @@ var (
 )
 
 func init() {
-	dirEntries, err := fs.ReadDir(runtimeFS, "embed")
+	matches, err := fs.Glob(runtimeFS, "embed/*.html")
 	if err != nil {
 		panic(err)
 	}
-	for _, dirEntry := range dirEntries {
-		name := dirEntry.Name()
-		if !strings.HasSuffix(name, ".html") || name == "base.html" {
-			continue
-		}
-		tmpl, err := template.New(name).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/"+name)
+	for _, match := range matches {
+		tmpl, err := template.New(path.Base(match)).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", match)
 		if err != nil {
-			panic(name + ": " + err.Error())
+			panic(path.Base(match) + ": " + err.Error())
 		}
-		templates[name] = tmpl
+		templates[path.Base(match)] = tmpl
 	}
 }
 
