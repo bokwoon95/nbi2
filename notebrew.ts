@@ -1,3 +1,6 @@
+import "./static/basecoat.js";
+import "./static/dropdown-menu-v2.js";
+
 const hamburgerMenuBtn = document.getElementById("hamburger-menu-btn");
 const hamburgerMenuIcon = document.getElementById("hamburger-menu-icon");
 const sidePane = document.getElementById("side-pane");

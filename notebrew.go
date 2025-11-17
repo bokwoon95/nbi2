@@ -972,6 +972,78 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 		nbrew.MonitoringConfig.Email = monitoringConfig.Email
 	}
+
+	// Content Security Policy.
+	var buf strings.Builder
+	// default-src
+	buf.WriteString("default-src 'none';")
+	// script-src
+	buf.WriteString(" script-src 'self' 'unsafe-hashes' " + notebrewJSHash)
+	if value := csp["script-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if value := nbrew.CaptchaConfig.CSP["script-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	buf.WriteString(";")
+	// connect-src
+	buf.WriteString(" connect-src 'self'")
+	if value := csp["connect-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if value := nbrew.CaptchaConfig.CSP["connect-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	buf.WriteString(";")
+	// img-src
+	buf.WriteString(" img-src 'self' data:")
+	if value := csp["img-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if nbrew.CDNDomain != "" {
+		buf.WriteString(" " + nbrew.CDNDomain)
+	}
+	buf.WriteString(";")
+	// media-src
+	buf.WriteString(" media-src 'self'")
+	if value := csp["media-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if nbrew.CDNDomain != "" {
+		buf.WriteString(" " + nbrew.CDNDomain)
+	}
+	buf.WriteString(";")
+	// style-src
+	buf.WriteString(" style-src 'self' 'unsafe-inline'")
+	if value := csp["style-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if value := nbrew.CaptchaConfig.CSP["style-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	buf.WriteString(";")
+	// base-uri
+	buf.WriteString(" base-uri 'self';")
+	// form-action
+	buf.WriteString(" form-action 'self'")
+	if value := csp["form-action"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	buf.WriteString(";")
+	// manifest-src
+	buf.WriteString(" manifest-src 'self';")
+	// frame-src
+	buf.WriteString(" frame-src 'self'")
+	if value := csp["frame-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	if value := nbrew.CaptchaConfig.CSP["frame-src"]; value != "" {
+		buf.WriteString(" " + value)
+	}
+	buf.WriteString(";")
+	// font-src
+	buf.WriteString(" font-src 'self';")
+	nbrew.ContentSecurityPolicy = buf.String()
 	return nbrew, nil
 }
 
@@ -979,9 +1051,9 @@ type ResponseContext struct {
 	ContentBaseURL string         `json:"contentBaseURL"`
 	CDNDomain      string         `json:"cdnDomain"`
 	User           User           `json:"user"`
-	StylesCSS      template.CSS   `json:"-"`
-	NotebrewJS     template.JS    `json:"-"`
-	Referer        string         `json:"-"`
+	StylesCSS      template.CSS   `json:"stylesCSS"`
+	NotebrewJS     template.JS    `json:"notebrewJS"`
+	Referer        string         `json:"referer"`
 	TemplateData   map[string]any `json:"-"`
 }
 
