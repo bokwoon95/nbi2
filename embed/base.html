@@ -6,6 +6,8 @@
 <title>{{ block "title" $ }}Notebrew{{ end }}</title>
 <style>{{ $.ResponseContext.StylesCSS }}</style>
 <script type='module'>{{ $.ResponseContext.NotebrewJS }}</script>
+<script type='module' src='/cms/static/basecoat/basecoat.js'></script>
+<script type='module' src='/cms/static/basecoat/dropdown-menu-v2.js'></script>
 {{- end }}
 {{- block "menu-pane" . }}
 <div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>

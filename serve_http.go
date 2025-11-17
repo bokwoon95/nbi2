@@ -149,6 +149,9 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case "":
 			w.Write([]byte("hello world!"))
 			return
+		case "static":
+			http.ServeFileFS(w, r, runtimeFS, tail)
+			return
 		case "users":
 			switch tail2 {
 			case "login":
