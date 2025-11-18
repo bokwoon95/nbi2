@@ -71,8 +71,22 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := strings.Trim(cleanPath, "/")
 	head, tail, _ := strings.Cut(urlPath, "/")
 	if head == "cms" {
-		var user User
-		_ = user
+		responseContext := ResponseContext{
+			ContentBaseURL: "", // TODO: something to do with sitePrefix?
+			CDNDomain:      nbrew.CDNDomain,
+			StylesCSS:      template.CSS(stylesCSS),
+			NotebrewJS:     template.JS(notebrewJS),
+			TemplateData:   make(map[string]any),
+		}
+		referer := r.Referer()
+		uri := *r.URL
+		uri.Scheme = scheme
+		uri.Host = r.Host
+		uri.Fragment = ""
+		uri.User = nil
+		if uri.String() != referer {
+			responseContext.Referer = referer
+		}
 		var sessionToken string
 		header := r.Header.Get("Authorization")
 		if header != "" {
@@ -90,7 +104,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				checksum := blake2b.Sum256(sessionTokenBytes[8:])
 				copy(sessionTokenHash[:8], sessionTokenBytes[:8])
 				copy(sessionTokenHash[8:], checksum[:])
-				user, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+				responseContext.User, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
 					Dialect: nbrew.Dialect,
 					Format: "SELECT {*}" +
 						" FROM session" +
@@ -127,55 +141,48 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		responseContext := ResponseContext{
-			ContentBaseURL: "", // TODO: something to do with sitePrefix?
-			CDNDomain:      nbrew.CDNDomain,
-			User:           user,
-			StylesCSS:      template.CSS(stylesCSS),
-			NotebrewJS:     template.JS(notebrewJS),
-			Referer:        r.Referer(),
-			TemplateData:   make(map[string]any),
+		head2, _, _ := strings.Cut(tail, "/")
+		switch head2 {
+		case "static":
+			http.ServeFileFS(w, r, runtimeFS, tail)
+			return
+		case "login":
+			if tail != "" {
+				nbrew.NotFound(w, r)
+				return
+			}
+			nbrew.login(w, r, responseContext)
+			return
+		case "logout":
+			if tail != "" {
+				nbrew.NotFound(w, r)
+				return
+			}
+			return
+		case "resetpassword":
+			if tail != "" {
+				nbrew.NotFound(w, r)
+				return
+			}
+			return
+		case "invite":
+			if tail != "" {
+				nbrew.NotFound(w, r)
+				return
+			}
+			return
 		}
-		uri := *r.URL
-		uri.Scheme = scheme
-		uri.Host = r.Host
-		uri.Fragment = ""
-		uri.User = nil
-		if uri.String() == responseContext.Referer {
-			responseContext.Referer = ""
+		if responseContext.User.UserID.IsZero() {
 		}
-		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "":
 			w.Write([]byte("hello world!"))
 			return
-		case "static":
-			http.ServeFileFS(w, r, runtimeFS, tail)
-			return
-		case "users":
-			switch tail2 {
-			case "login":
-				nbrew.login(w, r, responseContext)
-				return
-			case "logout":
-				return
-			case "resetpassword":
-				return
-			case "invite":
-				return
-			}
-			switch tail2 {
-			case "changepassword":
-			}
 		case "notes":
 		case "photos":
 		}
 	}
 	nbrew.NotFound(w, r)
-	// TODO: /cms
-	// TODO: /cms/users/*
-	// TODO: /cms/notes/*
-	// TODO: /cms/photos/*
 }
 
 func (nbrew *Notebrew) NewServer() (*http.Server, error) {
