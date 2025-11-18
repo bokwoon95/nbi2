@@ -11,25 +11,25 @@
   <a href='/files/' class='ma2 white'>🖋️☕ notebrew</a>
 </nav>
 <div class='center'>
-  {{- if $.Referer }}
+  {{ if $.Referer }}
   <div><a href='{{ $.Referer }}' data-go-back>&larr; back</a></div>
-  {{- end }}
+  {{ end }}
   <h3 class='f3 mv2 tc b'>{{ safeHTML $.Headline }}</h3>
   <div class='mv2 tc'>{{ safeHTML $.Byline }}</div>
-  {{- if $.Details }}
+  {{ if $.Details }}
   <details>
     <summary>details</summary>
     <pre class='ws-normal'>{{ $.Details }}</pre>
-    {{- if $.Callers }}
+    {{ if $.Callers }}
     <strong>stack trace:</strong>
     <ul>
-      {{- range $caller := $.Callers }}
+      {{ range $caller := $.Callers }}
       <li>{{ $caller }}</li>
-      {{- end }}
+      {{ end }}
     </ul>
-    {{- end }}
+    {{ end }}
     <strong>version:</strong>
     <div>{{ $.Version }}</div>
   </details>
-  {{- end }}
+  {{ end }}
 </div>
