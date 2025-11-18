@@ -116,6 +116,12 @@
         "primarykey": true
       },
       {
+        "column": "flash_setter",
+        "type": {
+          "default": "VARCHAR(500)"
+        }
+      },
+      {
         "column": "data",
         "type": {
           "default": "JSON",

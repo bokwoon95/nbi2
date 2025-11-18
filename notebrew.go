@@ -1048,14 +1048,17 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 }
 
 type ResponseContext struct {
-	ContentBaseURL string         `json:"contentBaseURL"`
-	CDNDomain      string         `json:"cdnDomain"`
-	User           User           `json:"user"`
-	StylesCSS      template.CSS   `json:"-"`
-	NotebrewJS     template.JS    `json:"-"`
-	Referer        string         `json:"-"`
-	TemplateData   map[string]any `json:"-"`
+	ContentBaseURL string       `json:"contentBaseURL"`
+	CDNDomain      string       `json:"cdnDomain"`
+	UserID         ID           `json:"userID"`
+	Username       string       `json:"username"`
+	DisableReason  string       `json:"disableReason"`
+	StylesCSS      template.CSS `json:"-"`
+	NotebrewJS     template.JS  `json:"-"`
+	Referer        string       `json:"-"`
 }
+
+// SetFlashSession(map[string]any{"responseContext":{"flashData"}})
 
 // IsKeyViolation returns true if the provided errorCode matches the
 // dialect-specific code for representing a primary key/unique constraint
@@ -1154,7 +1157,7 @@ func (nbrew *Notebrew) GetLogger(ctx context.Context) *slog.Logger {
 }
 
 // SetFlashSession writes a value into the user's flash session.
-func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, value any) error {
+func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, flashSetter string, value any) error {
 	buf := bufPool.Get().(*bytes.Buffer)
 	defer func() {
 		if buf.Cap() <= maxPoolableBufferCapacity {
@@ -1168,53 +1171,49 @@ func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, v
 	if err != nil {
 		return stacktrace.New(err)
 	}
-	cookie := &http.Cookie{
-		Path:     "/",
-		Name:     "flash",
-		Secure:   r.TLS != nil,
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-	}
 	if devMode {
 		os.Stderr.WriteString(buf.String())
 	}
-	if nbrew.DB == nil {
-		cookie.Value = base64.URLEncoding.EncodeToString(buf.Bytes())
-	} else {
-		var flashTokenBytes [8 + 16]byte
-		binary.BigEndian.PutUint64(flashTokenBytes[:8], uint64(time.Now().Unix()))
-		_, err := rand.Read(flashTokenBytes[8:])
-		if err != nil {
-			return stacktrace.New(err)
-		}
-		var flashTokenHash [8 + blake2b.Size256]byte
-		checksum := blake2b.Sum256(flashTokenBytes[8:])
-		copy(flashTokenHash[:8], flashTokenBytes[:8])
-		copy(flashTokenHash[8:], checksum[:])
-		_, err = sq.Exec(r.Context(), nbrew.DB, sq.Query{
-			Dialect: nbrew.Dialect,
-			Format:  "INSERT INTO flash (flash_token_hash, data) VALUES ({flashTokenHash}, {data})",
-			Values: []any{
-				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
-				sq.StringParam("data", strings.TrimSpace(buf.String())),
-			},
-		})
-		if err != nil {
-			return stacktrace.New(err)
-		}
-		cookie.Value = strings.TrimLeft(hex.EncodeToString(flashTokenBytes[:]), "0")
+	var flashTokenBytes [8 + 16]byte
+	binary.BigEndian.PutUint64(flashTokenBytes[:8], uint64(time.Now().Unix()))
+	_, err = rand.Read(flashTokenBytes[8:])
+	if err != nil {
+		return stacktrace.New(err)
 	}
-	http.SetCookie(w, cookie)
+	var flashTokenHash [8 + blake2b.Size256]byte
+	checksum := blake2b.Sum256(flashTokenBytes[8:])
+	copy(flashTokenHash[:8], flashTokenBytes[:8])
+	copy(flashTokenHash[8:], checksum[:])
+	_, err = sq.Exec(r.Context(), nbrew.DB, sq.Query{
+		Dialect: nbrew.Dialect,
+		Format:  "INSERT INTO flash (flash_token_hash, flash_setter, data) VALUES ({flashTokenHash}, {flashSetter}, {data})",
+		Values: []any{
+			sq.BytesParam("flashTokenHash", flashTokenHash[:]),
+			sq.StringParam("flashSetter", flashSetter),
+			sq.StringParam("data", strings.TrimSpace(buf.String())),
+		},
+	})
+	if err != nil {
+		return stacktrace.New(err)
+	}
+	http.SetCookie(w, &http.Cookie{
+		Path:     "/",
+		Name:     "flash",
+		Value:    strings.TrimLeft(hex.EncodeToString(flashTokenBytes[:]), "0"),
+		Secure:   r.TLS != nil,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
 	return nil
 }
 
 // GetFlashSession retrieves a value from the user's flash session, unmarshals
 // it into the valuePtr and then deletes the session. It returns a boolean
 // result indicating if a flash session was retrieved.
-func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, valuePtr any) (ok bool, err error) {
+func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, flashGetter string, responsePtr any, flashDataPtr *map[string]any) (status int, err error) {
 	cookie, _ := r.Cookie("flash")
 	if cookie == nil {
-		return false, nil
+		return -1, nil
 	}
 	http.SetCookie(w, &http.Cookie{
 		Path:     "/",
@@ -1225,76 +1224,90 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, v
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
-	var data []byte
-	if nbrew.DB == nil {
-		data, err = base64.URLEncoding.DecodeString(cookie.Value)
-		if err != nil {
-			return false, nil
-		}
-	} else {
-		flashToken, err := hex.DecodeString(fmt.Sprintf("%048s", cookie.Value))
-		if err != nil {
-			return false, nil
-		}
-		creationTime := time.Unix(int64(binary.BigEndian.Uint64(flashToken[:8])), 0).UTC()
-		if time.Since(creationTime) > 5*time.Minute {
-			return false, nil
-		}
-		var flashTokenHash [8 + blake2b.Size256]byte
-		checksum := blake2b.Sum256(flashToken[8:])
-		copy(flashTokenHash[:8], flashToken[:8])
-		copy(flashTokenHash[8:], checksum[:])
-		switch nbrew.Dialect {
-		case "sqlite", "postgres":
-			data, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
-				Dialect: nbrew.Dialect,
-				Format:  "DELETE FROM flash WHERE flash_token_hash = {flashTokenHash} RETURNING {*}",
-				Values: []any{
-					sq.BytesParam("flashTokenHash", flashTokenHash[:]),
-				},
-			}, func(row *sq.Row) []byte {
-				return row.Bytes(nil, "data")
-			})
-			if err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
-					return false, nil
-				}
-				return false, stacktrace.New(err)
-			}
-		default:
-			data, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
-				Dialect: nbrew.Dialect,
-				Format:  "SELECT {*} FROM flash WHERE flash_token_hash = {flashTokenHash}",
-				Values: []any{
-					sq.BytesParam("flashTokenHash", flashTokenHash[:]),
-				},
-			}, func(row *sq.Row) []byte {
-				return row.Bytes(nil, "data")
-			})
-			if err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
-					return false, nil
-				}
-				return false, stacktrace.New(err)
-			}
-			_, err = sq.Exec(r.Context(), nbrew.DB, sq.Query{
-				Dialect: nbrew.Dialect,
-				Format:  "DELETE FROM flash WHERE flash_token_hash = {flashTokenHash}",
-				Values: []any{
-					sq.BytesParam("flashTokenHash", flashTokenHash[:]),
-				},
-			})
-			if err != nil {
-				return false, stacktrace.New(err)
-			}
-		}
-	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(valuePtr)
+	flashToken, err := hex.DecodeString(fmt.Sprintf("%048s", cookie.Value))
 	if err != nil {
-		return true, stacktrace.New(err)
+		return -1, nil
 	}
-	return true, nil
+	creationTime := time.Unix(int64(binary.BigEndian.Uint64(flashToken[:8])), 0).UTC()
+	if time.Since(creationTime) > 5*time.Minute {
+		return -1, nil
+	}
+	var flashTokenHash [8 + blake2b.Size256]byte
+	checksum := blake2b.Sum256(flashToken[8:])
+	copy(flashTokenHash[:8], flashToken[:8])
+	copy(flashTokenHash[8:], checksum[:])
+	var flashSetter string
+	var data []byte
+	switch nbrew.Dialect {
+	case "sqlite", "postgres":
+		result, err := sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+			Dialect: nbrew.Dialect,
+			Format:  "DELETE FROM flash WHERE flash_token_hash = {flashTokenHash} RETURNING {*}",
+			Values: []any{
+				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
+			},
+		}, func(row *sq.Row) (result struct {
+			FlashSetter string
+			Data        []byte
+		}) {
+			result.FlashSetter = row.String("flash_setter")
+			result.Data = row.Bytes(nil, "data")
+			return result
+		})
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return -1, nil
+			}
+			return -1, stacktrace.New(err)
+		}
+		flashSetter = result.FlashSetter
+		data = result.Data
+	default:
+		result, err := sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+			Dialect: nbrew.Dialect,
+			Format:  "SELECT {*} FROM flash WHERE flash_token_hash = {flashTokenHash}",
+			Values: []any{
+				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
+			},
+		}, func(row *sq.Row) (result struct {
+			FlashSetter string
+			Data        []byte
+		}) {
+			result.FlashSetter = row.String("name")
+			result.Data = row.Bytes(nil, "data")
+			return result
+		})
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return -1, nil
+			}
+			return -1, stacktrace.New(err)
+		}
+		_, err = sq.Exec(r.Context(), nbrew.DB, sq.Query{
+			Dialect: nbrew.Dialect,
+			Format:  "DELETE FROM flash WHERE flash_token_hash = {flashTokenHash}",
+			Values: []any{
+				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
+			},
+		})
+		if err != nil {
+			return -1, stacktrace.New(err)
+		}
+		flashSetter = result.FlashSetter
+		data = result.Data
+	}
+	if flashSetter == flashGetter {
+		err := json.Unmarshal(data, responsePtr)
+		if err != nil {
+			return 1, stacktrace.New(err)
+		}
+		return 1, nil
+	}
+	err = json.Unmarshal(data, flashDataPtr)
+	if err != nil {
+		return 0, stacktrace.New(err)
+	}
+	return 0, nil
 }
 
 // urlReplacer escapes special characters in a URL for http.Redirect.

@@ -17,6 +17,7 @@ require (
 	github.com/libdns/libdns v1.1.1
 	github.com/libdns/porkbun v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.32
+	github.com/mileusna/useragent v1.3.5
 	github.com/oschwald/maxminddb-golang v1.13.1
 	github.com/yuin/goldmark v1.7.13
 	go.uber.org/zap v1.27.0

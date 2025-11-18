@@ -98,6 +98,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				sessionToken = cookie.Value
 			}
 		}
+		var user User
 		if sessionToken != "" {
 			sessionTokenBytes, err := hex.DecodeString(fmt.Sprintf("%048s", sessionToken))
 			if err == nil && len(sessionTokenBytes) == 24 {
@@ -105,7 +106,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				checksum := blake2b.Sum256(sessionTokenBytes[8:])
 				copy(sessionTokenHash[:8], sessionTokenBytes[:8])
 				copy(sessionTokenHash[8:], checksum[:])
-				responseContext.User, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+				user, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
 					Dialect: nbrew.Dialect,
 					Format: "SELECT {*}" +
 						" FROM session" +
@@ -140,6 +141,9 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 				}
+				responseContext.UserID = user.UserID
+				responseContext.Username = user.Username
+				responseContext.DisableReason = user.DisableReason
 			}
 		}
 		head2, tail2, _ := strings.Cut(tail, "/")
@@ -177,7 +181,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		if responseContext.User.UserID.IsZero() {
+		if responseContext.UserID.IsZero() {
 		}
 		switch head2 {
 		case "":
