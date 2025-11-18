@@ -79,13 +79,15 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			TemplateData:   make(map[string]any),
 		}
 		referer := r.Referer()
-		uri := *r.URL
-		uri.Scheme = scheme
-		uri.Host = r.Host
-		uri.Fragment = ""
-		uri.User = nil
-		if uri.String() != referer {
-			responseContext.Referer = referer
+		if referer != "" {
+			uri := *r.URL
+			uri.Scheme = scheme
+			uri.Host = r.Host
+			uri.Fragment = ""
+			uri.User = nil
+			if referer != uri.String() {
+				responseContext.Referer = referer
+			}
 		}
 		var sessionToken string
 		header := r.Header.Get("Authorization")
