@@ -76,7 +76,6 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			CDNDomain:      nbrew.CDNDomain,
 			StylesCSS:      template.CSS(stylesCSS),
 			NotebrewJS:     template.JS(notebrewJS),
-			TemplateData:   make(map[string]any),
 		}
 		referer := r.Referer()
 		if referer != "" {
