@@ -144,6 +144,10 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "static":
+			if tail2 == "" {
+				nbrew.NotFound(w, r)
+				return
+			}
 			http.ServeFileFS(w, r, runtimeFS, tail)
 			return
 		case "login":
