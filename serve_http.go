@@ -141,32 +141,32 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		head2, _, _ := strings.Cut(tail, "/")
+		head2, tail2, _ := strings.Cut(tail, "/")
 		switch head2 {
 		case "static":
 			http.ServeFileFS(w, r, runtimeFS, tail)
 			return
 		case "login":
-			if tail != "" {
+			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			nbrew.login(w, r, responseContext)
 			return
 		case "logout":
-			if tail != "" {
+			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			return
 		case "resetpassword":
-			if tail != "" {
+			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			return
 		case "invite":
-			if tail != "" {
+			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
