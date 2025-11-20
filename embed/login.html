@@ -1,64 +1,77 @@
 {{ template "preamble" $ }}
+{{- if $.RequireCaptcha }}
+<script src='{{ $.CaptchaWidgetScriptSrc }}' async defer></script>
+{{- end }}
 {{ template "menu-pane" $ }}
 <div id='not-menu-pane'>
-  <form method='post' class='w-4/5 md:w-[70%] lg:w-3/5 mx-auto' data-login-validation>
-    <h1 class='text-2xl my-4 font-bold text-center'>Login</h1>
+  <form method='post' class='w-md lg:w-sm mx-auto' data-login-validation>
+    <h1 class='text-xl font-bold text-center py-3'>Login</h1>
     {{- if eq (index $.FlashData "from") "invite" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Account created, please log in using your new credentials.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-info-circle" }}
+      <h2>Account created, please log in using your new credentials.</h2>
     </div>
     {{- end }}
     {{- if eq (index $.FlashData "from") "resetpassword" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
+    <div class='alert mb-3'>
+      {{ template "tabler-info-circle" }}
       {{- if index $.FlashData "emailSent" }}
-      <div>Password reset email sent (please check your spam folder if you do not see it).</div>
+      <h2>Password reset email sent (please check your spam folder if you do not see it).</h2>
       {{- else }}
-      <div>Password reset successfully, please log in using your new credentials.</div>
+      <h2>Password reset successfully, please log in using your new credentials.</h2>
       {{- end }}
     </div>
     {{- end }}
     {{- if eq (index $.FlashData "from") "changepassword" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Password changed successfully, please log in using your new credentials.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-info-circle" }}
+      <h2>Password changed successfully, please log in using your new credentials.</h2>
     </div>
     {{- end }}
     {{- if eq $.Error "AlreadyAuthenticated" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>You are already logged in, <a href='/files/'>click here to go to your dashboard</a>.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-info-circle" }}
+      <h2>You are already logged in.</h2>
+      <section><a href='/cms/' class='link'>Go to your dashboard.</a></section>
     </div>
     {{- else if eq $.Error "RetryWithCaptcha" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Please retry with captcha.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-alert-triangle" }}
+      <h2>Please retry with captcha.</h2>
     </div>
     {{- else if eq $.Error "CaptchaChallengeFailed" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Captcha challenge failed.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-alert-triangle" }}
+      <h2>Captcha challenge failed.</h2>
     </div>
     {{- else if eq $.Error "IncorrectLoginCredentials" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Incorrect login credentials.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-alert-triangle" }}
+      <h2>Incorrect username or password.</h2>
     </div>
     {{- else if eq $.Error "UserNotFound" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>User not found.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-alert-triangle" }}
+      <h2>User not found.</h2>
     </div>
     {{- else if eq $.Error "NotAuthenticated" }}
-    <div role='alert' class='w-full rounded px-4 py-2 border alert'>
-      <div>Please log in.</div>
+    <div class='alert mb-3'>
+      {{ template "tabler-alert-triangle" }}
+      <h2>Please log in.</h2>
     </div>
     {{- end }}
-    <div class='my-4'>
-      <div><label for='username' class='font-bold'>Username or Email:</label></div>
-      <input id='username' name='username' value='{{ $.Username }}' class='py-1 px-2 rounded border w-full{{ if index $.FormErrors "username" }} border-red-600{{ end }}' autocomplete='on' required{{ if eq (index $.FlashData "from") "resetpassword" }} autofocus{{ end }}>
+    <div class='grid gap-3'>
+      <label for='username' class='label'>Username or Email:</label>
+      <input id='username' type='text' name='username' value='{{ $.Username }}' class='input' placeholder='user@mail.com' autocomplete='on' required {{ if or (index $.FormErrors "username") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }} {{ if eq (index $.FlashData "from") "resetpassword" }}autofocus{{ end }}>
       <ul class='list-disc px-4 text-sm text-red-600'>
         {{- range $error := index $.FormErrors "username" }}
         <li>{{ $error }}</li>
         {{- end }}
       </ul>
     </div>
-    <div class='my-4'>
-      <div><label for='password' class='font-bold'>Password:</label></div>
-      <input id='password' type='password' name='password' class='w-full py-1 px-2 rounded border{{ if index $.FormErrors "password" }} border-red-600{{ end }}' autocomplete='on' required>
+    <div class='grid gap-3'>
+      <label for='password' class='label'>Password:</label>
+      <input id='password' type='password' name='password' class='input' autocomplete='on' required {{ if or (index $.FormErrors "password") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }}>
       <ul class='list-disc px-4 text-sm text-red-600'>
         {{- range $error := index $.FormErrors "password" }}
         <li>{{ $error }}</li>
@@ -66,7 +79,7 @@
       </ul>
     </div>
     {{- if $.HasMailer }}
-    <div class='text-sm'><a href='/users/resetpassword/'>forgot password?</a></div>
+    <div class='link text-sm mb-3'><a href='/cms/resetpassword/'>forgot password?</a></div>
     {{- end }}
     {{- if $.Redirect }}
     <input type='hidden' name='$.Redirect' value='{{ $.Redirect }}'>
@@ -75,6 +88,6 @@
     <div class='{{ $.CaptchaWidgetClass }}' data-sitekey='{{ $.CaptchaSiteKey }}' data-captcha-response-name='{{ $.CaptchaResponseName }}'></div>
     {{- end }}
     <div role='status'></div>
-    <button type='submit' class='button border border-black rounded p-2 my-4 w-full'>Log in</button>
+    <button type='submit' class='btn w-full'>Log in</button>
   </form>
 </div>

@@ -74,6 +74,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		responseContext := ResponseContext{
 			ContentBaseURL: "", // TODO: something to do with sitePrefix?
 			CDNDomain:      nbrew.CDNDomain,
+			DevMode:        devMode,
 			StylesCSS:      template.CSS(stylesCSS),
 			NotebrewJS:     template.JS(notebrewJS),
 		}
@@ -182,6 +183,8 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if responseContext.UserID.IsZero() {
+			nbrew.NotAuthenticated(w, r)
+			return
 		}
 		switch head2 {
 		case "":

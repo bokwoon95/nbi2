@@ -68,14 +68,14 @@ func main() {
 				}
 				return nil
 			case "hashpassword":
-				// cmd, err := nbi2.HashpasswordCommand(args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.HashpasswordCommand(args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			}
 		}
@@ -105,56 +105,56 @@ func main() {
 		}
 		if len(args) > 0 {
 			switch args[0] {
-			case "createinvite":
-				// cmd, err := nbi2.CreateinviteCommand(nbrew, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				return nil
 			case "createuser":
-				// cmd, err := nbi2.CreateuserCommand(nbrew, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				return nil
-			case "deleteinvite":
-				// cmd, err := nbi2.DeleteinviteCommand(nbrew, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.CreateuserCommand(nbrew, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			case "deleteuser":
-				// cmd, err := nbi2.DeleteuserCommand(nbrew, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.DeleteuserCommand(nbrew, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			case "resetpassword":
-				// cmd, err := nbi2.ResetpasswordCommand(nbrew, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// return nil
+				cmd, err := nbi2.ResetpasswordCommand(nbrew, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				return nil
+			case "createinvite":
+				cmd, err := nbi2.CreateinviteCommand(nbrew, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				return nil
+			case "deleteinvite":
+				cmd, err := nbi2.DeleteinviteCommand(nbrew, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				return nil
 			case "start":
 				// cmd, err := nbi2.StartCommand(nbrew, configDir, args[1:]...)
 				// if err != nil {

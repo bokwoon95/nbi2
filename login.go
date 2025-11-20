@@ -248,7 +248,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 				if response.Redirect != "" {
 					query = "?redirect=" + url.QueryEscape(response.Redirect)
 				}
-				http.Redirect(w, r, "/users/login/"+query, http.StatusFound)
+				http.Redirect(w, r, r.URL.Path+query, http.StatusFound)
 				return
 			}
 			http.SetCookie(w, &http.Cookie{
@@ -295,23 +295,6 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 			request.Password = r.Form.Get("password")
 			request.CaptchaResponse = r.Form.Get(nbrew.CaptchaConfig.ResponseTokenName)
 			redirect = r.Form.Get("redirect")
-
-			response := Response{
-				Username:   strings.TrimPrefix(request.Username, "@"),
-				FormErrors: make(url.Values),
-				Redirect:   sanitizeRedirect(redirect),
-			}
-			if response.Username == "" {
-				response.FormErrors.Add("username", "required")
-			}
-			if request.Password == "" {
-				response.FormErrors.Add("password", "required")
-			}
-			if len(response.FormErrors) > 0 {
-				response.Error = "FormErrorsPresent"
-				writeResponse(w, r, response)
-				return
-			}
 		default:
 			nbrew.UnsupportedContentType(w, r)
 			return

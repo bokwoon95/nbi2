@@ -1053,6 +1053,7 @@ type ResponseContext struct {
 	UserID         ID           `json:"userID"`
 	Username       string       `json:"username"`
 	DisableReason  string       `json:"disableReason"`
+	DevMode        bool         `json:"-"`
 	StylesCSS      template.CSS `json:"-"`
 	NotebrewJS     template.JS  `json:"-"`
 	Referer        string       `json:"-"`
@@ -1746,7 +1747,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 	err := tmpl.Execute(buf, map[string]any{
 		"Title":    "401 unauthorized",
 		"Headline": "401 unauthorized",
-		"Byline":   fmt.Sprintf("You are not authenticated, please <a href='/users/login/%s'>log in</a>.", query),
+		"Byline":   fmt.Sprintf("You are not authenticated, please <a href='/cms/login/%s'>log in</a>.", query),
 	})
 	if err != nil {
 		nbrew.GetLogger(r.Context()).Error(err.Error())
