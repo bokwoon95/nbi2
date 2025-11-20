@@ -3,12 +3,17 @@ package nbi2
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/base32"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
 )
+
+// Crockford Base32 encoding.
+// 00000000000000000000000000
+var base32Encoding = base32.NewEncoding("0123456789abcdefghjkmnpqrstvwxyz").WithPadding(base32.NoPadding)
 
 // ID is a 16-byte UUID that is sortable by a timestamp component. The first 5
 // bytes of the ID are the timestamp component and the remaining 11 bytes are
@@ -42,25 +47,32 @@ func NewID() ID {
 // ParseID parses a UUID string of the format
 // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx into an ID.
 func ParseID(s string) (ID, error) {
-	if len(s) == 0 {
-		return ID{}, nil
-	}
-	if len(s) != 36 {
-		return ID{}, errors.New("invalid ID")
-	}
 	var id ID
-	for i, x := range [16]int{
-		0, 2, 4, 6,
-		9, 11,
-		14, 16,
-		19, 21,
-		24, 26, 28, 30, 32, 34,
-	} {
-		v, ok := xtob(s[x], s[x+1])
-		if !ok {
+	switch len(s) {
+	case 0:
+		break
+	case 26:
+		b, err := base32Encoding.DecodeString(s)
+		if err != nil {
 			return ID{}, errors.New("invalid ID")
 		}
-		id[i] = v
+		copy(id[:], b)
+	case 36:
+		for i, x := range [16]int{
+			0, 2, 4, 6,
+			9, 11,
+			14, 16,
+			19, 21,
+			24, 26, 28, 30, 32, 34,
+		} {
+			v, ok := xtob(s[x], s[x+1])
+			if !ok {
+				return ID{}, errors.New("invalid ID")
+			}
+			id[i] = v
+		}
+	default:
+		return ID{}, errors.New("invalid ID")
 	}
 	return id, nil
 }
@@ -87,6 +99,10 @@ func (id ID) String() string {
 	b[23] = '-'
 	hex.Encode(b[24:], id[10:])
 	return string(b[:])
+}
+
+func (id ID) Base32String() string {
+	return base32Encoding.EncodeToString(id[:])
 }
 
 // MarshalJSON converts an ID to a JSON string in the format

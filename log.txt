@@ -18,7 +18,7 @@ deleteuser_cmd.go
 resetpassword_cmd.go
 createinvite_cmd.go
 deleteinvite_cmd.go
-developer_mode.go
+dev_mode.go
 serve_http.go
 notebrew/main.go
 dashboard.go
@@ -27,6 +27,12 @@ invite.go
 start_cmd.go
 status_cmd.go
 stop_cmd.go
+
+/cms/createnote/
+/cms/notes/:noteID
+/cms/photos/:photoID
+/cms/sites/bokwoon/
+/cms/sites/bokwoon.com/
 
 TODO: figure out why clicking on outside the sidebar-pane in mobile mode doesn't hide the sidebar
 

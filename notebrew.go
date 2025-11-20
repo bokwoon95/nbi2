@@ -9,7 +9,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"embed"
-	"encoding/base32"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
@@ -1313,9 +1312,6 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, f
 
 // urlReplacer escapes special characters in a URL for http.Redirect.
 var urlReplacer = strings.NewReplacer("#", "%23", "%", "%25")
-
-// Crockford Base32 encoding.
-var base32Encoding = base32.NewEncoding("0123456789abcdefghjkmnpqrstvwxyz").WithPadding(base32.NoPadding)
 
 // markdownTextOnly takes in a markdown snippet and extracts the text only,
 // removing any markup.
