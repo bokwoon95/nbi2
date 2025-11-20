@@ -8,52 +8,6 @@
   <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>
 </div>
 <div id='not-menu-pane' class='p-3 pt-6'>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-info-circle" }}
-    <h2>Account created</h2>
-    <section>Please log in using your new credentials.</section>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-info-circle" }}
-    {{ if index $.FlashData "emailSent" }}
-    <h2>Password reset email sent</h2>
-    <section>Please check your spam folder if you do not see it.</section>
-    {{ else }}
-    <h2>Password reset successfully</h2>
-    <section>Please log in using your new credentials.</section>
-    {{ end }}
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-info-circle" }}
-    <h2>Password changed successfully</h2>
-    <section>Please log in using your new credentials.</section>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-info-circle" }}
-    <h2>You are already logged in</h2>
-    <section>Go to your <a href='/cms/' class='link'>dashboard</a>.</section>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>Please retry with captcha</h2>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>Captcha challenge failed</h2>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>Incorrect username or password</h2>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>User not found</h2>
-  </div>
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>Please log in</h2>
-  </div>
-
   {{ if eq (index $.FlashData "from") "invite" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
     {{ template "tabler-info-circle" }}
@@ -84,7 +38,7 @@
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
     {{ template "tabler-info-circle" }}
     <h2>You are already logged in</h2>
-    <section><a href='/cms/' class='link'>Go to your dashboard.</a></section>
+    <section><p>Go to your <a href='/cms/' class='link'>dashboard</a>.</p></section>
   </div>
   {{ else if eq $.Error "RetryWithCaptcha" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
