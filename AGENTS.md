@@ -5,3 +5,27 @@
 - HTML, CSS and JS use two space indentation.
 - When achieving effects by CSS, use the bare minimum rules (i.e. no rules to make it look pretty) unless otherwise specified.
 - For every CSS rule added, justify why it exists with a comment otherwise remove it. Use the bare minimum CSS rules!
+
+## Project setup
+
+### Go
+
+go run -tags dev ./notebrew
+
+All routing is defined in serve\_http.go. The router is consumed in notebrew/main.go.
+
+### HTML
+
+All HTML pages are located in embed/, and all include base.html and the templates within. Refer to the `templates` global variable in the nbi2 package. The "preamble" template in base.html is responsible for importing static/notebrew.
+
+### CSS
+@tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always
+
+The source CSS file is notebrew.css, but the actual CSS file in effect is static/styles.css.
+
+BasecoatUI components are used heavily. You can find its source in node\_modules.
+
+### JavaScript
+esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever
+
+You can find JavaScript source files in node\_modules.
