@@ -28,3 +28,56 @@ for (const dataClickEventStopPropagation of document.querySelectorAll("[data-cli
     event.stopPropagation();
   });
 }
+
+function humanReadableFileSize(size: number) {
+  if (size < 0) {
+    return "";
+  }
+  const unit = 1000;
+  if (size < unit) {
+    return size.toString() + " B";
+  }
+  let div = unit;
+  let exp = 0;
+  for (let n = size / unit; n >= unit; n /= unit) {
+    div *= unit;
+    exp++;
+  }
+  return (size / div).toFixed(1) + " " + ["kB", "MB", "GB", "TB", "PB", "EB"][exp];
+}
+
+for (const dataDismissAlert of document.querySelectorAll("[data-dismiss-alert]")) {
+  dataDismissAlert.addEventListener("click", function() {
+    let parentElement = dataDismissAlert.parentElement;
+    while (parentElement != null) {
+      const role = parentElement.getAttribute("role");
+      if (role != "alert") {
+        parentElement = parentElement.parentElement;
+        continue;
+      }
+      parentElement.style.transition = "opacity 100ms linear";
+      parentElement.style.opacity = "0";
+      setTimeout(function() {
+        if (parentElement) {
+          parentElement.style.display = "none"
+        }
+      }, 100);
+      return;
+    }
+  });
+}
+
+for (const dataGoBack of document.querySelectorAll("[data-go-back]")) {
+  if (dataGoBack.tagName != "A") {
+    continue;
+  }
+  dataGoBack.addEventListener("click", function(event) {
+    if (!(event instanceof PointerEvent)) {
+      return;
+    }
+    if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault();
+      history.back();
+    }
+  });
+}

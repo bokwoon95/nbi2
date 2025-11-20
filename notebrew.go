@@ -1689,6 +1689,12 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Title":    `400 bad request`,
 		"Headline": "400 bad request",
 		"Byline":   message,
@@ -1745,9 +1751,15 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Title":    "401 unauthorized",
 		"Headline": "401 unauthorized",
-		"Byline":   fmt.Sprintf("You are not authenticated, please <a href='/cms/login/%s'>log in</a>.", query),
+		"Byline":   fmt.Sprintf("You are not authenticated, please <a href='/cms/login/%s' class='link'>log in</a>.", query),
 	})
 	if err != nil {
 		nbrew.GetLogger(r.Context()).Error(err.Error())
@@ -1800,6 +1812,12 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "403 forbidden",
 		"Headline": "403 forbidden",
@@ -1849,6 +1867,12 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "404 not found",
 		"Headline": "404 not found",
@@ -1899,6 +1923,12 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "405 method not allowed",
 		"Headline": "405 method not allowed: " + r.Method,
@@ -1936,6 +1966,12 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		encoder.SetIndent("", "  ")
 		encoder.SetEscapeHTML(false)
 		err := encoder.Encode(map[string]any{
+			"ResponseContext": ResponseContext{
+				DevMode:    devMode,
+				StylesCSS:  template.CSS(stylesCSS),
+				NotebrewJS: template.JS(notebrewJS),
+				Referer:    r.Referer(),
+			},
 			"error":   "UnsupportedMediaType",
 			"message": message,
 		})
@@ -1956,6 +1992,12 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "415 unsupported media type",
 		"Headline": message,
@@ -2067,22 +2109,30 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	}()
 	var data map[string]any
+	responseContext := ResponseContext{
+		DevMode:    devMode,
+		StylesCSS:  template.CSS(stylesCSS),
+		NotebrewJS: template.JS(notebrewJS),
+		Referer:    r.Referer(),
+	}
 	if isDeadlineExceeded {
 		data = map[string]any{
-			"Referer":  nbrew.GetReferer(r),
-			"Title":    "deadline exceeded",
-			"Headline": "The server took too long to process your request.",
-			"Details":  errmsg,
-			"Callers":  callers,
+			"ResponseContext": responseContext,
+			"Referer":         nbrew.GetReferer(r),
+			"Title":           "deadline exceeded",
+			"Headline":        "The server took too long to process your request.",
+			"Details":         errmsg,
+			"Callers":         callers,
 		}
 	} else {
 		data = map[string]any{
-			"Referer":  nbrew.GetReferer(r),
-			"Title":    "500 internal server error",
-			"Headline": "500 internal server error",
-			"Byline":   "There's a bug with notebrew.",
-			"Details":  errmsg,
-			"Callers":  callers,
+			"ResponseContext": responseContext,
+			"Referer":         nbrew.GetReferer(r),
+			"Title":           "500 internal server error",
+			"Headline":        "500 internal server error",
+			"Byline":          "There's a bug with notebrew.",
+			"Details":         errmsg,
+			"Callers":         callers,
 		}
 	}
 	tmpl := templates["error.html"]
@@ -2138,6 +2188,12 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  r.Referer(),
 		"Title":    "507 insufficient storage",
 		"Headline": "507 insufficient storage",
@@ -2185,6 +2241,12 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 		tmpl = template.Must(template.New("error.html").Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
+		"ResponseContext": ResponseContext{
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
+			Referer:    r.Referer(),
+		},
 		"Referer":  r.Referer(),
 		"Title":    "403 Forbidden",
 		"Headline": "403 Forbidden",
