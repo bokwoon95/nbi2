@@ -7,7 +7,7 @@
 <div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>
   <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>
 </div>
-<div id='not-menu-pane' class='p-3 pt-6'>
+<div id='not-menu-pane' class='p-3 pt-5'>
   {{ if eq (index $.FlashData "from") "invite" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
     {{ template "tabler-info-circle" }}
@@ -55,11 +55,6 @@
     {{ template "tabler-alert-triangle" }}
     <h2>Incorrect username or password</h2>
   </div>
-  {{ else if eq $.Error "UserNotFound" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
-    {{ template "tabler-alert-triangle" }}
-    <h2>User not found</h2>
-  </div>
   {{ else if eq $.Error "NotAuthenticated" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
     {{ template "tabler-alert-triangle" }}
@@ -74,7 +69,7 @@
       <form id='login' method='post' class='form grid gap-6'>
         <div class='grid gap-2'>
           <label for='username'>Email</label>
-          <input id='username' type='text' name='username' value='{{ $.Username }}' placeholder='user@mail.com' autocomplete='on' required {{ if or (index $.FormErrors "username") (eq $.Error "UserNotFound" "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }} {{ if eq (index $.FlashData "from") "resetpassword" }}autofocus{{ end }}>
+          <input id='username' type='text' name='username' value='{{ $.Username }}' placeholder='user@mail.com' autocomplete='on' required {{ if or (index $.FormErrors "username") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }} {{ if eq (index $.FlashData "from") "resetpassword" }}autofocus{{ end }}>
           <ul class='list-disc px-4 text-sm text-red-600'>
             {{ range $error := index $.FormErrors "username" }}
             <li>{{ $error }}</li>

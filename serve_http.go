@@ -188,9 +188,11 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch head2 {
 		case "":
-			w.Write([]byte("hello world!"))
+			http.Redirect(w, r, "/cms/notes", http.StatusFound)
 			return
 		case "notes":
+			nbrew.notes(w, r, responseContext)
+			return
 		case "photos":
 		}
 	}

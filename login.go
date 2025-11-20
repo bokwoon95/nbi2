@@ -156,7 +156,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 		}
 		writeResponse := func(w http.ResponseWriter, r *http.Request, response Response) {
 			switch response.Error {
-			case "IncorrectLoginCredentials", "ErrUserNotFound":
+			case "IncorrectLoginCredentials":
 				ip := RealClientIP(r, nbrew.ProxyConfig.RealIPHeaders, nbrew.ProxyConfig.ProxyIPs).As16()
 				if nbrew.Dialect == sq.DialectMySQL {
 					_, err := sq.Exec(r.Context(), nbrew.DB, sq.Query{
@@ -454,7 +454,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 		}
 
 		if userNotFound {
-			response.Error = "UserNotFound"
+			response.Error = "IncorrectLoginCredentials"
 			writeResponse(w, r, response)
 			return
 		}
