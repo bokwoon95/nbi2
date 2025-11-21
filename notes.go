@@ -36,7 +36,7 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, responseCon
 				}
 				return
 			}
-			tmpl := templates["notes.html"]
+			tmpl := templateMap["notes.html"]
 			if devMode {
 				tmpl = template.New("notes.html")
 				tmpl.Funcs(funcMap)

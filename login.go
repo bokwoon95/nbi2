@@ -112,7 +112,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 				}
 				return
 			}
-			tmpl := templates["login.html"]
+			tmpl := templateMap["login.html"]
 			if devMode {
 				tmpl = template.New("login.html")
 				tmpl.Funcs(funcMap)

@@ -2,9 +2,9 @@
 {{ template "preamble" $ }}
 {{ template "menu-pane" $ }}
 <div id='not-menu-pane' class='p-3 pt-5'>
-  <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300">
-    <header class="flex max-w-sm flex-col items-center gap-3 text-center">
-      <div class="mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6">
+  <div class='flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300'>
+    <header class='flex max-w-sm flex-col items-center gap-3 text-center'>
+      <div class='mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*="size-"])]:size-6'>
         {{ if hasPrefix $.Title "500" }}
           {{ template "tabler-mood-sad-dizzy" }}
         {{ else if hasPrefix $.Title "404" }}
@@ -13,12 +13,17 @@
           {{ template "tabler-mood-annoyed" }}
         {{ end }}
       </div>
-      <h3 class="text-lg font-semibold tracking-tight">{{ safeHTML $.Headline }}</h3>
-      <p class="text-muted-foreground text-sm/relaxed">{{ safeHTML $.Byline }}</p>
+      <h3 class='text-lg font-semibold tracking-tight'>{{ safeHTML $.Headline }}</h3>
+      <p class='text-muted-foreground text-sm/relaxed'>{{ safeHTML $.Byline }}</p>
     </header>
+    {{ if $.Referer }}
+    <div class='text-center link'><a href='{{ $.Referer }}' data-go-back>&larr; Go back</a></div>
+    {{ end }}
     {{ if $.Details }}
-    <details>
-      <summary>details</summary>
+    <details class='flex max-w-md flex-col items-center gap-3'>
+      <summary style='display: list-item'>
+        details
+      </summary>
       <pre class='whitespace-normal'>{{ $.Details }}</pre>
       {{ if $.Callers }}
       <strong>stack trace:</strong>
@@ -29,9 +34,6 @@
       </ul>
       {{ end }}
     </details>
-    {{ end }}
-    {{ if $.Referer }}
-    <div class='text-center link'><a href='{{ $.Referer }}' data-go-back>&larr; Go back</a></div>
     {{ end }}
   </div>
 </div>

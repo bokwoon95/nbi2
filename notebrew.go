@@ -1058,6 +1058,28 @@ type ResponseContext struct {
 	Referer        string       `json:"-"`
 }
 
+func (v ResponseContext) GoString() string {
+	type ResponseContext struct {
+		ContentBaseURL string       `json:"contentBaseURL"`
+		CDNDomain      string       `json:"cdnDomain"`
+		UserID         ID           `json:"userID"`
+		Username       string       `json:"username"`
+		DisableReason  string       `json:"disableReason"`
+		DevMode        bool         `json:"-"`
+		StylesCSS      template.CSS `json:"-"`
+		NotebrewJS     template.JS  `json:"-"`
+		Referer        string       `json:"-"`
+	}
+	vCopy := ResponseContext(v)
+	if vCopy.StylesCSS != "" {
+		vCopy.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(vCopy.StylesCSS)))
+	}
+	if vCopy.NotebrewJS != ""{
+		vCopy.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(vCopy.NotebrewJS)))
+	}
+	return fmt.Sprintf("%#v", vCopy)
+}
+
 // SetFlashSession(map[string]any{"responseContext":{"flashData"}})
 
 // IsKeyViolation returns true if the provided errorCode matches the
@@ -1555,8 +1577,9 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 }
 
 var (
-	templates = map[string]*template.Template{}
-	funcMap   = map[string]any{
+	baseTemplatePaths = []string{"embed/base.html", "embed/icons.html"}
+	templateMap       = map[string]*template.Template{}
+	funcMap           = map[string]any{
 		"join":                  path.Join,
 		"dir":                   path.Dir,
 		"base":                  path.Base,
@@ -1613,8 +1636,9 @@ func init() {
 	for _, match := range matches {
 		tmpl := template.New(path.Base(match))
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", match))
-		templates[path.Base(match)] = tmpl
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, match))
+		templateMap[path.Base(match)] = tmpl
 	}
 }
 
@@ -1683,7 +1707,7 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -1747,7 +1771,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 			query = "?redirect=" + url.QueryEscape(r.URL.Path)
 		}
 	}
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -1810,7 +1834,7 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 	} else {
 		byline = "You do not have permission to perform that action (try logging in to a different account)."
 	}
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -1867,7 +1891,7 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -1925,7 +1949,7 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -1996,7 +2020,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -2146,7 +2170,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 			"Callers":         callers,
 		}
 	}
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -2196,7 +2220,7 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
@@ -2251,7 +2275,7 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 			bufPool.Put(buf)
 		}
 	}()
-	tmpl := templates["error.html"]
+	tmpl := templateMap["error.html"]
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)

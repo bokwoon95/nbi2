@@ -69,7 +69,11 @@
       <form id='login' method='post' class='form grid gap-6'>
         <div class='grid gap-2'>
           <label for='username'>Email</label>
-          <input id='username' type='text' name='username' value='{{ $.Username }}' placeholder='user@mail.com' autocomplete='on' required {{ if or (index $.FormErrors "username") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }} {{ if eq (index $.FlashData "from") "resetpassword" }}autofocus{{ end }}>
+          <input id='username' type='text' name='username' value='{{ $.Username }}' placeholder='user@mail.com' autocomplete='on' required
+            {{ if or (index $.FormErrors "username") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }}
+            {{ if eq (index $.FlashData "from") "resetpassword" }}autofocus{{ end }}
+            {{ if eq $.Error "AlreadyAuthenticated" }}disabled{{ end }}
+          >
           <ul class='list-disc px-4 text-sm text-red-600'>
             {{ range $error := index $.FormErrors "username" }}
             <li>{{ $error }}</li>
@@ -83,7 +87,10 @@
             <a href='#' class='ml-auto inline-block text-sm underline-offset-4 hover:underline link'>Forgot your password?</a>
             {{ end }}
           </div>
-          <input id='password' type='password' name='password' autocomplete='on' required {{ if or (index $.FormErrors "password") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }}>
+          <input id='password' type='password' name='password' autocomplete='on' required
+            {{ if or (index $.FormErrors "password") (eq $.Error "IncorrectLoginCredentials") }}aria-invalid='true'{{ end }}
+            {{ if eq $.Error "AlreadyAuthenticated" }}disabled{{ end }}
+          >
           <ul class='list-disc px-4 text-sm text-red-600'>
             {{ range $error := index $.FormErrors "password" }}
             <li>{{ $error }}</li>
@@ -96,8 +103,16 @@
       </form>
     </section>
     <footer class='flex flex-col items-center gap-2'>
-      <button type='submit' form='login' class='btn w-full'>Login</button>
-      <button type='button' class='btn-outline w-full'>Login with Google</button>
+      <button type='submit' form='login' class='btn w-full'
+        {{ if eq $.Error "AlreadyAuthenticated" }}disabled{{ end }}
+      >
+        Login
+      </button>
+      <button type='button' class='btn-outline w-full'
+        {{ if eq $.Error "AlreadyAuthenticated" }}disabled{{ end }}
+      >
+        Login with Google
+      </button>
       <p class='mt-4 text-center text-sm'>Don't have an account? <a href='#' class='underline-offset-4 hover:underline link'>Sign up</a></p>
     </footer>
   </div>
