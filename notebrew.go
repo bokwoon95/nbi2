@@ -1491,7 +1491,9 @@ func (nbrew *Notebrew) ExecuteTemplate(w http.ResponseWriter, r *http.Request, t
 	err := tmpl.Execute(gzipWriter, data)
 	if err != nil {
 		nbrew.GetLogger(r.Context()).Error(err.Error())
-		fmt.Printf("%#v", data)
+		if devMode {
+			fmt.Printf("%#v", data)
+		}
 		nbrew.InternalServerError(w, r, err)
 		return
 	}
@@ -1607,11 +1609,10 @@ func init() {
 		panic(err)
 	}
 	for _, match := range matches {
-		tmpl, err := template.New(path.Base(match)).Funcs(funcMap).ParseFS(runtimeFS, "embed/base.html", match)
-		if err != nil {
-			panic(match + ": " + err.Error())
-		}
-		templates[path.Base(match)] = tmpl.Lookup(path.Base(match))
+		tmpl := template.New(path.Base(match))
+		tmpl.Funcs(funcMap)
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", match))
+		templates[path.Base(match)] = tmpl
 	}
 }
 
