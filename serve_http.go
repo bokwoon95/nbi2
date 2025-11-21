@@ -68,10 +68,10 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		nbrew.BadRequest(w, r, err)
 		return
 	}
-	urlPath := strings.Trim(cleanPath, "/")
-	head, tail, _ := strings.Cut(urlPath, "/")
+	head, tail, _ := strings.Cut(strings.Trim(cleanPath, "/"), "/")
 	if head == "cms" {
 		responseContext := ResponseContext{
+			CleanPath:      cleanPath,
 			ContentBaseURL: "", // TODO: something to do with sitePrefix?
 			CDNDomain:      nbrew.CDNDomain,
 			DevMode:        devMode,

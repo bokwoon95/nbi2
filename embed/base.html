@@ -26,7 +26,7 @@
       <div class='mx-1 mt-1 last:mb-1 rounded-sm flex items-center hover:bg-gray-200'>
         <a href='/cms/notes' class='px-2 py-1 grow flex items-center text-gray-600'>
           {{ template "tabler-notebook" }}
-          <span class='mx-1 font-semibold'>Notes</span>
+          <span class='mx-1 {{ if eq $.ResponseContext.CleanPath "/cms/notes" }}font-semibold{{ end }}'>Notes</span>
         </a>
       </div>
       <details class='group flex flex-col-reverse'>
@@ -38,9 +38,9 @@
         </summary>
         <section>
           <div class='mx-1 mt-1 last:mb-1 rounded-sm flex items-center hover:bg-gray-200'>
-            <a href='' class='px-2 py-1 grow flex items-center text-gray-600'>
+            <a href='/cms/notes/2025' class='px-2 py-1 grow flex items-center text-gray-600'>
               {{ template "tabler-folder" }}
-              <span class='mx-1'>2025</span>
+              <span class='mx-1 {{ if eq $.ResponseContext.CleanPath "/cms/notes/2025" }}font-semibold{{ end }}'>2025</span>
             </a>
             <div class='dropdown-menu'>
               <button type='button' id='demo-dropdown-menu-trigger' aria-haspopup='menu' aria-controls='demo-dropdown-menu-menu' aria-expanded='false' class='btn-outline btn-thin mr-2'>{{ template "tabler-dots" }}</button>

@@ -1046,42 +1046,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	return nbrew, nil
 }
 
-type ResponseContext struct {
-	ContentBaseURL string       `json:"contentBaseURL"`
-	CDNDomain      string       `json:"cdnDomain"`
-	UserID         ID           `json:"userID"`
-	Username       string       `json:"username"`
-	DisableReason  string       `json:"disableReason"`
-	DevMode        bool         `json:"-"`
-	StylesCSS      template.CSS `json:"-"`
-	NotebrewJS     template.JS  `json:"-"`
-	Referer        string       `json:"-"`
-}
-
-func (v ResponseContext) GoString() string {
-	type ResponseContext struct {
-		ContentBaseURL string       `json:"contentBaseURL"`
-		CDNDomain      string       `json:"cdnDomain"`
-		UserID         ID           `json:"userID"`
-		Username       string       `json:"username"`
-		DisableReason  string       `json:"disableReason"`
-		DevMode        bool         `json:"-"`
-		StylesCSS      template.CSS `json:"-"`
-		NotebrewJS     template.JS  `json:"-"`
-		Referer        string       `json:"-"`
-	}
-	vCopy := ResponseContext(v)
-	if vCopy.StylesCSS != "" {
-		vCopy.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(vCopy.StylesCSS)))
-	}
-	if vCopy.NotebrewJS != "" {
-		vCopy.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(vCopy.NotebrewJS)))
-	}
-	return fmt.Sprintf("%#v", vCopy)
-}
-
-// SetFlashSession(map[string]any{"responseContext":{"flashData"}})
-
 // IsKeyViolation returns true if the provided errorCode matches the
 // dialect-specific code for representing a primary key/unique constraint
 // violation.
@@ -1574,6 +1538,42 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 		return ""
 	}
 	return referer
+}
+
+type ResponseContext struct {
+	CleanPath      string       `json:"cleanPath"`
+	ContentBaseURL string       `json:"contentBaseURL"`
+	CDNDomain      string       `json:"cdnDomain"`
+	UserID         ID           `json:"userID"`
+	Username       string       `json:"username"`
+	DisableReason  string       `json:"disableReason"`
+	DevMode        bool         `json:"-"`
+	StylesCSS      template.CSS `json:"-"`
+	NotebrewJS     template.JS  `json:"-"`
+	Referer        string       `json:"-"`
+}
+
+func (v ResponseContext) GoString() string {
+	type ResponseContext struct {
+		CleanPath      string
+		ContentBaseURL string
+		CDNDomain      string
+		UserID         ID
+		Username       string
+		DisableReason  string
+		DevMode        bool
+		StylesCSS      template.CSS
+		NotebrewJS     template.JS
+		Referer        string
+	}
+	vCopy := ResponseContext(v)
+	if vCopy.StylesCSS != "" {
+		vCopy.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(vCopy.StylesCSS)))
+	}
+	if vCopy.NotebrewJS != "" {
+		vCopy.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(vCopy.NotebrewJS)))
+	}
+	return fmt.Sprintf("%#v", vCopy)
 }
 
 var (
