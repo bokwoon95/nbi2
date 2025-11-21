@@ -1074,7 +1074,7 @@ func (v ResponseContext) GoString() string {
 	if vCopy.StylesCSS != "" {
 		vCopy.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(vCopy.StylesCSS)))
 	}
-	if vCopy.NotebrewJS != ""{
+	if vCopy.NotebrewJS != "" {
 		vCopy.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(vCopy.NotebrewJS)))
 	}
 	return fmt.Sprintf("%#v", vCopy)
@@ -1577,7 +1577,7 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 }
 
 var (
-	baseTemplatePaths = []string{"embed/base.html", "embed/icons.html"}
+	baseTemplatePaths = []string{"embed/icons.html", "embed/base.html"}
 	templateMap       = map[string]*template.Template{}
 	funcMap           = map[string]any{
 		"join":                  path.Join,
@@ -1711,7 +1711,8 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -1775,7 +1776,8 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -1838,7 +1840,8 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -1895,7 +1898,8 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -1953,7 +1957,8 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -2024,7 +2029,8 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -2174,7 +2180,8 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, data)
 	if err != nil {
@@ -2224,7 +2231,8 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{
@@ -2279,7 +2287,8 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 	if devMode {
 		tmpl = template.New("error.html")
 		tmpl.Funcs(funcMap)
-		template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/error.html"))
+		template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ResponseContext": ResponseContext{

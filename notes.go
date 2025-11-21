@@ -40,7 +40,8 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, responseCon
 			if devMode {
 				tmpl = template.New("notes.html")
 				tmpl.Funcs(funcMap)
-				template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/notes.html"))
+				template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+				template.Must(tmpl.ParseFS(runtimeFS, "embed/notes.html"))
 			}
 			w.Header().Set("Content-Security-Policy", nbrew.ContentSecurityPolicy)
 			nbrew.ExecuteTemplate(w, r, tmpl, &response)

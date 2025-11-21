@@ -116,7 +116,8 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 			if devMode {
 				tmpl = template.New("login.html")
 				tmpl.Funcs(funcMap)
-				template.Must(tmpl.ParseFS(runtimeFS, "embed/base.html", "embed/icons.html", "embed/login.html"))
+				template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
+				template.Must(tmpl.ParseFS(runtimeFS, "embed/login.html"))
 			}
 			w.Header().Set("Content-Security-Policy", nbrew.ContentSecurityPolicy)
 			nbrew.ExecuteTemplate(w, r, tmpl, &response)
