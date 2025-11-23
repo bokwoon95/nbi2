@@ -35,6 +35,16 @@ side-pane contains:
 - photos
 - blogs
 
+references
+
+https://zapier.com/blog/best-note-taking-apps/
+
+https://www.google.com/imgres?q=evernote&imgurl=https%3A%2F%2Fprismic-io.s3.amazonaws.com%2Fevernote%2F4e89f820-ff36-4e56-b407-0ac326493424_tasks-list-before-65a682eaea011.webp&imgrefurl=https%3A%2F%2Fevernote.com%2Fblog%2Fnew-ui-2024&docid=6-lBuxICRkr_GM&tbnid=6E6gx5TlnWxAAM&vet=12ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECCIQAA..i&w=2880&h=1800&hcb=2&ved=2ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECCIQAA
+
+https://www.google.com/imgres?q=evernote&imgurl=https%3A%2F%2Fhelp.evernote.com%2Fhc%2Farticle_attachments%2F38701038409619&imgrefurl=https%3A%2F%2Fhelp.evernote.com%2Fhc%2Fen-us%2Farticles%2F38701063490195-Comments&docid=TLS7eX_FawriAM&tbnid=q2KirIIWpaQvfM&vet=12ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECBkQAA..i&w=5760&h=3600&hcb=2&ved=2ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECBkQAA
+
+https://www.google.com/imgres?q=evernote&imgurl=https%3A%2F%2Fprismic-io.s3.amazonaws.com%2Fevernote%2Fb3224a59-c938-429e-82df-07ff66512550_homepage-after-65a682bc0170b.webp&imgrefurl=https%3A%2F%2Fevernote.com%2Fblog%2Fnew-ui-2024&docid=6-lBuxICRkr_GM&tbnid=j1UMNgxIO5O1uM&vet=12ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECBoQAA..i&w=2880&h=1800&hcb=2&ved=2ahUKEwjE1-_yvIiRAxVg8DgGHadKBVcQM3oECBoQAA
+
 /cms/createnote/
 /cms/notes/:noteID
 /cms/photos/:photoID

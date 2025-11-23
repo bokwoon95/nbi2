@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "basecoat-css";
+
+:root {
+  --side-pane-width: 16rem;
+}
