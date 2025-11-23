@@ -28,6 +28,13 @@ start_cmd.go
 status_cmd.go
 stop_cmd.go
 
+side-pane, not-side-pane
+side-pane contains:
+- username
+- notes
+- photos
+- blogs
+
 /cms/createnote/
 /cms/notes/:noteID
 /cms/photos/:photoID
