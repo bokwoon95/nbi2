@@ -35,9 +35,17 @@ side-pane contains:
 - photos
 - blogs
 
+/cms/notes
 /cms/notes/:noteID
 /cms/folders/:folderID
 /cms/folders/:folderID?from=:noteID
+/cms/photos/:photoID
+/cms/albums/:albumID
+
+folder? or folders?
+should folders and notes be kepts in separate tables?
+if separate, we can pull folders and notes separately (i.e. folders first, then notes). But then how do we paginate with say limit 100? Does the limit 100 apply to folders or notes? both? combined limit? combined limit is not possible if we pull folders and notes separately
+or do we have a UI that can display both folders and notes separately in a seamless pattern? but every desktop file explorer UI so far displays them together (with option to separate). how?
 
 go tool wgo -xdir . npx @tailwindcss/cli --input ./notebrew_v2.css --output ./static/styles_v2.css --minify --watch-always :: wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
 

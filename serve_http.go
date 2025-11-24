@@ -40,6 +40,9 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// Redirect unclean paths to the clean path equivalent.
 	cleanPath := path.Clean(r.URL.Path)
+	if cleanPath != "/" {
+		cleanPath += "/"
+	}
 	if cleanPath != r.URL.Path {
 		if r.Method == "GET" || r.Method == "HEAD" {
 			cleanURL := *r.URL
