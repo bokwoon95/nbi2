@@ -14,20 +14,22 @@
 
 {{ block "side-pane" $ }}
 <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50'>
-  <details>
-    <summary class='w-full transition-all outline-none rounded-md'>
+  <details class='group'>
+    <summary class='w-full transition-all rounded-md'>
       <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
         {{ template "basecoat-accordion-chevron" }}
         <a href='/cms/login/' class='grow'>Is it accessible?</a>
       </h2>
     </summary>
-    <section class='pb-4'>
+    <section>
       <p class="text-sm">Yes. It adheres to the WAI-ARIA design pattern.</p>
     </section>
   </details>
-  <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
-    <a href='/cms/login/' class='grow'>Is it accessible?</a>
-  </h2>
+  <div>
+    <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
+      <a href='/cms/login/' class='grow'>Is it accessible?</a>
+    </h2>
+  </div>
 </div>
 {{ end }}
 
