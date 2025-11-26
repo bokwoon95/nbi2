@@ -4,10 +4,10 @@
 {{ if $.RequireCaptcha }}
 <script src='{{ $.CaptchaWidgetScriptSrc }}' async defer></script>
 {{ end }}
-<div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>
-  <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>
-</div>
-<div id='not-menu-pane' class='p-3 pt-5'>
+<!--<div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>-->
+<!--  <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>-->
+<!--</div>-->
+<div class='p-3 pt-5'>
   {{ if eq (index $.FlashData "from") "invite" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
     {{ template "tabler-info-circle" }}
@@ -63,7 +63,7 @@
   {{ end }}
   <div class='card w-md lg:w-sm mx-auto'>
     <header>
-      <h2>Login to your account</h2>
+      <h2>☕ Login to your notebrew account</h2>
     </header>
     <section>
       <form id='login' method='post' class='form grid gap-6'>

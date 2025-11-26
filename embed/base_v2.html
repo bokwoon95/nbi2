@@ -14,19 +14,19 @@
 
 {{ block "side-pane" $ }}
 <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50'>
-  <details class='group border-b last:border-b-0'>
-    <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md'>
-      <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:underline'>
-        <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
-        <a href="/cms/login/">Is it accessible?</a>
+  <details>
+    <summary class='w-full transition-all outline-none rounded-md'>
+      <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
+        {{ template "basecoat-accordion-chevron" }}
+        <a href='/cms/login/' class='grow'>Is it accessible?</a>
       </h2>
     </summary>
     <section class='pb-4'>
       <p class="text-sm">Yes. It adheres to the WAI-ARIA design pattern.</p>
     </section>
   </details>
-  <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:underline'>
-    <a href="/cms/login/">Is it accessible?</a>
+  <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
+    <a href='/cms/login/' class='grow'>Is it accessible?</a>
   </h2>
 </div>
 {{ end }}
