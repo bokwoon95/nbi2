@@ -53,7 +53,6 @@ type rawTable struct {
 func unmarshalCatalog(b []byte, catalog *ddl.Catalog) error {
 	var rawTables []rawTable
 	decoder := json.NewDecoder(bytes.NewReader(b))
-	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&rawTables)
 	if err != nil {
 		return err

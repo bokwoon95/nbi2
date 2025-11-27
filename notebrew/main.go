@@ -156,35 +156,35 @@ func main() {
 				}
 				return nil
 			case "start":
-				// cmd, err := nbi2.StartCommand(nbrew, configDir, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// cmd.Handler = nbrew
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.StartCommand(nbrew, configDir, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				cmd.Handler = nbrew
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			case "status":
-				// cmd, err := nbi2.StatusCommand(nbrew, configDir, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.StatusCommand(nbrew, configDir, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			case "stop":
-				// cmd, err := nbi2.StopCommand(nbrew, configDir, args[1:]...)
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
-				// err = cmd.Run()
-				// if err != nil {
-				// 	return fmt.Errorf("%s: %w", args[0], err)
-				// }
+				cmd, err := nbi2.StopCommand(nbrew, configDir, args[1:]...)
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
+				err = cmd.Run()
+				if err != nil {
+					return fmt.Errorf("%s: %w", args[0], err)
+				}
 				return nil
 			default:
 				return fmt.Errorf("unknown command: %s", args[0])

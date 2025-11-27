@@ -175,7 +175,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -190,7 +189,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig DatabaseConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return fmt.Errorf("invalid value: %w", err)
@@ -255,7 +253,6 @@ func (cmd *ConfigCmd) Run() error {
 				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&dict)
 					if err != nil {
 						return fmt.Errorf("invalid value: %w", err)
@@ -335,7 +332,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -347,7 +343,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig ObjectstorageConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -438,7 +433,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -453,7 +447,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig CaptchaConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -511,7 +504,6 @@ func (cmd *ConfigCmd) Run() error {
 				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&dict)
 					if err != nil {
 						return err
@@ -559,7 +551,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -571,7 +562,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig SMTPConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -670,7 +660,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -688,7 +677,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig ProxyConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -710,7 +698,6 @@ func (cmd *ConfigCmd) Run() error {
 				var dict map[string]string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&dict)
 					if err != nil {
 						return err
@@ -731,7 +718,6 @@ func (cmd *ConfigCmd) Run() error {
 				var list []string
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&list)
 					if err != nil {
 						return err
@@ -779,7 +765,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -791,7 +776,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig DNSConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -870,7 +854,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -882,7 +865,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig CertmagicConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
@@ -947,7 +929,6 @@ func (cmd *ConfigCmd) Run() error {
 		}
 		if len(b) > 0 {
 			decoder := json.NewDecoder(bytes.NewReader(b))
-			decoder.DisallowUnknownFields()
 			err = decoder.Decode(&config)
 			if err != nil && tail != "" {
 				return fmt.Errorf("%s: %w", filepath.Join(cmd.ConfigDir, filePath), err)
@@ -959,7 +940,6 @@ func (cmd *ConfigCmd) Run() error {
 				var newConfig MonitoringConfig
 				if cmd.Value.String != "" {
 					decoder := json.NewDecoder(strings.NewReader(cmd.Value.String))
-					decoder.DisallowUnknownFields()
 					err := decoder.Decode(&newConfig)
 					if err != nil {
 						return err
