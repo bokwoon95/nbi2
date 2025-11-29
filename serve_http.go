@@ -74,12 +74,11 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	head, tail, _ := strings.Cut(strings.Trim(cleanPath, "/"), "/")
 	if head == "cms" {
 		responseContext := ResponseContext{
-			CleanPath:      cleanPath,
-			ContentBaseURL: "", // TODO: something to do with sitePrefix?
-			CDNDomain:      nbrew.CDNDomain,
-			DevMode:        devMode,
-			StylesCSS:      template.CSS(stylesCSS),
-			NotebrewJS:     template.JS(notebrewJS),
+			CleanPath:  cleanPath,
+			CDNDomain:  nbrew.CDNDomain,
+			DevMode:    devMode,
+			StylesCSS:  template.CSS(stylesCSS),
+			NotebrewJS: template.JS(notebrewJS),
 		}
 		referer := r.Referer()
 		if referer != "" {
@@ -171,18 +170,21 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				nbrew.NotFound(w, r)
 				return
 			}
+			// nbrew.logout(w, r, responseContext) // TODO
 			return
 		case "resetpassword":
 			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
+			// nbrew.resetpassword(w, r, responseContext) // TODO
 			return
 		case "invite":
 			if tail2 != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
+			// nbrew.invite(w, r, responseContext) // TODO
 			return
 		}
 		if responseContext.UserID.IsZero() {
@@ -197,6 +199,11 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			nbrew.notes(w, r, responseContext)
 			return
 		case "photos":
+			// nbrew.photos(w, r, responseContext) // TODO
+			return
+		default:
+			nbrew.NotFound(w, r)
+			return
 		}
 	}
 	nbrew.NotFound(w, r)

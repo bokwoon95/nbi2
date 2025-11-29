@@ -4,9 +4,6 @@
 {{ if $.RequireCaptcha }}
 <script src='{{ $.CaptchaWidgetScriptSrc }}' async defer></script>
 {{ end }}
-<!--<div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>-->
-<!--  <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>-->
-<!--</div>-->
 <div class='p-3 pt-5'>
   {{ if eq (index $.FlashData "from") "invite" }}
   <div class='alert mb-3 w-md lg:w-sm mx-auto'>
@@ -113,7 +110,9 @@
       >
         Login with Google
       </button>
+      {{ if ne $.Error "AlreadyAuthenticated" }}
       <p class='mt-4 text-center text-sm'>Don't have an account? <a href='#' class='underline-offset-4 hover:underline link'>Sign up</a></p>
+      {{ end }}
     </footer>
   </div>
 </div>

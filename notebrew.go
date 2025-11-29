@@ -1541,39 +1541,27 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 }
 
 type ResponseContext struct {
-	CleanPath      string       `json:"cleanPath"`
-	ContentBaseURL string       `json:"contentBaseURL"`
-	CDNDomain      string       `json:"cdnDomain"`
-	UserID         ID           `json:"userID"`
-	Username       string       `json:"username"`
-	DisableReason  string       `json:"disableReason"`
-	DevMode        bool         `json:"-"`
-	StylesCSS      template.CSS `json:"-"`
-	NotebrewJS     template.JS  `json:"-"`
-	Referer        string       `json:"-"`
+	CleanPath     string       `json:"cleanPath"`
+	CDNDomain     string       `json:"cdnDomain"`
+	UserID        ID           `json:"userID"`
+	Username      string       `json:"username"`
+	DisableReason string       `json:"disableReason"`
+	DevMode       bool         `json:"-"`
+	StylesCSS     template.CSS `json:"-"`
+	NotebrewJS    template.JS  `json:"-"`
+	Referer       string       `json:"-"`
 }
 
 func (v ResponseContext) GoString() string {
-	type ResponseContext struct {
-		CleanPath      string
-		ContentBaseURL string
-		CDNDomain      string
-		UserID         ID
-		Username       string
-		DisableReason  string
-		DevMode        bool
-		StylesCSS      template.CSS
-		NotebrewJS     template.JS
-		Referer        string
+	type ResponseContext2 ResponseContext
+	v2 := ResponseContext2(v)
+	if v2.StylesCSS != "" {
+		v2.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(v2.StylesCSS)))
 	}
-	vCopy := ResponseContext(v)
-	if vCopy.StylesCSS != "" {
-		vCopy.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(vCopy.StylesCSS)))
+	if v2.NotebrewJS != "" {
+		v2.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(v2.NotebrewJS)))
 	}
-	if vCopy.NotebrewJS != "" {
-		vCopy.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(vCopy.NotebrewJS)))
-	}
-	return fmt.Sprintf("%#v", vCopy)
+	return fmt.Sprintf("%#v", v2)
 }
 
 var (
