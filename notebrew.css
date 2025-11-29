@@ -1,9 +1,18 @@
 @import "tailwindcss";
 @import "basecoat-css";
+@source "./embed";
 
 :root {
   --menu-pane-height: 2.5rem;
   --side-pane-width: 16rem;
+}
+
+/* Reserve the chevron's footprint so plain links line up with accordion labels */
+.chevron-offset::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  margin-right: 0.25rem;
 }
 
 .link {

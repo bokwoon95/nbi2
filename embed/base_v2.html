@@ -4,7 +4,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <title>{{ block "title" $ }}Notebrew{{ end }}</title>
 {{ if $.ResponseContext.DevMode }}
-<link rel="stylesheet" href="/cms/static/styles_v2.css">
+<link rel="stylesheet" href="/cms/static/styles.css">
 <script type='module' src='/cms/static/notebrew.js'></script>
 {{ else }}
 <style>{{ $.ResponseContext.StylesCSS }}</style>
@@ -24,7 +24,7 @@
     </section>
   </details>
   <div class=''>
-    <a href='/cms/login/' class='ml-4 truncate hover:underline'>Is it accessible?</a>
+    <a href='/cms/login/' class='truncate hover:underline chevron-offset'>Is it accessible?</a>
   </div>
 </div>
 {{ end }}
