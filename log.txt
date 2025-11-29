@@ -42,6 +42,8 @@ side-pane contains:
 /cms/photos/:photoID
 /cms/albums/:albumID
 
+TODO: remove styles_v2.css and base_v2.html, migrate to the original styles.css and base.html.
+
 folder? or folders?
 should folders and notes be kepts in separate tables?
 if separate, we can pull folders and notes separately (i.e. folders first, then notes). But then how do we paginate with say limit 100? Does the limit 100 apply to folders or notes? both? combined limit? combined limit is not possible if we pull folders and notes separately
