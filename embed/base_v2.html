@@ -16,19 +16,15 @@
 <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50'>
   <details class='group'>
     <summary class='w-full transition-all rounded-md'>
-      <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
-        <span class='flex px-1'>{{ template "basecoat-accordion-chevron" }}</span>
-        <a href='/cms/login/' class='grow'>Is it accessible?</a>
-      </h2>
+        {{ template "basecoat-accordion-chevron" }}
+        <a href='/cms/login/' class='truncate ml-1 hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
     </summary>
     <section>
-      <p class="text-sm">Yes. It adheres to the WAI-ARIA design pattern.</p>
+      Yes. It adheres to the WAI-ARIA design pattern.
     </section>
   </details>
-  <div>
-    <h2 class='flex flex-1 items-center text-left text-sm font-medium hover:bg-gray-200'>
-      <a href='/cms/login/' class='grow'>Is it accessible?</a>
-    </h2>
+  <div class=''>
+    <a href='/cms/login/' class='ml-4 truncate hover:underline'>Is it accessible?</a>
   </div>
 </div>
 {{ end }}

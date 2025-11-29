@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "basecoat-css";
+@source "./embed";
 
 :root {
   --side-pane-width: 16rem;
