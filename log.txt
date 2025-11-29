@@ -42,8 +42,6 @@ side-pane contains:
 /cms/photos/:photoID
 /cms/albums/:albumID
 
-TODO: remove styles_v2.css and base_v2.html, migrate to the original styles.css and base.html.
-
 folder? or folders?
 should folders and notes be kepts in separate tables?
 if separate, we can pull folders and notes separately (i.e. folders first, then notes). But then how do we paginate with say limit 100? Does the limit 100 apply to folders or notes? both? combined limit? combined limit is not possible if we pull folders and notes separately
@@ -53,7 +51,7 @@ what if we just displayed _all_ folders unconditionally?
 notes have names? no, folders have names. should folder names be included in the full text search? yes
 how should search be organized? search note text. notes can contain photos and videos. photos contain OCR-ed text that may be searched.
 
-wgo -xdir . npx @tailwindcss/cli --input ./notebrew_v2.css --output ./static/styles_v2.css --minify --watch-always :: wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
+wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
 
 /n/ => /cms/n/
 /p/CAfx7fLJ3YBDDvuwwEEPHa/ => /cms/p/CAfx7fLJ3YBDDvuwwEEPHa/Osaka_2025/?api

@@ -11,143 +11,25 @@
 <script type='module'>{{ $.ResponseContext.NotebrewJS }}</script>
 {{ end }}
 {{ end }}
-{{ block "menu-pane" $ }}
-<div id='menu-pane' class='flex items-center z-1 bg-dark-cyan'>
-  <div id='hamburger-menu-btn' class='h-full aspect-square flex items-center justify-center ml-1 px-1 lg:hidden  hover:bg-very-dark-cyan cursor-pointer'>
-    <span id='hamburger-menu-icon'></span>
+
+{{ block "side-pane" $ }}
+<div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50'>
+  <details class='group'>
+    <summary class='w-full transition-all rounded-md'>
+        {{ template "basecoat-accordion-chevron" }}
+        <a href='/cms/login/' class='truncate ml-1 hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
+    </summary>
+    <section>
+      Yes. It adheres to the WAI-ARIA design pattern.
+    </section>
+  </details>
+  <div class=''>
+    <a href='/cms/login/' class='truncate hover:underline chevron-offset'>Is it accessible?</a>
   </div>
-  <a href='/cms/' class='lg:ml-2 px-3 lg:px-1 h-full flex items-center text-white hover:bg-very-dark-cyan'>☕<span class='hidden lg:inline-block ml-2'>Notebrew</span></a>
 </div>
 {{ end }}
-<div id='not-menu-pane'>
-  {{ block "side-pane" $ }}
-  <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50' data-click-event-stop-propagation>
-    <div id='notes-pane'>
-      <div class='mx-1 mt-1 last:mb-1 rounded-sm flex items-center hover:bg-gray-200'>
-        <a href='/cms/notes' class='px-2 py-1 grow flex items-center text-gray-600'>
-          {{ template "tabler-notebook" }}
-          <span class='mx-1 {{ if eq $.ResponseContext.CleanPath "/cms/notes" }}font-semibold{{ end }}'>Notes</span>
-        </a>
-      </div>
-      <details class='group flex flex-col-reverse'>
-        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-sm'>
-          <h2 class='flex flex-1 items-center justify-center gap-1 py-1 px-2 text-left text-sm font-medium hover:underline'>
-            <span data-show-more-show-less></span>
-            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
-          </h2>
-        </summary>
-        <section>
-          <div class='mx-1 mt-1 last:mb-1 rounded-sm flex items-center hover:bg-gray-200'>
-            <a href='/cms/notes/2025' class='px-2 py-1 grow flex items-center text-gray-600'>
-              {{ template "tabler-folder" }}
-              <span class='mx-1 {{ if eq $.ResponseContext.CleanPath "/cms/notes/2025" }}font-semibold{{ end }}'>2025</span>
-            </a>
-            <div class='dropdown-menu'>
-              <button type='button' id='demo-dropdown-menu-trigger' aria-haspopup='menu' aria-controls='demo-dropdown-menu-menu' aria-expanded='false' class='btn-outline btn-thin mr-2'>{{ template "tabler-dots" }}</button>
-              <div id='demo-dropdown-menu-popover' data-popover aria-hidden='true' class='min-w-56'>
-                <div role='menu' id='demo-dropdown-menu-menu' aria-labelledby='demo-dropdown-menu-trigger'>
-                  <div role='group' aria-labelledby='account-options'>
-                    <div role='heading' id='account-options'>My Account</div>
-                    <div role='menuitem'>
-                      Profile
-                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
-                    </div>
-                    <div role='menuitem'>
-                      Billing
-                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘B</span>
-                    </div>
-                    <div role='menuitem'>
-                      Settings
-                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘S</span>
-                    </div>
-                    <div role='menuitem'>
-                      Keyboard shortcuts
-                      <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⌘K</span>
-                    </div>
-                  </div>
-                  <hr role='separator' />
-                  <div role='menuitem'>GitHub</div>
-                  <div role='menuitem'>Support</div>
-                  <div role='menuitem' aria-disabled='true'>API</div>
-                  <hr role='separator' />
-                  <div role='menuitem'>
-                    Logout
-                    <span class='text-muted-foreground ml-auto text-xs tracking-widest'>⇧⌘P</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </details>
-    </div>
-    <hr>
-    <div id='photos-pane'>
-      <div class='mx-1 mt-1 last:mb-1 rounded-sm flex items-center hover:bg-gray-200'>
-        <a href='/cms/photos' class='px-2 py-1 grow flex items-center text-gray-600'>
-          {{ template "tabler-folder" }}
-          <span class='mx-1'>Photos</span>
-        </a>
-      </div>
-    </div>
-    <hr>
-    <div id='blogs-pane'>
-      <div class='m-2 text-sm text-gray-600'>Blogs (3/10)</div>
-      <details class='m-2 group border-b last:border-b-0'>
-        <summary class='w-full focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all outline-none rounded-md'>
-          <h2 class='flex flex-1 items-start justify-between gap-4 py-4 text-left text-sm font-medium hover:underline'>
-            bokwoon.com
-            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200 group-open:rotate-180'><path d='m6 9 6 6 6-6' /></svg>
-          </h2>
-        </summary>
-        <section class='pb-4'>
-          <p class='text-sm'>Yes. It adheres to the WAI-ARIA design pattern.</p>
-        </section>
-      </details>
-    </div>
-  </div>
-  {{ end }}
-  <div id='not-side-pane' class='p-2 bg-white'>
-    {{ block "content" $ }}
-    <h1 class='ma0'>Main Content Area</h1>
-    <p>This is the main content area. Resize your browser window to see the responsive behavior.</p>
-    <p>On wide screens, the sidebar is always visible. On narrow screens (below 600px), the sidebar collapses and you can access it via the pull-out tab.</p>
 
-    <h2 class='ma0'>Content Section 1</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
-    <h2 class='ma0'>Content Section 2</h2>
-    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-    <h2 class='ma0'>Content Section 3</h2>
-    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-
-    <h2 class='ma0'>Content Section 4</h2>
-    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
-
-    <h2 class='ma0'>Content Section 5</h2>
-    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
-
-    <h2 class='ma0'>Content Section 6</h2>
-    <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
-
-    <h2 class='ma0'>Content Section 7</h2>
-    <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
-
-    <h2 class='ma0'>Content Section 8</h2>
-    <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.</p>
-
-    <h2 class='ma0'>Content Section 9</h2>
-    <p>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
-
-    <h2 class='ma0'>Content Section 10</h2>
-    <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
-
-    <h2 class='ma0'>Content Section 11</h2>
-    <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.</p>
-
-    <h2 class='ma0'>Content Section 12</h2>
-    <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.</p>
-    {{ end }}
-  </div>
+<div id='not-side-pane' class='p-2 bg-white'>
+{{ block "content" $ }}
+{{ end }}
 </div>
