@@ -272,24 +272,6 @@ func (cmd *CreateuserCmd) Run() error {
 	if err != nil {
 		return err
 	}
-	if cmd.Username == "" {
-		_, err = sq.Exec(context.Background(), tx, sq.Query{
-			Dialect: cmd.Notebrew.Dialect,
-			Format: "INSERT INTO site_user (site_id, user_id)" +
-				" VALUES ((SELECT site_id FROM site WHERE site_name = ''), (SELECT user_id FROM users WHERE username = ''))",
-		})
-		if err != nil {
-			return err
-		}
-		_, err = sq.Exec(context.Background(), tx, sq.Query{
-			Dialect: cmd.Notebrew.Dialect,
-			Format: "INSERT INTO site_owner (site_id, user_id)" +
-				" VALUES ((SELECT site_id FROM site WHERE site_name = ''), (SELECT user_id FROM users WHERE username = ''))",
-		})
-		if err != nil {
-			return err
-		}
-	}
 	err = tx.Commit()
 	if err != nil {
 		return err

@@ -648,140 +648,138 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "database.json"), err)
 		}
 	}
-	if databaseConfig.Dialect != "" {
-		var dataSourceName string
-		switch databaseConfig.Dialect {
-		case "", "sqlite":
-			if databaseConfig.SQLiteFilePath == "" {
-				databaseConfig.SQLiteFilePath = filepath.Join(dataDir, "notebrew-database.db")
-			}
-			databaseConfig.SQLiteFilePath, err = filepath.Abs(databaseConfig.SQLiteFilePath)
-			if err != nil {
-				return nil, fmt.Errorf("%s: sqlite: %w", filepath.Join(configDir, "database.json"), err)
-			}
-			dataSourceName = databaseConfig.SQLiteFilePath + "?" + sqliteQueryString(databaseConfig.Params)
-			nbrew.Dialect = "sqlite"
-			nbrew.DB, err = sql.Open(sqliteDriverName, dataSourceName)
-			if err != nil {
-				return nil, fmt.Errorf("%s: sqlite: open %s: %w", filepath.Join(configDir, "database.json"), dataSourceName, err)
-			}
-			nbrew.ErrorCode = sqliteErrorCode
-		case "postgres":
-			values := make(url.Values)
-			for key, value := range databaseConfig.Params {
-				switch key {
-				case "sslmode":
-					values.Set(key, value)
-				}
-			}
-			if _, ok := databaseConfig.Params["sslmode"]; !ok {
-				values.Set("sslmode", "disable")
-			}
-			if databaseConfig.Port == "" {
-				databaseConfig.Port = "5432"
-			}
-			uri := url.URL{
-				Scheme:   "postgres",
-				User:     url.UserPassword(databaseConfig.User, databaseConfig.Password),
-				Host:     databaseConfig.Host + ":" + databaseConfig.Port,
-				Path:     databaseConfig.DBName,
-				RawQuery: values.Encode(),
-			}
-			dataSourceName = uri.String()
-			nbrew.Dialect = "postgres"
-			nbrew.DB, err = sql.Open("pgx", dataSourceName)
-			if err != nil {
-				return nil, fmt.Errorf("%s: postgres: open %s: %w", filepath.Join(configDir, "database.json"), dataSourceName, err)
-			}
-			nbrew.ErrorCode = func(err error) string {
-				var pgErr *pgconn.PgError
-				if errors.As(err, &pgErr) {
-					return pgErr.Code
-				}
-				return ""
-			}
-		case "mysql":
-			values := make(url.Values)
-			for key, value := range databaseConfig.Params {
-				switch key {
-				case "charset", "collation", "loc", "maxAllowedPacket",
-					"readTimeout", "rejectReadOnly", "serverPubKey", "timeout",
-					"tls", "writeTimeout", "connectionAttributes":
-					values.Set(key, value)
-				}
-			}
-			values.Set("multiStatements", "true")
-			values.Set("parseTime", "true")
-			if databaseConfig.Port == "" {
-				databaseConfig.Port = "3306"
-			}
-			config, err := mysql.ParseDSN(fmt.Sprintf("tcp(%s:%s)/%s?%s", databaseConfig.Host, databaseConfig.Port, url.PathEscape(databaseConfig.DBName), values.Encode()))
-			if err != nil {
-				return nil, err
-			}
-			// Set user and passwd manually to accomodate special characters.
-			// https://github.com/go-sql-driver/mysql/issues/1323
-			config.User = databaseConfig.User
-			config.Passwd = databaseConfig.Password
-			driver, err := mysql.NewConnector(config)
-			if err != nil {
-				return nil, err
-			}
-			dataSourceName = config.FormatDSN()
-			nbrew.Dialect = "mysql"
-			nbrew.DB = sql.OpenDB(driver)
-			nbrew.ErrorCode = func(err error) string {
-				var mysqlErr *mysql.MySQLError
-				if errors.As(err, &mysqlErr) {
-					return strconv.FormatUint(uint64(mysqlErr.Number), 10)
-				}
-				return ""
-			}
-		default:
-			return nil, fmt.Errorf("%s: unsupported dialect %q (possible values: sqlite, postgres, mysql)", filepath.Join(configDir, "database.json"), databaseConfig.Dialect)
+	var dataSourceName string
+	switch databaseConfig.Dialect {
+	case "", "sqlite":
+		if databaseConfig.SQLiteFilePath == "" {
+			databaseConfig.SQLiteFilePath = filepath.Join(dataDir, "notebrew-database.db")
 		}
-		err := nbrew.DB.Ping()
+		databaseConfig.SQLiteFilePath, err = filepath.Abs(databaseConfig.SQLiteFilePath)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %s: ping %s: %w", filepath.Join(configDir, "database.json"), nbrew.Dialect, dataSourceName, err)
+			return nil, fmt.Errorf("%s: sqlite: %w", filepath.Join(configDir, "database.json"), err)
 		}
-		if databaseConfig.MaxOpenConns > 0 {
-			nbrew.DB.SetMaxOpenConns(databaseConfig.MaxOpenConns)
+		dataSourceName = databaseConfig.SQLiteFilePath + "?" + sqliteQueryString(databaseConfig.Params)
+		nbrew.Dialect = "sqlite"
+		nbrew.DB, err = sql.Open(sqliteDriverName, dataSourceName)
+		if err != nil {
+			return nil, fmt.Errorf("%s: sqlite: open %s: %w", filepath.Join(configDir, "database.json"), dataSourceName, err)
 		}
-		if databaseConfig.MaxIdleConns > 0 {
-			nbrew.DB.SetMaxIdleConns(databaseConfig.MaxIdleConns)
-		}
-		if databaseConfig.ConnMaxLifetime != "" {
-			duration, err := time.ParseDuration(databaseConfig.ConnMaxLifetime)
-			if err != nil {
-				return nil, fmt.Errorf("%s: connMaxLifetime: %s: %w", filepath.Join(configDir, "database.json"), databaseConfig.ConnMaxLifetime, err)
+		nbrew.ErrorCode = sqliteErrorCode
+	case "postgres":
+		values := make(url.Values)
+		for key, value := range databaseConfig.Params {
+			switch key {
+			case "sslmode":
+				values.Set(key, value)
 			}
-			nbrew.DB.SetConnMaxLifetime(duration)
 		}
-		if databaseConfig.ConnMaxIdleTime != "" {
-			duration, err := time.ParseDuration(databaseConfig.ConnMaxIdleTime)
-			if err != nil {
-				return nil, fmt.Errorf("%s: connMaxIdleTime: %s: %w", filepath.Join(configDir, "database.json"), databaseConfig.ConnMaxIdleTime, err)
+		if _, ok := databaseConfig.Params["sslmode"]; !ok {
+			values.Set("sslmode", "disable")
+		}
+		if databaseConfig.Port == "" {
+			databaseConfig.Port = "5432"
+		}
+		uri := url.URL{
+			Scheme:   "postgres",
+			User:     url.UserPassword(databaseConfig.User, databaseConfig.Password),
+			Host:     databaseConfig.Host + ":" + databaseConfig.Port,
+			Path:     databaseConfig.DBName,
+			RawQuery: values.Encode(),
+		}
+		dataSourceName = uri.String()
+		nbrew.Dialect = "postgres"
+		nbrew.DB, err = sql.Open("pgx", dataSourceName)
+		if err != nil {
+			return nil, fmt.Errorf("%s: postgres: open %s: %w", filepath.Join(configDir, "database.json"), dataSourceName, err)
+		}
+		nbrew.ErrorCode = func(err error) string {
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				return pgErr.Code
 			}
-			nbrew.DB.SetConnMaxIdleTime(duration)
+			return ""
 		}
-		databaseCatalog := &ddl.Catalog{
-			Dialect: nbrew.Dialect,
+	case "mysql":
+		values := make(url.Values)
+		for key, value := range databaseConfig.Params {
+			switch key {
+			case "charset", "collation", "loc", "maxAllowedPacket",
+				"readTimeout", "rejectReadOnly", "serverPubKey", "timeout",
+				"tls", "writeTimeout", "connectionAttributes":
+				values.Set(key, value)
+			}
 		}
-		err = unmarshalCatalog(databaseSchemaBytes, databaseCatalog)
+		values.Set("multiStatements", "true")
+		values.Set("parseTime", "true")
+		if databaseConfig.Port == "" {
+			databaseConfig.Port = "3306"
+		}
+		config, err := mysql.ParseDSN(fmt.Sprintf("tcp(%s:%s)/%s?%s", databaseConfig.Host, databaseConfig.Port, url.PathEscape(databaseConfig.DBName), values.Encode()))
 		if err != nil {
 			return nil, err
 		}
-		automigrateCmd := &ddl.AutomigrateCmd{
-			DB:             nbrew.DB,
-			Dialect:        nbrew.Dialect,
-			DestCatalog:    databaseCatalog,
-			AcceptWarnings: true,
-			Stderr:         io.Discard,
-		}
-		err = automigrateCmd.Run()
+		// Set user and passwd manually to accomodate special characters.
+		// https://github.com/go-sql-driver/mysql/issues/1323
+		config.User = databaseConfig.User
+		config.Passwd = databaseConfig.Password
+		driver, err := mysql.NewConnector(config)
 		if err != nil {
 			return nil, err
 		}
+		dataSourceName = config.FormatDSN()
+		nbrew.Dialect = "mysql"
+		nbrew.DB = sql.OpenDB(driver)
+		nbrew.ErrorCode = func(err error) string {
+			var mysqlErr *mysql.MySQLError
+			if errors.As(err, &mysqlErr) {
+				return strconv.FormatUint(uint64(mysqlErr.Number), 10)
+			}
+			return ""
+		}
+	default:
+		return nil, fmt.Errorf("%s: unsupported dialect %q (possible values: sqlite, postgres, mysql)", filepath.Join(configDir, "database.json"), databaseConfig.Dialect)
+	}
+	err = nbrew.DB.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %s: ping %s: %w", filepath.Join(configDir, "database.json"), nbrew.Dialect, dataSourceName, err)
+	}
+	if databaseConfig.MaxOpenConns > 0 {
+		nbrew.DB.SetMaxOpenConns(databaseConfig.MaxOpenConns)
+	}
+	if databaseConfig.MaxIdleConns > 0 {
+		nbrew.DB.SetMaxIdleConns(databaseConfig.MaxIdleConns)
+	}
+	if databaseConfig.ConnMaxLifetime != "" {
+		duration, err := time.ParseDuration(databaseConfig.ConnMaxLifetime)
+		if err != nil {
+			return nil, fmt.Errorf("%s: connMaxLifetime: %s: %w", filepath.Join(configDir, "database.json"), databaseConfig.ConnMaxLifetime, err)
+		}
+		nbrew.DB.SetConnMaxLifetime(duration)
+	}
+	if databaseConfig.ConnMaxIdleTime != "" {
+		duration, err := time.ParseDuration(databaseConfig.ConnMaxIdleTime)
+		if err != nil {
+			return nil, fmt.Errorf("%s: connMaxIdleTime: %s: %w", filepath.Join(configDir, "database.json"), databaseConfig.ConnMaxIdleTime, err)
+		}
+		nbrew.DB.SetConnMaxIdleTime(duration)
+	}
+	databaseCatalog := &ddl.Catalog{
+		Dialect: nbrew.Dialect,
+	}
+	err = unmarshalCatalog(databaseSchemaBytes, databaseCatalog)
+	if err != nil {
+		return nil, err
+	}
+	automigrateCmd := &ddl.AutomigrateCmd{
+		DB:             nbrew.DB,
+		Dialect:        nbrew.Dialect,
+		DestCatalog:    databaseCatalog,
+		AcceptWarnings: true,
+		Stderr:         io.Discard,
+	}
+	err = automigrateCmd.Run()
+	if err != nil {
+		return nil, err
 	}
 
 	// Object Storage.
