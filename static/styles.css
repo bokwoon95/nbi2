@@ -524,9 +524,6 @@
   .text-balance {
     text-wrap: balance;
   }
-  .text-nowrap {
-    text-wrap: nowrap;
-  }
   .text-ellipsis {
     text-overflow: ellipsis;
   }
