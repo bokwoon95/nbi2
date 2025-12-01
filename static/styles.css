@@ -415,6 +415,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .overflow-auto {
+    overflow: auto;
+  }
   .overflow-hidden {
     overflow: hidden;
   }
@@ -524,6 +527,9 @@
   .text-balance {
     text-wrap: balance;
   }
+  .text-nowrap {
+    text-wrap: nowrap;
+  }
   .text-ellipsis {
     text-overflow: ellipsis;
   }
@@ -598,12 +604,13 @@
     --tw-outline-style: none;
     outline-style: none;
   }
-  .select-none {
-    -webkit-user-select: none;
-    user-select: none;
-  }
   .group-open\:rotate-180 {
     &:is(:where(.group):is([open], :popover-open, :open) *) {
+      rotate: 180deg;
+    }
+  }
+  .group-open\/inner\:rotate-180 {
+    &:is(:where(.group\/inner):is([open], :popover-open, :open) *) {
       rotate: 180deg;
     }
   }
