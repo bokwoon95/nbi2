@@ -29,6 +29,10 @@ summary.nb-marker::before {
   transition: transform 200ms ease; /* animate flip */
 }
 
+summary.nb-markur { list-style:none; }
+summary.nb-markur::marker { content:"▸ "; transition: transform 200ms; }
+details[open] summary.nb-markur::marker { content:"▾ "; }
+
 /* Flip the arrow when its own details is open */
 details[open] > summary.nb-marker::before {
   transform: rotate(90deg); /* points down */
