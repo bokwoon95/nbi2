@@ -1,18 +1,6 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
-
-	godaddy "github.com/libdns/godaddy"
-	"github.com/libdns/libdns"
-)
-
-func main() {
+/*func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -79,3 +67,4 @@ func main() {
 		fmt.Println(deleteRecords)
 	}
 }
+*/
