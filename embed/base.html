@@ -14,20 +14,19 @@
 
 {{ block "side-pane" $ }}
 <div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
-  <div class='flex items-center'>
-    <span class='pr-1'>{{ template "svg-empty" }}</span>
-    <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
-  </div>
+  <details class='flex items-center'>
+    <summary class='flex nb-svg'>
+      <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
+    </summary>
+  </details>
   <details class='group'>
-    <summary class='flex'>
-      <span class='pr-1'>{{ template "basecoat-accordion-chevron" }}</span>
+    <summary class='flex nb-marker'>
       <a href='/cms/login/' class='whitespace-nowrap hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
     </summary>
     <section class='flex'>
       <span class='pr-1'>{{ template "svg-empty" }}</span>
       <details class='group/inner'>
-        <summary class='flex'>
-          <span class='pr-1'>{{ template "basecoat-accordion-chevron-inner" }}</span>
+        <summary class='flex nb-marker'>
           <a href='/cms/login/' class='text-nowrap hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
         </summary>
         <section class='flex'>
@@ -35,6 +34,16 @@
           Yes. It adheres to the WAI-ARIA design pattern.
         </section>
       </details>
+    </section>
+  </details>
+  <details class='group'>
+    <summary class='flex'>
+      <span class='pr-1'>{{ template "basecoat-accordion-chevron" }}</span>
+      <a href='/cms/login/' class='text-nowrap hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
+    </summary>
+    <section class='flex'>
+      <span class='pr-1'>{{ template "svg-empty" }}</span>
+      Yes. It adheres to the WAI-ARIA design pattern.
     </section>
   </details>
 </div>

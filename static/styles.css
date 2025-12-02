@@ -603,11 +603,6 @@
       rotate: 180deg;
     }
   }
-  .group-open\/inner\:rotate-180 {
-    &:is(:where(.group\/inner):is([open], :popover-open, :open) *) {
-      rotate: 180deg;
-    }
-  }
   .last\:mb-1 {
     &:last-child {
       margin-bottom: calc(var(--spacing) * 1);
@@ -3422,13 +3417,10 @@ summary.nb-marker {
   list-style: none;
 }
 summary.nb-marker::before {
-  content: "▸";
+  content: "⮞";
   display: inline-block;
   margin-right: 0.25rem;
   transition: transform 200ms ease;
-}
-summary.nb-markur {
-  list-style: none;
 }
 summary.nb-markur::marker {
   content: "▸ ";

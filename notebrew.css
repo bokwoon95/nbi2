@@ -23,13 +23,13 @@ summary.nb-marker { list-style: none; }
 
 /* Insert a text arrow and allow rotation */
 summary.nb-marker::before {
-  content: "▸"; /* glyph arrow, no image needed */
+  content: "⮞"; /* glyph arrow, no image needed */
   display: inline-block; /* required so transform works */
   margin-right: 0.25rem; /* small gap from text */
   transition: transform 200ms ease; /* animate flip */
 }
 
-summary.nb-markur { list-style:none; }
+/* summary.nb-markur { list-style:none; } */
 summary.nb-markur::marker { content:"▸ "; transition: transform 200ms; }
 details[open] summary.nb-markur::marker { content:"▾ "; }
 
