@@ -13,52 +13,27 @@
 .dropdown-chevron::before {
   content: "";
   display: inline-block;
-  width: 1rem;
-  height: 1rem;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
   margin-right: 0.25rem;
   background: currentColor;
   mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27currentColor%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20class%3D%27%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%20%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;
-  @apply text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200
+  color: var(--color-muted-foreground);
+  pointer-events: none;
+  flex-shrink: 0;
+  @apply translate-y-0.5 transition-transform duration-200
 }
 
 details[open] > .dropdown-chevron::before {
   transform: rotate(180deg);
 }
 
-.dropdown-chevron-spacer {
+.dropdown-chevron-spacer::before {
   content: "";
   display: inline-block;
-  width: 1rem;
-  height: 1rem;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
   margin-right: 0.25rem;
-}
-
-/* Hide native marker to avoid double icons */
-/* summary.nb-svg { list-style: none; } */
-
-/* Draw the chevron using an SVG mask so it inherits text color */
-summary.nb-svg::before {
-  content: "";
-  display: inline-block; /* enable sizing + transform */
-  width: 1rem; height: 1rem; /* icon size */
-  margin-right: 0.25rem; /* gap from text */
-  background: currentColor; /* match surrounding text */
-  /* mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='black'/%3E%3C/svg%3E") center/contain no-repeat; /1* use chevron path *1/ */
-  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27currentColor%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20class%3D%27%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%20%2F%3E%3C%2Fsvg%3E") center/contain no-repeat; /* use chevron path */
-  transition: transform 200ms ease; /* animate flip */
-  @apply text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5
-}
-
-.nb-svg1::before {
-  content: "";
-  display: inline-block; /* enable sizing + transform */
-  width: 1rem; height: 1rem; /* icon size */
-  margin-right: 0.25rem; /* gap from text */
-}
-
-/* Rotate only when its own details is open */
-details[open] > summary.nb-svg::before {
-  transform: rotate(180deg); /* point up */
 }
 
 #side-pane {

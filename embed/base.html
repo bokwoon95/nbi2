@@ -15,15 +15,15 @@
 {{ block "side-pane" $ }}
 <aside id='side-pane' class='border-r border-gray-300 -hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
   <details>
-    <summary class='flex nb-svg'>
+    <summary class='flex dropdown-chevron'>
       <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
     </summary>
-    <section class='flex nb-svg1'>
+    <section class='flex dropdown-chevron-spacer'>
       <details class='grow'>
-        <summary class='flex nb-svg'>
+        <summary class='flex dropdown-chevron'>
           <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
         </summary>
-        <section class='flex nb-svg1'>
+        <section class='flex dropdown-chevron-spacer'>
           <ul>
             <li>hi there :3</li>
             <li>hi there :3</li>
@@ -33,13 +33,11 @@
       </details>
     </section>
   </details>
-  <details>
-    <summary class='nb-svg1'>
-      woah
-    </summary>
-  </details>
-  <section class='flex nb-svg1'>
-    woah
+  <section class='flex dropdown-chevron-spacer'>
+    <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
+  </section>
+  <section class='flex dropdown-chevron-spacer'>
+    <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
   </section>
 </aside>
 {{ end }}
