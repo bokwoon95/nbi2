@@ -3428,10 +3428,10 @@
   --tw-duration: 200ms;
   transition-duration: 200ms;
 }
-details[open] > .dropdown-spacer::before {
+details[open] > .dropdown-chevron::before {
   transform: rotate(180deg);
 }
-.dropdown-spacer {
+.dropdown-chevron-spacer {
   content: "";
   display: inline-block;
   width: 1rem;
