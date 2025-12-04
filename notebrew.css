@@ -6,40 +6,12 @@
   --side-pane-width: 16rem;
 }
 
-/* Reserve the chevron's footprint so plain links line up with accordion labels */
-.chevron-offset::before {
-  content: "";
-  display: inline-block;
-  width: 1rem;
-  margin-right: 0.25rem;
-}
-
 .link {
    @apply text-blue-600 hover:text-blue-800 hover:underline
 }
 
-/* Remove native marker so we can fully control the glyph */
-summary.nb-marker { list-style: none; }
-
-/* Insert a text arrow and allow rotation */
-summary.nb-marker::before {
-  content: "⮞"; /* glyph arrow, no image needed */
-  display: inline-block; /* required so transform works */
-  margin-right: 0.25rem; /* small gap from text */
-  transition: transform 200ms ease; /* animate flip */
-}
-
-/* summary.nb-markur { list-style:none; } */
-summary.nb-markur::marker { content:"▸ "; transition: transform 200ms; }
-details[open] summary.nb-markur::marker { content:"▾ "; }
-
-/* Flip the arrow when its own details is open */
-details[open] > summary.nb-marker::before {
-  transform: rotate(90deg); /* points down */
-}
-
 /* Hide native marker to avoid double icons */
-summary.nb-svg { list-style: none; }
+/* summary.nb-svg { list-style: none; } */
 
 /* Draw the chevron using an SVG mask so it inherits text color */
 summary.nb-svg::before {
@@ -48,8 +20,17 @@ summary.nb-svg::before {
   width: 1rem; height: 1rem; /* icon size */
   margin-right: 0.25rem; /* gap from text */
   background: currentColor; /* match surrounding text */
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='black'/%3E%3C/svg%3E") center/contain no-repeat; /* use chevron path */
+  /* mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='black'/%3E%3C/svg%3E") center/contain no-repeat; /1* use chevron path *1/ */
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27currentColor%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20class%3D%27%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%20%2F%3E%3C%2Fsvg%3E") center/contain no-repeat; /* use chevron path */
   transition: transform 200ms ease; /* animate flip */
+  @apply text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5
+}
+
+.nb-svg1::before {
+  content: "";
+  display: inline-block; /* enable sizing + transform */
+  width: 1rem; height: 1rem; /* icon size */
+  margin-right: 0.25rem; /* gap from text */
 }
 
 /* Rotate only when its own details is open */

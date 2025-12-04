@@ -13,11 +13,25 @@
 {{ end }}
 
 {{ block "side-pane" $ }}
-<div id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
-  <details class='flex items-center'>
+<aside id='side-pane' class='border-r border-gray-300 -hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
+  <details>
     <summary class='flex nb-svg'>
       <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
     </summary>
+    <section class='flex nb-svg1'>
+      <details>
+        <summary class='flex nb-svg'>
+          <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
+        </summary>
+        <section class='flex nb-svg1'>
+          <ul>
+            <li>hi there :3</li>
+            <li>hi there :3</li>
+            <li>hi there :3</li>
+          </ul>
+        </section>
+      </details>
+    </section>
   </details>
   <details class='group'>
     <summary class='flex nb-marker'>
@@ -38,7 +52,7 @@
   </details>
   <details class='group'>
     <summary class='flex'>
-      <span class='pr-1'>{{ template "basecoat-accordion-chevron" }}</span>
+      <span class='pr-1'>{{ template "testchevron" }}</span>
       <a href='/cms/login/' class='text-nowrap hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
     </summary>
     <section class='flex'>
@@ -46,7 +60,15 @@
       Yes. It adheres to the WAI-ARIA design pattern.
     </section>
   </details>
-</div>
+  <details>
+    <summary class='nb-marker flex'>
+      <a href='/cms/login/' class='text-nowrap hover:underline'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</a>
+    </summary>
+    <section class='flex'>
+      Yes. It adheres to the WAI-ARIA design pattern.
+    </section>
+  </details>
+</aside>
 {{ end }}
 
 <div id='not-side-pane' class='p-2 bg-white'>
