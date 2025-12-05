@@ -1000,6 +1000,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	if nbrew.CDNDomain != "" {
 		buf.WriteString(" " + nbrew.CDNDomain)
 	}
+	buf.WriteString(" github.com avatars.githubusercontent.com")
 	buf.WriteString(";")
 	// media-src
 	buf.WriteString(" media-src 'self'")
