@@ -28,7 +28,6 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail st
 		nbrew.NotFound(w, r)
 		return
 	}
-
 	type Request struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
