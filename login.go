@@ -23,27 +23,32 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
-func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseContext ResponseContext) {
+func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail string, requestContext RequestContext) {
+	if pathTail != "" {
+		nbrew.NotFound(w, r)
+		return
+	}
+
 	type Request struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
 		CaptchaResponse string `json:"captchaResponse"`
 	}
 	type Response struct {
-		ResponseContext        ResponseContext `json:"responseContext"`
-		HasMailer              bool            `json:"hasMailer"`
-		Username               string          `json:"username"`
-		RequireCaptcha         bool            `json:"requireCaptcha"`
-		CaptchaWidgetScriptSrc template.URL    `json:"captchaWidgetScriptSrc"`
-		CaptchaWidgetClass     string          `json:"captchaWidgetClass"`
-		CaptchaSiteKey         string          `json:"captchaSiteKey"`
-		CaptchaResponseName    string          `json:"captchaResponseName"`
-		Error                  string          `json:"error"`
-		FormErrors             url.Values      `json:"formErrors"`
-		SessionToken           string          `json:"sessionToken"`
-		Redirect               string          `json:"redirect"`
-		FlashData              map[string]any  `json:"-"`
-		TemplateData           map[string]any  `json:"-"`
+		RequestContext         RequestContext `json:"requestContext"`
+		HasMailer              bool           `json:"hasMailer"`
+		Username               string         `json:"username"`
+		RequireCaptcha         bool           `json:"requireCaptcha"`
+		CaptchaWidgetScriptSrc template.URL   `json:"captchaWidgetScriptSrc"`
+		CaptchaWidgetClass     string         `json:"captchaWidgetClass"`
+		CaptchaSiteKey         string         `json:"captchaSiteKey"`
+		CaptchaResponseName    string         `json:"captchaResponseName"`
+		Error                  string         `json:"error"`
+		FormErrors             url.Values     `json:"formErrors"`
+		SessionToken           string         `json:"sessionToken"`
+		Redirect               string         `json:"redirect"`
+		FlashData              map[string]any `json:"-"`
+		TemplateData           map[string]any `json:"-"`
 	}
 
 	sanitizeRedirect := func(redirect string) string {
@@ -130,7 +135,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 			nbrew.InternalServerError(w, r, err)
 			return
 		}
-		response.ResponseContext = responseContext
+		response.RequestContext = requestContext
 		response.HasMailer = nbrew.Mailer != nil
 		response.CaptchaWidgetScriptSrc = nbrew.CaptchaConfig.WidgetScriptSrc
 		response.CaptchaWidgetClass = nbrew.CaptchaConfig.WidgetClass
@@ -146,14 +151,14 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, responseCon
 			return
 		}
 		response.Redirect = sanitizeRedirect(r.Form.Get("redirect"))
-		if !responseContext.UserID.IsZero() {
+		if !requestContext.UserID.IsZero() {
 			response.Error = "AlreadyAuthenticated"
 			writeResponse(w, r, response)
 			return
 		}
 		writeResponse(w, r, response)
 	case "POST":
-		if !responseContext.UserID.IsZero() {
+		if !requestContext.UserID.IsZero() {
 			http.Redirect(w, r, "/cms/", http.StatusFound)
 			return
 		}

@@ -1549,8 +1549,8 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 	return referer
 }
 
-type ResponseContext struct {
-	CleanPath     string       `json:"cleanPath"`
+type RequestContext struct {
+	URLPath       string       `json:"urlPath"`
 	CDNDomain     string       `json:"cdnDomain"`
 	UserID        ID           `json:"userID"`
 	Username      string       `json:"username"`
@@ -1561,16 +1561,16 @@ type ResponseContext struct {
 	Referer       string       `json:"-"`
 }
 
-func (v ResponseContext) GoString() string {
-	type ResponseContext2 ResponseContext
-	v2 := ResponseContext2(v)
-	if v2.StylesCSS != "" {
-		v2.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(v2.StylesCSS)))
+func (v RequestContext) GoString() string {
+	type RequestContextClone RequestContext
+	clone := RequestContextClone(v)
+	if clone.StylesCSS != "" {
+		clone.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(clone.StylesCSS)))
 	}
-	if v2.NotebrewJS != "" {
-		v2.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(v2.NotebrewJS)))
+	if clone.NotebrewJS != "" {
+		clone.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(clone.NotebrewJS)))
 	}
-	return fmt.Sprintf("%#v", v2)
+	return fmt.Sprintf("%#v", clone)
 }
 
 var (
@@ -1712,7 +1712,7 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1777,7 +1777,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1841,7 +1841,7 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1899,7 +1899,7 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1958,7 +1958,7 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2001,7 +2001,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		encoder.SetIndent("", "  ")
 		encoder.SetEscapeHTML(false)
 		err := encoder.Encode(map[string]any{
-			"ResponseContext": ResponseContext{
+			"RequestContext": RequestContext{
 				DevMode:    devMode,
 				StylesCSS:  template.CSS(stylesCSS),
 				NotebrewJS: template.JS(notebrewJS),
@@ -2030,7 +2030,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2147,7 +2147,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	}()
 	var data map[string]any
-	responseContext := ResponseContext{
+	responseContext := RequestContext{
 		DevMode:    devMode,
 		StylesCSS:  template.CSS(stylesCSS),
 		NotebrewJS: template.JS(notebrewJS),
@@ -2155,7 +2155,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	}
 	if isDeadlineExceeded {
 		data = map[string]any{
-			"ResponseContext": responseContext,
+			"RequestContext": responseContext,
 			"Referer":         nbrew.GetReferer(r),
 			"Title":           "deadline exceeded",
 			"Headline":        "The server took too long to process your request.",
@@ -2164,7 +2164,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	} else {
 		data = map[string]any{
-			"ResponseContext": responseContext,
+			"RequestContext": responseContext,
 			"Referer":         nbrew.GetReferer(r),
 			"Title":           "500 internal server error",
 			"Headline":        "500 internal server error",
@@ -2232,7 +2232,7 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2288,7 +2288,7 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ResponseContext": ResponseContext{
+		"RequestContext": RequestContext{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2408,13 +2408,14 @@ var (
 	// directory.
 	stylesCSS string
 
-	// stylesCSSHash is the sha256 hash of the StylesCSS contents.
+	// stylesCSSHash is the sha256 hash of the stylesCSS contents.
 	stylesCSSHash string
 
-	// notebrewJSHash is the sha256 hash of the BaselineJS contents.
+	// notebrewJSHash is the contents of the notebrew.js file in the embed/
+	// directory.
 	notebrewJS string
 
-	// notebrewJSHash is the sha256 hash of the BaselineJS contents.
+	// notebrewJSHash is the sha256 hash of the notebrewJS contents.
 	notebrewJSHash string
 
 	// commonPasswords is a set of the top 10,000 most common passwords from

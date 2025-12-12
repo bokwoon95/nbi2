@@ -28,6 +28,13 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
+var urlFileExts = map[string]struct{}{
+	".html": {}, ".css": {}, ".js": {}, ".txt": {}, ".json": {}, ".xml": {},
+	".jpeg": {}, ".jpg": {}, ".png": {}, ".webp": {}, ".gif": {}, ".svg": {},
+	".mp4": {}, ".mov": {}, ".webm": {},
+	".tgz": {},
+}
+
 func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	scheme := "https://"
 	if r.TLS == nil {
@@ -39,15 +46,17 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Redirect unclean paths to the clean path equivalent.
-	cleanPath := path.Clean(r.URL.Path)
-	if cleanPath != "/" {
-		cleanPath += "/"
+	urlPath := path.Clean(r.URL.Path)
+	if urlPath != "/" {
+		if _, ok := urlFileExts[path.Ext(urlPath)]; !ok {
+			urlPath += "/"
+		}
 	}
-	if cleanPath != r.URL.Path {
+	if urlPath != r.URL.Path {
 		if r.Method == "GET" || r.Method == "HEAD" {
-			cleanURL := *r.URL
-			cleanURL.Path = cleanPath
-			http.Redirect(w, r, cleanURL.String(), http.StatusMovedPermanently)
+			uri := *r.URL
+			uri.Path = urlPath
+			http.Redirect(w, r, uri.String(), http.StatusMovedPermanently)
 			return
 		}
 	}
@@ -71,10 +80,11 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		nbrew.BadRequest(w, r, err)
 		return
 	}
-	head, tail, _ := strings.Cut(strings.Trim(cleanPath, "/"), "/")
-	if head == "cms" {
-		responseContext := ResponseContext{
-			CleanPath:  cleanPath,
+	pathHead, pathTail, _ := strings.Cut(strings.Trim(urlPath, "/"), "/")
+	if pathHead == "cms" {
+		pathHead, pathTail, _ := strings.Cut(pathTail, "/")
+		requestContext := RequestContext{
+			URLPath:    urlPath,
 			CDNDomain:  nbrew.CDNDomain,
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
@@ -88,7 +98,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			uri.Fragment = ""
 			uri.User = nil
 			if referer != uri.String() {
-				responseContext.Referer = referer
+				requestContext.Referer = referer
 			}
 		}
 		var sessionToken string
@@ -144,59 +154,54 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 				}
-				responseContext.UserID = user.UserID
-				responseContext.Username = user.Username
-				responseContext.DisableReason = user.DisableReason
+				requestContext.UserID = user.UserID
+				requestContext.Username = user.Username
+				requestContext.DisableReason = user.DisableReason
 			}
 		}
-		head2, tail2, _ := strings.Cut(tail, "/")
-		switch head2 {
+		switch pathHead {
 		case "static":
-			if tail2 == "" {
+			if pathTail == "" {
 				nbrew.NotFound(w, r)
 				return
 			}
-			http.ServeFileFS(w, r, runtimeFS, tail)
+			http.ServeFileFS(w, r, runtimeFS, "static/"+pathTail)
 			return
 		case "login":
-			if tail2 != "" {
-				nbrew.NotFound(w, r)
-				return
-			}
-			nbrew.login(w, r, responseContext)
+			nbrew.login(w, r, pathTail, requestContext)
 			return
 		case "logout":
-			if tail2 != "" {
+			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			// nbrew.logout(w, r, responseContext) // TODO
 			return
 		case "resetpassword":
-			if tail2 != "" {
+			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			// nbrew.resetpassword(w, r, responseContext) // TODO
 			return
 		case "invite":
-			if tail2 != "" {
+			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
 			// nbrew.invite(w, r, responseContext) // TODO
 			return
 		}
-		if responseContext.UserID.IsZero() {
+		if requestContext.UserID.IsZero() {
 			nbrew.NotAuthenticated(w, r)
 			return
 		}
-		switch head2 {
+		switch pathHead {
 		case "":
-			http.Redirect(w, r, "/cms/notes", http.StatusFound)
+			http.Redirect(w, r, "/cms/notes/", http.StatusFound)
 			return
 		case "notes":
-			nbrew.notes(w, r, responseContext)
+			nbrew.notes(w, r, pathTail, requestContext)
 			return
 		case "photos":
 			// nbrew.photos(w, r, responseContext) // TODO
