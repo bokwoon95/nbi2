@@ -273,7 +273,16 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 		server.ReadHeaderTimeout = 5 * time.Minute
 		server.WriteTimeout = 60 * time.Minute
 		server.IdleTimeout = 5 * time.Minute
-		staticCertConfig := certmagic.NewDefault()
+		// staticCertConfig is the certmagic config responsible for managing
+		// statically-known domains in the nbrew.ManagingDomains slice.
+		var staticCertConfig *certmagic.Config
+		staticCertCache := certmagic.NewCache(certmagic.CacheOptions{
+			GetConfigForCert: func(cert certmagic.Certificate) (*certmagic.Config, error) {
+				return staticCertConfig, nil
+			},
+			Logger: nbrew.CertLogger,
+		})
+		staticCertConfig = certmagic.New(staticCertCache, certmagic.Config{})
 		staticCertConfig.OnEvent = onEvent
 		staticCertConfig.Storage = nbrew.CertStorage
 		staticCertConfig.Logger = nbrew.CertLogger
@@ -309,7 +318,16 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 		if err != nil {
 			return nil, err
 		}
-		dynamicCertConfig := certmagic.NewDefault()
+		// dynamicCertConfig is the certmagic config responsible for managing
+		// dynamically-determined domains present in the site table.
+		var dynamicCertConfig *certmagic.Config
+		dynamicCertCache := certmagic.NewCache(certmagic.CacheOptions{
+			GetConfigForCert: func(cert certmagic.Certificate) (*certmagic.Config, error) {
+				return dynamicCertConfig, nil
+			},
+			Logger: nbrew.CertLogger,
+		})
+		dynamicCertConfig = certmagic.New(dynamicCertCache, certmagic.Config{})
 		dynamicCertConfig.OnEvent = onEvent
 		dynamicCertConfig.Storage = nbrew.CertStorage
 		dynamicCertConfig.Logger = nbrew.CertLogger
@@ -335,6 +353,10 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 				return nil
 			},
 		}
+		// TLSConfig logic copied from (*certmagic.Config).TLSConfig(). The
+		// only modification is that in GetCertificate we obtain the
+		// certificate from either staticCertConfig or dynamicCertConfig based
+		// on clientHello.
 		server.TLSConfig = &tls.Config{
 			NextProtos: []string{"h2", "http/1.1", "acme-tls/1"},
 			GetCertificate: func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error) {

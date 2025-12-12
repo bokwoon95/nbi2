@@ -521,119 +521,6 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 	}
 
-	// Certmagic.
-	b, err = os.ReadFile(filepath.Join(configDir, "certmagic.json"))
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
-	}
-	b = bytes.TrimSpace(b)
-	var certmagicConfig CertmagicConfig
-	if len(b) > 0 {
-		decoder := json.NewDecoder(bytes.NewReader(b))
-		err := decoder.Decode(&certmagicConfig)
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
-		}
-	}
-	if certmagicConfig.DirectoryPath == "" {
-		certmagicConfig.DirectoryPath = filepath.Join(configDir, "certmagic")
-	}
-	err = os.MkdirAll(certmagicConfig.DirectoryPath, 0755)
-	if err != nil {
-		return nil, err
-	}
-	nbrew.CertStorage = &certmagic.FileStorage{
-		Path: certmagicConfig.DirectoryPath,
-	}
-	if certmagicConfig.TerseLogger {
-		encoderConfig := zap.NewProductionEncoderConfig()
-		encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
-		terseLogger := zap.New(zapcore.NewCore(
-			zapcore.NewConsoleEncoder(encoderConfig),
-			os.Stderr,
-			zap.ErrorLevel,
-		))
-		nbrew.CertLogger = terseLogger
-		certmagic.Default.Logger = terseLogger
-		certmagic.DefaultACME.Logger = terseLogger
-	} else {
-		encoderConfig := zap.NewProductionEncoderConfig()
-		encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
-		verboseLogger := zap.New(zapcore.NewCore(
-			zapcore.NewConsoleEncoder(encoderConfig),
-			os.Stderr,
-			zap.InfoLevel,
-		))
-		nbrew.CertLogger = verboseLogger
-		certmagic.Default.Logger = verboseLogger
-		certmagic.DefaultACME.Logger = verboseLogger
-	}
-
-	if nbrew.Port == 443 || nbrew.Port == 80 {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		group, groupctx := errgroup.WithContext(ctx)
-		matched := make([]bool, len(nbrew.Domains))
-		for i, domain := range nbrew.Domains {
-			group.Go(func() error {
-				_, err := netip.ParseAddr(domain)
-				if err == nil {
-					return nil
-				}
-				ips, err := net.DefaultResolver.LookupIPAddr(groupctx, domain)
-				if err != nil {
-					fmt.Println(err)
-					return nil
-				}
-				for _, ip := range ips {
-					ip, ok := netip.AddrFromSlice(ip.IP)
-					if !ok {
-						continue
-					}
-					if ip.Is4() && ip == nbrew.IP4 || ip.Is6() && ip == nbrew.IP6 {
-						matched[i] = true
-						break
-					}
-				}
-				return nil
-			})
-		}
-		err = group.Wait()
-		if err != nil {
-			return nil, err
-		}
-		switch nbrew.Port {
-		case 80:
-			for i, domain := range nbrew.Domains {
-				if matched[i] {
-					nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
-				}
-			}
-		case 443:
-			cmsDomainWildcard := "*." + nbrew.CMSDomain
-			cmsDomainWildcardAdded := false
-			contentDomainWildcard := "*." + nbrew.ContentDomain
-			contentDomainWildcardAdded := false
-			for i, domain := range nbrew.Domains {
-				if matched[i] {
-					if certmagic.MatchWildcard(domain, cmsDomainWildcard) && nbrew.DNSProvider != nil {
-						if !cmsDomainWildcardAdded {
-							cmsDomainWildcardAdded = true
-							nbrew.ManagingDomains = append(nbrew.ManagingDomains, cmsDomainWildcard)
-						}
-					} else if certmagic.MatchWildcard(domain, contentDomainWildcard) && nbrew.DNSProvider != nil {
-						if !contentDomainWildcardAdded {
-							contentDomainWildcardAdded = true
-							nbrew.ManagingDomains = append(nbrew.ManagingDomains, contentDomainWildcard)
-						}
-					} else {
-						nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
-					}
-				}
-			}
-		}
-	}
-
 	// Database.
 	b, err = os.ReadFile(filepath.Join(configDir, "database.json"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
@@ -856,6 +743,128 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		return nil, fmt.Errorf("%s: unsupported provider %q (possible values: directory, s3)", filepath.Join(configDir, "objectstorage.json"), objectstorageConfig.Provider)
 	}
 
+	// Certmagic.
+	b, err = os.ReadFile(filepath.Join(configDir, "certmagic.json"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
+	}
+	b = bytes.TrimSpace(b)
+	var certmagicConfig CertmagicConfig
+	if len(b) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		err := decoder.Decode(&certmagicConfig)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "certmagic.json"), err)
+		}
+	}
+	switch certmagicConfig.Provider {
+	case "database": // TODO: Once CertDatabaseStorage is implemented, make it the default instead.
+		nbrew.CertStorage = &CertDatabaseStorage{
+			DB:        nbrew.DB,
+			Dialect:   nbrew.Dialect,
+			ErrorCode: nbrew.ErrorCode,
+		}
+	case "", "directory":
+		if certmagicConfig.DirectoryPath == "" {
+			certmagicConfig.DirectoryPath = filepath.Join(configDir, "certmagic")
+		}
+		err = os.MkdirAll(certmagicConfig.DirectoryPath, 0755)
+		if err != nil {
+			return nil, err
+		}
+		nbrew.CertStorage = &certmagic.FileStorage{
+			Path: certmagicConfig.DirectoryPath,
+		}
+	}
+	if certmagicConfig.TerseLogger {
+		encoderConfig := zap.NewProductionEncoderConfig()
+		encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+		terseLogger := zap.New(zapcore.NewCore(
+			zapcore.NewConsoleEncoder(encoderConfig),
+			os.Stderr,
+			zap.ErrorLevel,
+		))
+		nbrew.CertLogger = terseLogger
+		certmagic.Default.Logger = terseLogger
+		certmagic.DefaultACME.Logger = terseLogger
+	} else {
+		encoderConfig := zap.NewProductionEncoderConfig()
+		encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+		verboseLogger := zap.New(zapcore.NewCore(
+			zapcore.NewConsoleEncoder(encoderConfig),
+			os.Stderr,
+			zap.InfoLevel,
+		))
+		nbrew.CertLogger = verboseLogger
+		certmagic.Default.Logger = verboseLogger
+		certmagic.DefaultACME.Logger = verboseLogger
+	}
+
+	if nbrew.Port == 443 || nbrew.Port == 80 {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		group, groupctx := errgroup.WithContext(ctx)
+		matched := make([]bool, len(nbrew.Domains))
+		for i, domain := range nbrew.Domains {
+			group.Go(func() error {
+				_, err := netip.ParseAddr(domain)
+				if err == nil {
+					return nil
+				}
+				ips, err := net.DefaultResolver.LookupIPAddr(groupctx, domain)
+				if err != nil {
+					fmt.Println(err)
+					return nil
+				}
+				for _, ip := range ips {
+					ip, ok := netip.AddrFromSlice(ip.IP)
+					if !ok {
+						continue
+					}
+					if ip.Is4() && ip == nbrew.IP4 || ip.Is6() && ip == nbrew.IP6 {
+						matched[i] = true
+						break
+					}
+				}
+				return nil
+			})
+		}
+		err = group.Wait()
+		if err != nil {
+			return nil, err
+		}
+		switch nbrew.Port {
+		case 80:
+			for i, domain := range nbrew.Domains {
+				if matched[i] {
+					nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
+				}
+			}
+		case 443:
+			cmsDomainWildcard := "*." + nbrew.CMSDomain
+			cmsDomainWildcardAdded := false
+			contentDomainWildcard := "*." + nbrew.ContentDomain
+			contentDomainWildcardAdded := false
+			for i, domain := range nbrew.Domains {
+				if matched[i] {
+					if certmagic.MatchWildcard(domain, cmsDomainWildcard) && nbrew.DNSProvider != nil {
+						if !cmsDomainWildcardAdded {
+							cmsDomainWildcardAdded = true
+							nbrew.ManagingDomains = append(nbrew.ManagingDomains, cmsDomainWildcard)
+						}
+					} else if certmagic.MatchWildcard(domain, contentDomainWildcard) && nbrew.DNSProvider != nil {
+						if !contentDomainWildcardAdded {
+							contentDomainWildcardAdded = true
+							nbrew.ManagingDomains = append(nbrew.ManagingDomains, contentDomainWildcard)
+						}
+					} else {
+						nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
+					}
+				}
+			}
+		}
+	}
+
 	// Captcha.
 	b, err = os.ReadFile(filepath.Join(configDir, "captcha.json"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
@@ -1042,6 +1051,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 	// font-src
 	buf.WriteString(" font-src 'self';")
 	nbrew.ContentSecurityPolicy = buf.String()
+
 	return nbrew, nil
 }
 

@@ -108,6 +108,7 @@
       <button type='button' class='btn-outline w-full'
         {{ if eq $.Error "AlreadyAuthenticated" }}disabled{{ end }}
       >
+        {{ template "tabler-brand-google" }}
         Login with Google
       </button>
       {{ if ne $.Error "AlreadyAuthenticated" }}
