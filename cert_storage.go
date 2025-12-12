@@ -19,6 +19,10 @@ func (storage *CertDatabaseStorage) Lock(ctx context.Context, name string) error
 	return nil
 }
 
+func (storage *CertDatabaseStorage) TryLock(ctx context.Context, name string) error {
+	return nil
+}
+
 func (storage *CertDatabaseStorage) Unlock(ctx context.Context, name string) error {
 	return nil
 }
