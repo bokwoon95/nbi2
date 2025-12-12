@@ -841,21 +841,19 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 				}
 			}
 		case 443:
-			cmsDomainWildcard := "*." + nbrew.CMSDomain
-			cmsDomainWildcardAdded := false
-			contentDomainWildcard := "*." + nbrew.ContentDomain
-			contentDomainWildcardAdded := false
+			addedCMSDomainWildcard := false
+			addedContentDomainWildcard := false
 			for i, domain := range nbrew.Domains {
 				if matched[i] {
-					if certmagic.MatchWildcard(domain, cmsDomainWildcard) && nbrew.DNSProvider != nil {
-						if !cmsDomainWildcardAdded {
-							cmsDomainWildcardAdded = true
-							nbrew.ManagingDomains = append(nbrew.ManagingDomains, cmsDomainWildcard)
+					if certmagic.MatchWildcard(domain, "*."+nbrew.CMSDomain) && nbrew.DNSProvider != nil {
+						if !addedCMSDomainWildcard {
+							addedCMSDomainWildcard = true
+							nbrew.ManagingDomains = append(nbrew.ManagingDomains, "*."+nbrew.CMSDomain)
 						}
-					} else if certmagic.MatchWildcard(domain, contentDomainWildcard) && nbrew.DNSProvider != nil {
-						if !contentDomainWildcardAdded {
-							contentDomainWildcardAdded = true
-							nbrew.ManagingDomains = append(nbrew.ManagingDomains, contentDomainWildcard)
+					} else if certmagic.MatchWildcard(domain, "*."+nbrew.ContentDomain) && nbrew.DNSProvider != nil {
+						if !addedContentDomainWildcard {
+							addedContentDomainWildcard = true
+							nbrew.ManagingDomains = append(nbrew.ManagingDomains, "*."+nbrew.ContentDomain)
 						}
 					} else {
 						nbrew.ManagingDomains = append(nbrew.ManagingDomains, domain)
@@ -2156,21 +2154,21 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	if isDeadlineExceeded {
 		data = map[string]any{
 			"RequestContext": responseContext,
-			"Referer":         nbrew.GetReferer(r),
-			"Title":           "deadline exceeded",
-			"Headline":        "The server took too long to process your request.",
-			"Details":         errmsg,
-			"Callers":         callers,
+			"Referer":        nbrew.GetReferer(r),
+			"Title":          "deadline exceeded",
+			"Headline":       "The server took too long to process your request.",
+			"Details":        errmsg,
+			"Callers":        callers,
 		}
 	} else {
 		data = map[string]any{
 			"RequestContext": responseContext,
-			"Referer":         nbrew.GetReferer(r),
-			"Title":           "500 internal server error",
-			"Headline":        "500 internal server error",
-			"Byline":          "There's a bug with notebrew.",
-			"Details":         errmsg,
-			"Callers":         callers,
+			"Referer":        nbrew.GetReferer(r),
+			"Title":          "500 internal server error",
+			"Headline":       "500 internal server error",
+			"Byline":         "There's a bug with notebrew.",
+			"Details":        errmsg,
+			"Callers":        callers,
 		}
 	}
 	tmpl := templateMap["error.html"]

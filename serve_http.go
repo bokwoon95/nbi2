@@ -80,9 +80,9 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		nbrew.BadRequest(w, r, err)
 		return
 	}
-	pathHead, pathTail, _ := strings.Cut(strings.Trim(urlPath, "/"), "/")
-	if pathHead == "cms" {
-		pathHead, pathTail, _ := strings.Cut(pathTail, "/")
+	if strings.HasPrefix(urlPath, "/cms/") {
+		pathHead, pathTail, _ := strings.Cut(strings.Trim(strings.TrimPrefix(urlPath, "/cms/"), "/"), "/")
+		r.Pattern = pathTail
 		requestContext := RequestContext{
 			URLPath:    urlPath,
 			CDNDomain:  nbrew.CDNDomain,
@@ -165,7 +165,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				nbrew.NotFound(w, r)
 				return
 			}
-			http.ServeFileFS(w, r, runtimeFS, "static/"+pathTail)
+			http.ServeFileFS(w, r, runtimeFS, pathTail)
 			return
 		case "login":
 			nbrew.login(w, r, pathTail, requestContext)
