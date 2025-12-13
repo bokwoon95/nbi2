@@ -2146,7 +2146,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	}()
 	var data map[string]any
-	responseContext := ContextData{
+	contextData := ContextData{
 		DevMode:    devMode,
 		StylesCSS:  template.CSS(stylesCSS),
 		NotebrewJS: template.JS(notebrewJS),
@@ -2154,22 +2154,22 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	}
 	if isDeadlineExceeded {
 		data = map[string]any{
-			"ContextData": responseContext,
-			"Referer":        nbrew.GetReferer(r),
-			"Title":          "deadline exceeded",
-			"Headline":       "The server took too long to process your request.",
-			"Details":        errmsg,
-			"Callers":        callers,
+			"ContextData": contextData,
+			"Referer":     nbrew.GetReferer(r),
+			"Title":       "deadline exceeded",
+			"Headline":    "The server took too long to process your request.",
+			"Details":     errmsg,
+			"Callers":     callers,
 		}
 	} else {
 		data = map[string]any{
-			"ContextData": responseContext,
-			"Referer":        nbrew.GetReferer(r),
-			"Title":          "500 internal server error",
-			"Headline":       "500 internal server error",
-			"Byline":         "There's a bug with notebrew.",
-			"Details":        errmsg,
-			"Callers":        callers,
+			"ContextData": contextData,
+			"Referer":     nbrew.GetReferer(r),
+			"Title":       "500 internal server error",
+			"Headline":    "500 internal server error",
+			"Byline":      "There's a bug with notebrew.",
+			"Details":     errmsg,
+			"Callers":     callers,
 		}
 	}
 	tmpl := templateMap["error.html"]
