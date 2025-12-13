@@ -1548,16 +1548,17 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 }
 
 type ContextData struct {
-	URLPath       string       `json:"urlPath"`
-	CDNDomain     string       `json:"cdnDomain"`
-	UserID        ID           `json:"userID"`
-	Username      string       `json:"username"`
-	DisableReason string       `json:"disableReason"`
-	DevMode       bool         `json:"-"`
-	StylesCSS     template.CSS `json:"-"`
-	NotebrewJS    template.JS  `json:"-"`
-	Referer       string       `json:"-"`
-	PathTail      string       `json:"-"`
+	URLPath       string          `json:"urlPath"`
+	CDNDomain     string          `json:"cdnDomain"`
+	UserID        ID              `json:"userID"`
+	Username      string          `json:"username"`
+	DisableReason string          `json:"disableReason"`
+	UserFlags     map[string]bool `json:"userFlags"`
+	DevMode       bool            `json:"-"`
+	StylesCSS     template.CSS    `json:"-"`
+	NotebrewJS    template.JS     `json:"-"`
+	Referer       string          `json:"-"`
+	PathTail      string          `json:"-"`
 }
 
 func (v ContextData) GoString() string {

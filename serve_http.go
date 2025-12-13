@@ -156,6 +156,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				contextData.UserID = user.UserID
 				contextData.Username = user.Username
 				contextData.DisableReason = user.DisableReason
+				contextData.UserFlags = user.UserFlags
 			}
 		}
 		contextData.PathTail = pathTail
