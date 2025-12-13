@@ -23,8 +23,8 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
-func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail string, requestContext RequestContext) {
-	if pathTail != "" {
+func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, contextValues ContextValues) {
+	if contextValues.PathTail != "" {
 		nbrew.NotFound(w, r)
 		return
 	}
@@ -34,7 +34,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail st
 		CaptchaResponse string `json:"captchaResponse"`
 	}
 	type Response struct {
-		RequestContext         RequestContext `json:"requestContext"`
+		ContextValues          ContextValues  `json:"contextValues"`
 		HasMailer              bool           `json:"hasMailer"`
 		Username               string         `json:"username"`
 		RequireCaptcha         bool           `json:"requireCaptcha"`
@@ -134,7 +134,7 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail st
 			nbrew.InternalServerError(w, r, err)
 			return
 		}
-		response.RequestContext = requestContext
+		response.ContextValues = contextValues
 		response.HasMailer = nbrew.Mailer != nil
 		response.CaptchaWidgetScriptSrc = nbrew.CaptchaConfig.WidgetScriptSrc
 		response.CaptchaWidgetClass = nbrew.CaptchaConfig.WidgetClass
@@ -150,14 +150,14 @@ func (nbrew *Notebrew) login(w http.ResponseWriter, r *http.Request, pathTail st
 			return
 		}
 		response.Redirect = sanitizeRedirect(r.Form.Get("redirect"))
-		if !requestContext.UserID.IsZero() {
+		if !contextValues.UserID.IsZero() {
 			response.Error = "AlreadyAuthenticated"
 			writeResponse(w, r, response)
 			return
 		}
 		writeResponse(w, r, response)
 	case "POST":
-		if !requestContext.UserID.IsZero() {
+		if !contextValues.UserID.IsZero() {
 			http.Redirect(w, r, "/cms/", http.StatusFound)
 			return
 		}

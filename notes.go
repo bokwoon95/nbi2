@@ -6,16 +6,16 @@ import (
 	"net/http"
 )
 
-func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, pathTail string, requestContext RequestContext) {
+func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextValues ContextValues) {
 	type Request struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
 		CaptchaResponse string `json:"captchaResponse"`
 	}
 	type Response struct {
-		RequestContext RequestContext `json:"requestContext"`
-		FlashData      map[string]any `json:"-"`
-		TemplateData   map[string]any `json:"-"`
+		ContextValues ContextValues  `json:"contextValues"`
+		FlashData     map[string]any `json:"-"`
+		TemplateData  map[string]any `json:"-"`
 	}
 
 	switch r.Method {
@@ -53,7 +53,7 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, pathTail st
 			nbrew.InternalServerError(w, r, err)
 			return
 		}
-		response.RequestContext = requestContext
+		response.ContextValues = contextValues
 		writeResponse(w, r, response)
 	case "POST":
 	default:
