@@ -3,12 +3,12 @@
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <title>{{ block "title" $ }}Notebrew{{ end }}</title>
-{{ if $.ContextValues.DevMode }}
+{{ if $.ContextData.DevMode }}
 <link rel='stylesheet' href='/cms/static/styles.css'>
 <script type='module' src='/cms/static/notebrew.js'></script>
 {{ else }}
-<style>{{ $.ContextValues.StylesCSS }}</style>
-<script type='module'>{{ $.ContextValues.NotebrewJS }}</script>
+<style>{{ $.ContextData.StylesCSS }}</style>
+<script type='module'>{{ $.ContextData.NotebrewJS }}</script>
 {{ end }}
 {{ end }}
 

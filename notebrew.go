@@ -1547,7 +1547,7 @@ func (nbrew *Notebrew) GetReferer(r *http.Request) string {
 	return referer
 }
 
-type ContextValues struct {
+type ContextData struct {
 	URLPath       string       `json:"urlPath"`
 	CDNDomain     string       `json:"cdnDomain"`
 	UserID        ID           `json:"userID"`
@@ -1560,9 +1560,9 @@ type ContextValues struct {
 	PathTail      string       `json:"-"`
 }
 
-func (v ContextValues) GoString() string {
-	type ContextValuesClone ContextValues
-	clone := ContextValuesClone(v)
+func (v ContextData) GoString() string {
+	type ContextDataClone ContextData
+	clone := ContextDataClone(v)
 	if clone.StylesCSS != "" {
 		clone.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(clone.StylesCSS)))
 	}
@@ -1711,7 +1711,7 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1776,7 +1776,7 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1840,7 +1840,7 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1898,7 +1898,7 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -1957,7 +1957,7 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2000,7 +2000,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		encoder.SetIndent("", "  ")
 		encoder.SetEscapeHTML(false)
 		err := encoder.Encode(map[string]any{
-			"ContextValues": ContextValues{
+			"ContextData": ContextData{
 				DevMode:    devMode,
 				StylesCSS:  template.CSS(stylesCSS),
 				NotebrewJS: template.JS(notebrewJS),
@@ -2029,7 +2029,7 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2146,7 +2146,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	}()
 	var data map[string]any
-	responseContext := ContextValues{
+	responseContext := ContextData{
 		DevMode:    devMode,
 		StylesCSS:  template.CSS(stylesCSS),
 		NotebrewJS: template.JS(notebrewJS),
@@ -2154,7 +2154,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	}
 	if isDeadlineExceeded {
 		data = map[string]any{
-			"ContextValues": responseContext,
+			"ContextData": responseContext,
 			"Referer":        nbrew.GetReferer(r),
 			"Title":          "deadline exceeded",
 			"Headline":       "The server took too long to process your request.",
@@ -2163,7 +2163,7 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 		}
 	} else {
 		data = map[string]any{
-			"ContextValues": responseContext,
+			"ContextData": responseContext,
 			"Referer":        nbrew.GetReferer(r),
 			"Title":          "500 internal server error",
 			"Headline":       "500 internal server error",
@@ -2231,7 +2231,7 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),
@@ -2287,7 +2287,7 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 		template.Must(tmpl.ParseFS(runtimeFS, "embed/error.html"))
 	}
 	err := tmpl.Execute(buf, map[string]any{
-		"ContextValues": ContextValues{
+		"ContextData": ContextData{
 			DevMode:    devMode,
 			StylesCSS:  template.CSS(stylesCSS),
 			NotebrewJS: template.JS(notebrewJS),

@@ -80,7 +80,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		nbrew.BadRequest(w, r, err)
 		return
 	}
-	contextValues := ContextValues{
+	contextData := ContextData{
 		URLPath:    urlPath,
 		CDNDomain:  nbrew.CDNDomain,
 		DevMode:    devMode,
@@ -97,7 +97,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			uri.Fragment = ""
 			uri.User = nil
 			if referer != uri.String() {
-				contextValues.Referer = referer
+				contextData.Referer = referer
 			}
 		}
 		var sessionToken string
@@ -153,12 +153,12 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 				}
-				contextValues.UserID = user.UserID
-				contextValues.Username = user.Username
-				contextValues.DisableReason = user.DisableReason
+				contextData.UserID = user.UserID
+				contextData.Username = user.Username
+				contextData.DisableReason = user.DisableReason
 			}
 		}
-		contextValues.PathTail = pathTail
+		contextData.PathTail = pathTail
 		switch pathHead {
 		case "static":
 			if pathTail == "" {
@@ -168,31 +168,31 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.ServeFileFS(w, r, runtimeFS, urlPath)
 			return
 		case "login":
-			nbrew.login(w, r, contextValues)
+			nbrew.login(w, r, contextData)
 			return
 		case "logout":
 			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
-			// nbrew.logout(w, r, responseContext) // TODO
+			// nbrew.logout(w, r, contextData) // TODO
 			return
 		case "resetpassword":
 			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
-			// nbrew.resetpassword(w, r, responseContext) // TODO
+			// nbrew.resetpassword(w, r, contextData) // TODO
 			return
 		case "invite":
 			if pathTail != "" {
 				nbrew.NotFound(w, r)
 				return
 			}
-			// nbrew.invite(w, r, responseContext) // TODO
+			// nbrew.invite(w, r, contextData) // TODO
 			return
 		}
-		if contextValues.UserID.IsZero() {
+		if contextData.UserID.IsZero() {
 			nbrew.NotAuthenticated(w, r)
 			return
 		}
@@ -201,10 +201,10 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/cms/notes/", http.StatusFound)
 			return
 		case "notes":
-			nbrew.notes(w, r, contextValues)
+			nbrew.notes(w, r, contextData)
 			return
 		case "photos":
-			// nbrew.photos(w, r, responseContext) // TODO
+			// nbrew.photos(w, r, contextData) // TODO
 			return
 		default:
 			nbrew.NotFound(w, r)
