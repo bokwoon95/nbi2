@@ -266,11 +266,17 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .my-1 {
+    margin-block: calc(var(--spacing) * 1);
+  }
   .mt-1 {
     margin-top: calc(var(--spacing) * 1);
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
+  }
+  .mr-1 {
+    margin-right: calc(var(--spacing) * 1);
   }
   .mr-2 {
     margin-right: calc(var(--spacing) * 2);
@@ -323,6 +329,10 @@
   .size-4 {
     width: calc(var(--spacing) * 4);
     height: calc(var(--spacing) * 4);
+  }
+  .size-5 {
+    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing) * 5);
   }
   .size-8 {
     width: calc(var(--spacing) * 8);
@@ -702,6 +712,11 @@
     & svg:not([class*="size-"]) {
       width: calc(var(--spacing) * 6);
       height: calc(var(--spacing) * 6);
+    }
+  }
+  .\[\&\>svg\]\:block {
+    &>svg {
+      display: block;
     }
   }
   .\[\&\>svg\]\:size-full {
@@ -3425,8 +3440,6 @@
   color: var(--color-muted-foreground);
   pointer-events: none;
   flex-shrink: 0;
-  --tw-translate-y: calc(var(--spacing) * 0.5);
-  translate: var(--tw-translate-x) var(--tw-translate-y);
   transition-property: transform, translate, scale, rotate;
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));

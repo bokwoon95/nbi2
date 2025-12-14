@@ -21,7 +21,7 @@
   color: var(--color-muted-foreground);
   pointer-events: none;
   flex-shrink: 0;
-  @apply translate-y-0.5 transition-transform duration-200
+  @apply transition-transform duration-200
 }
 
 details[open] > .dropdown-chevron::before {
