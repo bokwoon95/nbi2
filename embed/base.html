@@ -14,11 +14,11 @@
 
 {{ block "side-pane" $ }}
 <aside id='side-pane' class='border-r border-gray-300 -hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
-  <section class='flex p-2'>
+  <div class='flex p-2'>
     <div class='grow font-medium'>☕️ Notebrew</div>
     <div>{{ template "tabler-x" }}</div>
-  </section>
-  <!-- <section class='flex items-center'> -->
+  </div>
+  <!-- <div class='flex items-center'> -->
   <!--   <img class='size-8 shrink-0 object-cover rounded-full' alt='@hunvreus' src='https://github.com/hunvreus.png'> -->
   <!--   <div class='grow'> -->
   <!--     <div> -->
@@ -27,46 +27,69 @@
   <!--     <div class='text-sm text-muted-foreground'>email</div> -->
   <!--   </div> -->
   <!--   <div class='size-8 shrink-0 [&>svg]:size'>{{ template "tabler-settings" }}</div> -->
-  <!-- </section> -->
-  <details>
-    <summary class='flex dropdown-chevron my-1'>
+  <!-- </div> -->
+  <div class='flex items-center dropdown-chevron-spacer my-2'>
+    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
+    <a href='/cms/notes/' class='truncate hover:underline font-medium'>Notes</a>
+  </div>
+  <div class='flex items-center dropdown-chevron-spacer my-2'>
+    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-photo" }}</span>
+    <a href='/cms/photos/' class='truncate hover:underline font-medium'>Photos</a>
+  </div>
+  <div class='flex items-center dropdown-chevron-spacer my-2'>
+    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-ballpen" }}</span>
+    <a href='/cms/blogs/' class='truncate hover:underline font-medium'>Blogs</a>
+  </div>
+  <details class='my-2'>
+    <summary class='flex dropdown-chevron'>
       <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
       <a href='/cms/notes/' class='truncate hover:underline font-medium'>Notes</a>
     </summary>
-    <section class='flex dropdown-chevron-spacer'>
-      <details class='grow'>
-        <summary class='flex dropdown-chevron my-1'>
-          <a href='/cms/login/' class='truncate hover:underline'>Is it accessible?</a>
-        </summary>
-          <section class='flex dropdown-chevron-spacer'>
+    <div class='flex dropdown-chevron-spacer'>
+      <div class='grow'>
+        <details>
+          <summary class='flex dropdown-chevron'>
+            <a href='/cms/login/' class='truncate hover:underline font-medium'>Is it accessible?</a>
+          </summary>
+          <div class='flex dropdown-chevron-spacer'>
             <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
-          </section>
-          <section class='flex dropdown-chevron-spacer'>
+          </div>
+          <div class='flex dropdown-chevron-spacer'>
             <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
-          </section>
-      </details>
-    </section>
+          </div>
+        </details>
+        <div>hai</div>
+      </div>
+    </div>
   </details>
-  <details>
-    <summary class='flex dropdown-chevron my-1'>
+  <details class='my-2'>
+    <summary class='flex dropdown-chevron'>
       <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-photo" }}</span>
       <a href='/cms/notes/' class='truncate hover:underline font-medium'>Photos</a>
     </summary>
-    <section class='flex dropdown-chevron-spacer'>
-      <section class='flex dropdown-chevron-spacer'>
+    <div class='flex dropdown-chevron-spacer'>
+      <div class='flex dropdown-chevron-spacer'>
         <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
-      </section>
-      <section class='flex dropdown-chevron-spacer'>
+      </div>
+      <div class='flex dropdown-chevron-spacer'>
         <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
-      </section>
-    </section>
+      </div>
+    </div>
   </details>
-  <section class='flex dropdown-chevron-spacer my-1'>
-    <a href='/cms/login/' class='truncate hover:underline font-medium'>Is it accessible?</a>
-  </section>
-  <section class='flex dropdown-chevron-spacer my-1'>
-    <a href='/cms/login/' class='truncate hover:underline font-medium'>Is it accessible?</a>
-  </section>
+  <details class='my-2'>
+    <summary class='flex dropdown-chevron'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-ballpen" }}</span>
+      <a href='/cms/notes/' class='truncate hover:underline font-medium'>Blogs</a>
+    </summary>
+    <div class='flex dropdown-chevron-spacer'>
+      <div class='flex dropdown-chevron-spacer'>
+        <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
+      </div>
+      <div class='flex dropdown-chevron-spacer'>
+        <a href='/cms/login/' class='truncate hover:underline'>hi there :3</a>
+      </div>
+    </div>
+  </details>
 </aside>
 {{ end }}
 
