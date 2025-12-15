@@ -28,20 +28,14 @@
   <!--   </div> -->
   <!--   <div class='size-8 shrink-0 [&>svg]:size'>{{ template "tabler-settings" }}</div> -->
   <!-- </div> -->
-  <div class='flex items-center dropdown-chevron-spacer mt-2'>
+  <hr>
+  <div class='flex items-center dropdown-chevron-spacer my-1'>
     <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
     <a href='/cms/notes/' class='truncate hover:underline font-medium'>Notes</a>
   </div>
-  <div class='flex items-center dropdown-chevron-spacer mt-2'>
-    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-photo" }}</span>
-    <a href='/cms/photos/' class='truncate hover:underline font-medium'>Photos</a>
-  </div>
-  <div class='flex items-center dropdown-chevron-spacer mt-2'>
-    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-ballpen" }}</span>
-    <a href='/cms/blogs/' class='truncate hover:underline font-medium'>Blogs</a>
-  </div>
-  <details>
-    <summary class='flex dropdown-chevron mt-2'>
+  <hr>
+  <details class='my-1'>
+    <summary class='flex dropdown-chevron'>
       <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
       <a href='/cms/notes/' class='truncate hover:underline font-medium'>Notes</a>
     </summary>
@@ -62,8 +56,14 @@
       </div>
     </div>
   </details>
-  <details>
-    <summary class='flex dropdown-chevron mt-2'>
+  <hr>
+  <div class='flex items-center dropdown-chevron-spacer my-1'>
+    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-library-photo" }}</span>
+    <a href='/cms/photos/' class='truncate hover:underline font-medium'>Photos</a>
+  </div>
+  <hr>
+  <details class='my-1'>
+    <summary class='flex dropdown-chevron'>
       <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-library-photo" }}</span>
       <a href='/cms/notes/' class='truncate hover:underline font-medium'>Photos</a>
     </summary>
@@ -84,8 +84,14 @@
       </div>
     </div>
   </details>
-  <details>
-    <summary class='flex dropdown-chevron mt-2'>
+  <hr>
+  <div class='flex items-center dropdown-chevron-spacer my-1'>
+    <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-ballpen" }}</span>
+    <a href='/cms/blogs/' class='truncate hover:underline font-medium'>Blogs</a>
+  </div>
+  <hr>
+  <details class='my-1'>
+    <summary class='flex dropdown-chevron'>
       <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-ballpen" }}</span>
       <a href='/cms/notes/' class='truncate hover:underline font-medium'>Blogs</a>
     </summary>
@@ -120,6 +126,7 @@
       </div>
     </div>
   </details>
+  <hr>
 </aside>
 {{ end }}
 
