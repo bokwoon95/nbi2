@@ -28,6 +28,80 @@
   <!--   </div> -->
   <!--   <div class='size-8 shrink-0 [&>svg]:size'>{{ template "tabler-settings" }}</div> -->
   <!-- </div> -->
+  <details open>
+    <summary class='text-sm font-medium text-muted-foreground flex dropdown-chevron-after mt-2'>
+      <div class='grow px-2'>Notes</div>
+    </summary>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>Notes</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-file-text" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>foo</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-folder-open" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>bar</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-file" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>baz</a>
+    </div>
+  </details>
+  <details open>
+    <summary class='text-sm font-medium text-muted-foreground flex dropdown-chevron-after mt-2'>
+      <div class='grow px-2'>Photos</div>
+    </summary>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-library-photo" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>Photos</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-photo" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>foo</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-folder-open" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>bar</a>
+    </div>
+    <div class='flex dropdown-chevron-spacer mt-2'>
+      <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-file" }}</span>
+      <a href='/cms/login/' class='truncate hover:underline font-medium'>baz</a>
+    </div>
+  </details>
+  <details open>
+    <summary class='text-sm font-medium text-muted-foreground flex dropdown-chevron-after mt-2'>
+      <div class='grow px-2'>Blogs</div>
+    </summary>
+    <details open>
+      <summary class='flex dropdown-chevron mt-2'>
+        <a href='' class='truncate hover:underline text-muted-foreground'>bokwoon.com</a>
+      </summary>
+      <div class='flex dropdown-chevron-spacer mt-2'>
+        <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-file-type-html" }}</span>
+        <a href='' class='truncate hover:underline font-medium'>Pages</a>
+      </div>
+      <div class='flex dropdown-chevron-spacer mt-2'>
+        <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-pencil" }}</span>
+        <a href='' class='truncate hover:underline font-medium'>Posts</a>
+      </div>
+    </details>
+    <details open>
+      <summary class='flex dropdown-chevron mt-2'>
+        <a href='' class='truncate hover:underline text-muted-foreground'>@bokwoon</a>
+      </summary>
+      <div class='flex dropdown-chevron-spacer mt-2'>
+        <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-file-type-html" }}</span>
+        <a href='' class='truncate hover:underline font-medium'>Pages</a>
+      </div>
+      <div class='flex dropdown-chevron-spacer mt-2'>
+        <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "icon-tabler-pencil" }}</span>
+        <a href='' class='truncate hover:underline font-medium'>Posts</a>
+      </div>
+    </details>
+  </details>
+  <hr class='mt-2'>
   <div class='flex items-center dropdown-chevron-spacer my-1'>
     <span class='size-5 [&>svg]:size-full [&>svg]:block mr-1'>{{ template "tabler-notebook" }}</span>
     <a href='/cms/notes/' class='truncate hover:underline font-medium'>Notes</a>
