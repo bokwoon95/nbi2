@@ -89,6 +89,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if urlPath, found := strings.CutPrefix(urlPath, "/cms/"); found {
 		pathHead, pathTail, _ := strings.Cut(strings.Trim(urlPath, "/"), "/")
+		contextData.PathTail = pathTail
 		referer := r.Referer()
 		if referer != "" {
 			uri := *r.URL
@@ -159,7 +160,6 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				contextData.UserFlags = user.UserFlags
 			}
 		}
-		contextData.PathTail = pathTail
 		switch pathHead {
 		case "static":
 			if pathTail == "" {
