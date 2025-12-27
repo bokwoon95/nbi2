@@ -88,8 +88,6 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		NotebrewJS: template.JS(notebrewJS),
 	}
 	if urlPath, found := strings.CutPrefix(urlPath, "/cms/"); found {
-		pathHead, pathTail, _ := strings.Cut(strings.Trim(urlPath, "/"), "/")
-		contextData.PathTail = pathTail
 		referer := r.Referer()
 		if referer != "" {
 			uri := *r.URL
@@ -104,7 +102,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var sessionToken string
 		header := r.Header.Get("Authorization")
 		if header != "" {
-			sessionToken = strings.TrimPrefix(header, "Bearer")
+			sessionToken = strings.TrimPrefix(header, "Bearer ")
 		} else {
 			cookie, _ := r.Cookie("session")
 			if cookie != nil {
@@ -160,6 +158,8 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				contextData.UserFlags = user.UserFlags
 			}
 		}
+		pathHead, pathTail, _ := strings.Cut(strings.Trim(urlPath, "/"), "/")
+		contextData.PathTail = pathTail
 		switch pathHead {
 		case "static":
 			if pathTail == "" {
