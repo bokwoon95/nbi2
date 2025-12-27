@@ -435,6 +435,9 @@
   .overflow-auto {
     overflow: auto;
   }
+  .overflow-visible {
+    overflow: visible;
+  }
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
@@ -469,6 +472,9 @@
   }
   .object-cover {
     object-fit: cover;
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);

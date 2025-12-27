@@ -285,15 +285,25 @@
   if (!notSidePane) {
     throw new Error("#not-side-pane not found");
   }
-  notSidePane.addEventListener("click", function(event) {
+  window.addEventListener("click", function(event) {
+    if (window.matchMedia(
+      "(min-width: 64rem)"
+      /* tailwind lg breakpoint */
+    ).matches) {
+      return;
+    }
+    if (sidePane.classList.contains("hidden")) {
+      return;
+    }
     for (let element = event.target; element instanceof Element; element = element.parentElement) {
+      if (element.id == "side-pane") {
+        return;
+      }
       if (element.hasAttribute("data-show-side-pane")) {
         return;
       }
     }
-    if (!sidePane.classList.contains("hidden")) {
-      sidePane.classList.add("hidden");
-    }
+    sidePane.classList.add("hidden");
   });
   for (const dataHideSidePane of document.querySelectorAll("[data-hide-side-pane]")) {
     dataHideSidePane.addEventListener("click", function() {
