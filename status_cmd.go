@@ -67,8 +67,16 @@ func (cmd *StatusCmd) Run() error {
 		fmt.Fprintf(cmd.Stdout, "❌ notebrew is not currently running on port %d\n", cmd.Notebrew.Port)
 	}
 	fmt.Fprintf(cmd.Stdout, "port          = %d\n", cmd.Notebrew.Port)
-	fmt.Fprintf(cmd.Stdout, "cmsdomain     = %s\n", cmd.Notebrew.CMSDomain)
-	fmt.Fprintf(cmd.Stdout, "contentdomain = %s\n", cmd.Notebrew.ContentDomain)
+	if cmd.Notebrew.CMSDomain == "0.0.0.0" {
+		fmt.Fprintf(cmd.Stdout, "cmsdomain     = %s\n", cmd.Notebrew.OutboundIP4.String())
+	} else {
+		fmt.Fprintf(cmd.Stdout, "cmsdomain     = %s\n", cmd.Notebrew.CMSDomain)
+	}
+	if cmd.Notebrew.ContentDomain == "0.0.0.0" {
+		fmt.Fprintf(cmd.Stdout, "contentdomain = %s\n", cmd.Notebrew.OutboundIP4.String())
+	} else {
+		fmt.Fprintf(cmd.Stdout, "contentdomain = %s\n", cmd.Notebrew.ContentDomain)
+	}
 	if cmd.Notebrew.CDNDomain == "" {
 		fmt.Fprintf(cmd.Stdout, "cdndomain     = <not configured>\n")
 	} else {
@@ -209,15 +217,15 @@ func (cmd *StatusCmd) Run() error {
 		}
 
 		// IP4.
-		if cmd.Notebrew.IP4.IsValid() {
-			fmt.Fprintf(cmd.Stdout, "IPv4          = %s\n", cmd.Notebrew.IP4.String())
+		if cmd.Notebrew.InboundIP4.IsValid() {
+			fmt.Fprintf(cmd.Stdout, "IPv4          = %s\n", cmd.Notebrew.InboundIP4.String())
 		} else {
 			fmt.Fprintf(cmd.Stdout, "IPv4          = <none>\n")
 		}
 
 		// IP6.
-		if cmd.Notebrew.IP6.IsValid() {
-			fmt.Fprintf(cmd.Stdout, "IPv6          = %s\n", cmd.Notebrew.IP6.String())
+		if cmd.Notebrew.InboundIP6.IsValid() {
+			fmt.Fprintf(cmd.Stdout, "IPv6          = %s\n", cmd.Notebrew.InboundIP6.String())
 		} else {
 			fmt.Fprintf(cmd.Stdout, "IPv6          = <none>\n")
 		}

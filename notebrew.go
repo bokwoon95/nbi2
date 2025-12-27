@@ -101,7 +101,7 @@ type Notebrew struct {
 	ObjectStorage ObjectStorage
 
 	// CMSDomain is the domain that the notebrew is using to serve the CMS.
-	// Examples: localhost:6444, notebrew.com
+	// Examples: localhost, notebrew.com
 	CMSDomain string
 
 	// CMSDomainHTTPS indicates whether the CMS domain is currently being
@@ -109,7 +109,7 @@ type Notebrew struct {
 	CMSDomainHTTPS bool
 
 	// ContentDomain is the domain that the notebrew instance is using to serve
-	// the static generated content. Examples: localhost:6444, nbrew.net.
+	// the static generated content. Examples: localhost, nbrew.net.
 	ContentDomain string
 
 	// ContentDomainHTTPS indicates whether the content domain is currently
@@ -145,13 +145,17 @@ type Notebrew struct {
 	// (Required) Port is port that notebrew is listening on.
 	Port int
 
-	// IP4 is the IPv4 address of the current machine, if notebrew is currently
+	// InboundIP4 is the IPv4 address of the current machine, if notebrew is currently
 	// serving either port 80 (HTTP) or 443 (HTTPS).
-	IP4 netip.Addr
+	InboundIP4 netip.Addr
 
-	// IP6 is the IPv6 address of the current machine, if notebrew is currently
+	// InboundIP6 is the IPv6 address of the current machine, if notebrew is currently
 	// serving either port 80 (HTTP) or 443 (HTTPS).
-	IP6 netip.Addr
+	InboundIP6 netip.Addr
+
+	OutboundIP4 netip.Addr
+
+	OutboundIP6 netip.Addr
 
 	// Domains is the list of domains that need to point at notebrew for it to
 	// work. Does not include user-created domains.
@@ -278,6 +282,49 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		return nil, fmt.Errorf("%s: %w", filepath.Join(configDir, "cmsdomain.txt"), err)
 	}
 	nbrew.CMSDomain = string(bytes.TrimSpace(b))
+	if nbrew.CMSDomain == "0.0.0.0" {
+		// OutboundIP4 and OutboundIP6.
+		var dialer net.Dialer
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		group, groupctx := errgroup.WithContext(ctx)
+		group.Go(func() error {
+			conn, err := dialer.DialContext(groupctx, "udp", "8.8.8.8:80" /* Google IPv4 DNS */)
+			if err != nil {
+				return fmt.Errorf("udp 8.8.8.8:80: %w", err)
+			}
+			defer conn.Close()
+			udpAddr := conn.LocalAddr().(*net.UDPAddr)
+			ip, _ := netip.AddrFromSlice(udpAddr.IP)
+			if ip.Is4() {
+				nbrew.OutboundIP4 = ip
+			}
+			return nil
+		})
+		group.Go(func() error {
+			conn, err := dialer.DialContext(groupctx, "udp6", "[2001:4860:4860::8888]:80" /* Google IPv6 DNS */)
+			if err != nil {
+				// Best-effort attempt to get an IPv6 address; we won't always
+				// have an IPv6 address e.g. when computer is using a phone's
+				// data hotspot.
+				return nil
+			}
+			defer conn.Close()
+			udpAddr := conn.LocalAddr().(*net.UDPAddr)
+			ip, _ := netip.AddrFromSlice(udpAddr.IP)
+			if ip.Is6() {
+				nbrew.OutboundIP6 = ip
+			}
+			return nil
+		})
+		err := group.Wait()
+		if err != nil {
+			return nil, err
+		}
+		if !nbrew.OutboundIP4.IsValid() && !nbrew.OutboundIP6.IsValid() {
+			return nil, fmt.Errorf("unable to determine the outbound IP address of the current machine")
+		}
+	}
 
 	// Content domain.
 	b, err = os.ReadFile(filepath.Join(configDir, "contentdomain.txt"))
@@ -345,15 +392,19 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		}
 	} else {
 		if nbrew.CMSDomain != "" {
-			nbrew.Port = 443
+			if nbrew.CMSDomain == "0.0.0.0" {
+				nbrew.Port = 6444
+			} else {
+				nbrew.Port = 443
+			}
 		} else {
 			nbrew.Port = 6444
-			nbrew.CMSDomain = "localhost:6444"
+			nbrew.CMSDomain = "localhost"
 		}
 	}
 
 	if nbrew.Port == 443 || nbrew.Port == 80 {
-		// IP4 and IP6.
+		// InboundIP4 and InboundIP6.
 		client := &http.Client{
 			Timeout: 10 * time.Second,
 		}
@@ -386,7 +437,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 				return fmt.Errorf("ipv4.icanhazip.com: did not get a valid IP address (%s)", s)
 			}
 			if ip.Is4() {
-				nbrew.IP4 = ip
+				nbrew.InboundIP4 = ip
 			}
 			return nil
 		})
@@ -418,7 +469,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 				return fmt.Errorf("ipv6.icanhazip.com: did not get a valid IP address (%s)", s)
 			}
 			if ip.Is6() {
-				nbrew.IP6 = ip
+				nbrew.InboundIP6 = ip
 			}
 			return nil
 		})
@@ -426,14 +477,14 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !nbrew.IP4.IsValid() && !nbrew.IP6.IsValid() {
-			return nil, fmt.Errorf("unable to determine the IP address of the current machine")
+		if !nbrew.InboundIP4.IsValid() && !nbrew.InboundIP6.IsValid() {
+			return nil, fmt.Errorf("unable to determine the inbound IP address of the current machine")
 		}
 		if nbrew.CMSDomain == "" {
-			if nbrew.IP4.IsValid() {
-				nbrew.CMSDomain = nbrew.IP4.String()
+			if nbrew.InboundIP4.IsValid() {
+				nbrew.CMSDomain = nbrew.InboundIP4.String()
 			} else {
-				nbrew.CMSDomain = "[" + nbrew.IP6.String() + "]"
+				nbrew.CMSDomain = "[" + nbrew.InboundIP6.String() + "]"
 			}
 		}
 	}
@@ -465,14 +516,14 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 		if dnsConfig.APIKey == "" {
 			return nil, fmt.Errorf("%s: namecheap: missing apiKey field", filepath.Join(configDir, "dns.json"))
 		}
-		if !nbrew.IP4.IsValid() && (nbrew.Port == 443 || nbrew.Port == 80) {
-			return nil, fmt.Errorf("the current machine's IP address (%s) is not IPv4: an IPv4 address is needed to integrate with namecheap's API", nbrew.IP6.String())
+		if !nbrew.InboundIP4.IsValid() && (nbrew.Port == 443 || nbrew.Port == 80) {
+			return nil, fmt.Errorf("the current machine's IP address (%s) is not IPv4: an IPv4 address is needed to integrate with namecheap's API", nbrew.InboundIP6.String())
 		}
 		nbrew.DNSProvider = &namecheap.Provider{
 			APIKey:      dnsConfig.APIKey,
 			User:        dnsConfig.Username,
 			APIEndpoint: "https://api.namecheap.com/xml.response",
-			ClientIP:    nbrew.IP4.String(),
+			ClientIP:    nbrew.InboundIP4.String(),
 		}
 	case "cloudflare":
 		if dnsConfig.APIToken == "" {
@@ -821,7 +872,7 @@ func New(configDir, dataDir string, csp map[string]string) (*Notebrew, error) {
 					if !ok {
 						continue
 					}
-					if ip.Is4() && ip == nbrew.IP4 || ip.Is6() && ip == nbrew.IP6 {
+					if ip.Is4() && ip == nbrew.InboundIP4 || ip.Is6() && ip == nbrew.InboundIP6 {
 						matched[i] = true
 						break
 					}

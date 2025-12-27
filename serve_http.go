@@ -318,7 +318,7 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 			}
 		}
 		if len(nbrew.ManagingDomains) == 0 {
-			fmt.Printf("WARNING: notebrew is listening on port 443 but no domains are pointing at this current machine's IP address (%s/%s). It means no traffic can reach this current machine. Please configure your DNS correctly.\n", nbrew.IP4.String(), nbrew.IP6.String())
+			fmt.Printf("WARNING: notebrew is listening on port 443 but no domains are pointing at this current machine's IP address (%s/%s). It means no traffic can reach this current machine. Please configure your DNS correctly.\n", nbrew.InboundIP4.String(), nbrew.InboundIP6.String())
 		}
 		err := staticCertConfig.ManageSync(context.Background(), nbrew.ManagingDomains)
 		if err != nil {
@@ -412,7 +412,7 @@ func (nbrew *Notebrew) NewServer() (*http.Server, error) {
 	case 80:
 		server.Addr = ":80"
 	default:
-		if len(nbrew.ProxyConfig.RealIPHeaders) == 0 && len(nbrew.ProxyConfig.ProxyIPs) == 0 {
+		if len(nbrew.ProxyConfig.RealIPHeaders) == 0 && len(nbrew.ProxyConfig.ProxyIPs) == 0 && nbrew.CMSDomain != "0.0.0.0" {
 			server.Addr = "localhost:" + strconv.Itoa(nbrew.Port)
 		} else {
 			server.Addr = ":" + strconv.Itoa(nbrew.Port)

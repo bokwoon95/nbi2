@@ -79,7 +79,7 @@ func main() {
 				return nil
 			}
 		}
-		nbrew, err := nbi2.New(configDir, dataHomeDir, nil)
+		nbrew, err := nbi2.New(configDir, dataHomeDir, nil /* csp */)
 		if err != nil {
 			return err
 		}
@@ -203,8 +203,10 @@ func main() {
 			// https://cs.opensource.google/go/x/sys/+/refs/tags/v0.6.0:windows/zerrors_windows.go;l=2680
 			const WSAEADDRINUSE = syscall.Errno(10048)
 			if errno == syscall.EADDRINUSE || runtime.GOOS == "windows" && errno == WSAEADDRINUSE {
-				if !nbrew.CMSDomainHTTPS {
-					fmt.Println("notebrew is already running on http://" + nbrew.CMSDomain + "/cms/")
+				if nbrew.CMSDomain == "0.0.0.0" {
+					fmt.Printf("notebrew is already running on http://%s:%d/cms/\n", nbrew.OutboundIP4.String(), nbrew.Port)
+				} else if !nbrew.CMSDomainHTTPS {
+					fmt.Printf("notebrew is already running on http://%s/cms/\n", nbrew.CMSDomain)
 				} else {
 					fmt.Println("notebrew is already running (run `notebrew stop` to stop the process)")
 				}
@@ -232,8 +234,10 @@ func main() {
 					close(wait)
 				}
 			}()
-			if !nbrew.CMSDomainHTTPS {
-				fmt.Printf("notebrew is running on %s\n", "http://"+nbrew.CMSDomain+"/cms/")
+			if nbrew.CMSDomain == "0.0.0.0" {
+				fmt.Printf("notebrew is running on http://%s:%d/cms/\n", nbrew.OutboundIP4.String(), nbrew.Port)
+			} else if !nbrew.CMSDomainHTTPS {
+				fmt.Printf("notebrew is running on http://%s/cms/\n", nbrew.CMSDomain)
 			} else {
 				fmt.Printf("notebrew is running on %s\n", server.Addr)
 			}
