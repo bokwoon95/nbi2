@@ -277,9 +277,36 @@
   })();
 
   // notebrew.ts
+  var sidePane = document.getElementById("side-pane");
+  if (!sidePane) {
+    throw new Error("#side-pane not found");
+  }
+  var notSidePane = document.getElementById("not-side-pane");
+  if (!notSidePane) {
+    throw new Error("#not-side-pane not found");
+  }
+  notSidePane.addEventListener("click", function(event) {
+    for (let element = event.target; element instanceof Element; element = element.parentElement) {
+      if (element.hasAttribute("data-show-side-pane")) {
+        return;
+      }
+    }
+    if (!sidePane.classList.contains("hidden")) {
+      sidePane.classList.add("hidden");
+    }
+  });
+  for (const dataHideSidePane of document.querySelectorAll("[data-hide-side-pane]")) {
+    dataHideSidePane.addEventListener("click", function() {
+      sidePane.classList.add("hidden");
+    });
+  }
+  for (const dataShowSidePane of document.querySelectorAll("[data-show-side-pane]")) {
+    dataShowSidePane.addEventListener("click", function() {
+      sidePane.classList.remove("hidden");
+    });
+  }
   var hamburgerMenuBtn = document.getElementById("hamburger-menu-btn");
   var hamburgerMenuIcon = document.getElementById("hamburger-menu-icon");
-  var sidePane = document.getElementById("side-pane");
   var menuPane = document.getElementById("menu-pane");
   var notMenuPane = document.getElementById("not-menu-pane");
   if (hamburgerMenuBtn && hamburgerMenuIcon && sidePane && notMenuPane) {

@@ -1,6 +1,6 @@
 {{ define "title" }}Notes{{ end }}
 {{ template "base.html" $ }}
 {{ define "content" }}
-<span class='inline-block lg:hidden'>{{ template "icon-tabler-layout-sidebar" }}</span>
+<span class='inline-block cursor-pointer lg:hidden' data-show-side-pane>{{ template "icon-tabler-layout-sidebar" }}</span>
 hi
 {{ end }}
