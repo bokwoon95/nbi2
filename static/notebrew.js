@@ -286,19 +286,15 @@
     throw new Error("#not-side-pane not found");
   }
   window.addEventListener("click", function(event) {
-    console.log("--------------------------------------------------------------------------------");
-    console.log("1");
     if (window.matchMedia(
       "(min-width: 64rem)"
       /* tailwind lg breakpoint */
     ).matches) {
       return;
     }
-    console.log("2");
     if (sidePane.classList.contains("hidden")) {
       return;
     }
-    console.log("3");
     for (let element = event.target; element instanceof Element; element = element.parentElement) {
       if (element.id == "side-pane") {
         return;
@@ -307,7 +303,6 @@
         return;
       }
     }
-    console.log("4");
     sidePane.classList.add("hidden");
   });
   for (const dataHideSidePane of document.querySelectorAll("[data-hide-side-pane]")) {
