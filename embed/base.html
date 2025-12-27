@@ -13,7 +13,7 @@
 {{ end }}
 
 {{ block "side-pane" $ }}
-<aside id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 pb-5 bg-gray-50 overflow-auto'>
+<aside id='side-pane' class='border-r border-gray-300 hidden lg:block z-1 bg-gray-50 overflow-auto z-70'>
   <div class='flex p-2'>
     <div class='grow font-medium'>☕️ Notebrew</div>
     <button class='cursor-pointer lg:hidden hover:bg-gray-200 p-1' data-hide-side-pane data-tooltip='Hide sidebar' data-side='bottom' data-align='end'>{{ template "tabler-x" }}</button>
@@ -101,6 +101,7 @@
       </div>
     </details>
   </details>
+  <div class='h-32'></div>
 </aside>
 {{ end }}
 
