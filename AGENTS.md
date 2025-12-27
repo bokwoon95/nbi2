@@ -16,7 +16,7 @@ All routing is defined in serve\_http.go. The router is consumed in notebrew/mai
 
 ## HTML
 
-All HTML pages are located in embed/, and all include base.html and the templates within. Refer to how the `templateMap` global variable in the nbi2 package is initialized in the init() function.
+All HTML pages are located in embed/, and all include base.html/icons.html and the templates within. Refer to how the `templateMap` global variable in the nbi2 package is initialized in the init() function.
 
 ## CSS
 @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --watch=always
