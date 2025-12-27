@@ -79,13 +79,9 @@ https://www.google.com/imgres?q=evernote&imgurl=https%3A%2F%2Fprismic-io.s3.amaz
 /cms/sites/bokwoon/
 /cms/sites/bokwoon.com/
 
-TODO: cross button that adds "hidden" class to the sidepane
+TODO: figure out how to make the login screen scale to screen width on mobile.
 
-TODO: button/icon that appears only when the sidepane is hidden, that removes the "hidden" class from the sidepane
-
-TODO: every accordion in the side pane has a unique name associated with it. When the user toggles an accordion, JavaScript persists the state of all accordions into a cookie. The server reads the cookie on each requests and renders the each accordion in an initially open or initially closed state accordingly.
-
-TODO: figure out why clicking on outside the sidebar-pane in mobile mode doesn't hide the sidebar
+TODO: figure out why clicking on outside the sidebar-pane in mobile mode doesn't hide the sidebar (debug on iOS).
 
 wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --minify --watch=always :: wgo -xdir . npx esbuild notebrew.ts --bundle --outdir=static --minify --watch=forever :: wgo run -tags dev -verbose ./notebrew
 
