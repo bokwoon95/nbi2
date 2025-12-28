@@ -6,14 +6,14 @@
 {{ end }}
 <div class='p-3 pt-5'>
   {{ if eq (index $.FlashData "from") "invite" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-info-circle" }}
     <h2>Account created</h2>
     <section>Please log in using your new credentials.</section>
   </div>
   {{ end }}
   {{ if eq (index $.FlashData "from") "resetpassword" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-info-circle" }}
     {{ if index $.FlashData "emailSent" }}
     <h2>Password reset email sent</h2>
@@ -25,40 +25,40 @@
   </div>
   {{ end }}
   {{ if eq (index $.FlashData "from") "changepassword" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-info-circle" }}
     <h2>Password changed successfully</h2>
     <section>Please log in using your new credentials.</section>
   </div>
   {{ end }}
   {{ if eq $.Error "AlreadyAuthenticated" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-info-circle" }}
     <h2>You are already logged in</h2>
     <section><p>Go to your <a href='/cms/' class='link'>dashboard</a>.</p></section>
   </div>
   {{ else if eq $.Error "RetryWithCaptcha" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-alert-triangle" }}
     <h2>Please retry with captcha</h2>
   </div>
   {{ else if eq $.Error "CaptchaChallengeFailed" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-alert-triangle" }}
     <h2>Captcha challenge failed</h2>
   </div>
   {{ else if eq $.Error "IncorrectLoginCredentials" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-alert-triangle" }}
     <h2>Incorrect username or password</h2>
   </div>
   {{ else if eq $.Error "NotAuthenticated" }}
-  <div class='alert mb-3 w-md lg:w-sm mx-auto'>
+  <div class='alert mb-3 w-full md:w-md mx-auto'>
     {{ template "tabler-alert-triangle" }}
     <h2>Please log in</h2>
   </div>
   {{ end }}
-  <div class='card w-md lg:w-sm mx-auto'>
+  <div class='card w-full md:w-md mx-auto'>
     <header>
       <h2>☕ Login to your notebrew account</h2>
     </header>
