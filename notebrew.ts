@@ -37,24 +37,27 @@ globalThis.initFuncs = [
       if (!notSidePane) {
         throw new Error("#not-side-pane not found");
       }
+
       for (const eventTarget of document.querySelectorAll("[data-hide-side-pane]")) {
         if (hideSidePaneTargets.has(eventTarget)) {
           continue;
         }
         hideSidePaneTargets.add(eventTarget);
-        eventTarget.addEventListener("click", function() {
+        eventTarget.addEventListener("click", function hideSidePane() {
           sidePane.classList.add("hidden");
         });
       }
+
       for (const eventTarget of document.querySelectorAll("[data-show-side-pane]")) {
         if (showSidePaneTargets.has(eventTarget)) {
           continue;
         }
         showSidePaneTargets.add(eventTarget);
-        eventTarget.addEventListener("click", function() {
+        eventTarget.addEventListener("click", function showSidePane() {
           sidePane.classList.remove("hidden");
         });
       }
+
       for (const eventTarget of document.querySelectorAll("[data-go-back]")) {
         if (goBackTargets.has(eventTarget)) {
           continue;
@@ -63,7 +66,7 @@ globalThis.initFuncs = [
         if (eventTarget.tagName != "A") {
           continue;
         }
-        eventTarget.addEventListener("click", function(event) {
+        eventTarget.addEventListener("click", function goBack(event) {
           if (!(event instanceof PointerEvent)) {
             return;
           }

@@ -320,7 +320,7 @@
             continue;
           }
           hideSidePaneTargets.add(eventTarget);
-          eventTarget.addEventListener("click", function() {
+          eventTarget.addEventListener("click", function hideSidePane2() {
             sidePane.classList.add("hidden");
           });
         }
@@ -329,7 +329,7 @@
             continue;
           }
           showSidePaneTargets.add(eventTarget);
-          eventTarget.addEventListener("click", function() {
+          eventTarget.addEventListener("click", function showSidePane() {
             sidePane.classList.remove("hidden");
           });
         }
@@ -341,7 +341,7 @@
           if (eventTarget.tagName != "A") {
             continue;
           }
-          eventTarget.addEventListener("click", function(event) {
+          eventTarget.addEventListener("click", function goBack(event) {
             if (!(event instanceof PointerEvent)) {
               return;
             }
