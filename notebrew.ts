@@ -9,7 +9,7 @@ const notSidePane = document.getElementById("not-side-pane");
 if (!notSidePane) {
   throw new Error("#not-side-pane not found");
 }
-window.addEventListener("click", function(event) {
+document.addEventListener("click", function(event) {
   if (window.matchMedia("(min-width: 64rem)" /* tailwind lg breakpoint */).matches) {
     return;
   }
