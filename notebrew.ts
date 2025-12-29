@@ -1,16 +1,12 @@
 import "./static/basecoat.js";
 import "./static/dropdown-menu-v2.js";
 
-const sidePane = document.getElementById("side-pane");
-if (!sidePane) {
-  throw new Error("#side-pane not found");
-}
-const notSidePane = document.getElementById("not-side-pane");
-if (!notSidePane) {
-  throw new Error("#not-side-pane not found");
-}
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function hideSidePane(event) {
   if (window.matchMedia("(min-width: 64rem)" /* tailwind lg breakpoint */).matches) {
+    return;
+  }
+  const sidePane = document.getElementById("side-pane");
+  if (!sidePane) {
     return;
   }
   if (sidePane.classList.contains("hidden")) {
@@ -26,79 +22,65 @@ document.addEventListener("click", function(event) {
   }
   sidePane.classList.add("hidden");
 });
-for (const dataHideSidePane of document.querySelectorAll("[data-hide-side-pane]")) {
-  dataHideSidePane.addEventListener("click", function() {
-    sidePane.classList.add("hidden");
-  });
-}
-for (const dataShowSidePane of document.querySelectorAll("[data-show-side-pane]")) {
-  dataShowSidePane.addEventListener("click", function() {
-    sidePane.classList.remove("hidden");
-  });
-}
 
-const hamburgerMenuBtn = document.getElementById("hamburger-menu-btn");
-const hamburgerMenuIcon = document.getElementById("hamburger-menu-icon");
-const menuPane = document.getElementById("menu-pane");
-const notMenuPane = document.getElementById("not-menu-pane");
-if (hamburgerMenuBtn && hamburgerMenuIcon && sidePane && notMenuPane) {
-  hamburgerMenuBtn.addEventListener("click", function() {
-    if (hamburgerMenuIcon.classList.contains("open")) {
-      hamburgerMenuIcon.classList.remove("open");
-      sidePane.classList.add("hidden");
-    } else {
-      hamburgerMenuIcon.classList.add("open");
-      sidePane.classList.remove("hidden");
-    }
-  });
-  notMenuPane.addEventListener("click", function() {
-    if (hamburgerMenuIcon.classList.contains("open")) {
-      hamburgerMenuIcon.classList.remove("open");
-      sidePane.classList.add("hidden");
-    }
-  });
-}
-
-for (const dataClickEventStopPropagation of document.querySelectorAll("[data-click-event-stop-propagation]")) {
-  dataClickEventStopPropagation.addEventListener("click", function(event) {
-    event.stopPropagation();
-  });
-}
-
-for (const dataDismissAlert of document.querySelectorAll("[data-dismiss-alert]")) {
-  dataDismissAlert.addEventListener("click", function() {
-    let parentElement = dataDismissAlert.parentElement;
-    while (parentElement != null) {
-      const role = parentElement.getAttribute("role");
-      if (role != "alert") {
-        parentElement = parentElement.parentElement;
-        continue;
+globalThis.initFuncs = [
+  (function() {
+    const hideSidePaneTargets = new WeakSet();
+    const showSidePaneTargets = new WeakSet();
+    const goBackTargets = new WeakSet();
+    return function init() {
+      const sidePane = document.getElementById("side-pane");
+      if (!sidePane) {
+        throw new Error("#side-pane not found");
       }
-      parentElement.style.transition = "opacity 100ms linear";
-      parentElement.style.opacity = "0";
-      setTimeout(function() {
-        if (parentElement) {
-          parentElement.style.display = "none"
+      const notSidePane = document.getElementById("not-side-pane");
+      if (!notSidePane) {
+        throw new Error("#not-side-pane not found");
+      }
+      for (const eventTarget of document.querySelectorAll("[data-hide-side-pane]")) {
+        if (hideSidePaneTargets.has(eventTarget)) {
+          continue;
         }
-      }, 100);
-      return;
+        hideSidePaneTargets.add(eventTarget);
+        eventTarget.addEventListener("click", function() {
+          sidePane.classList.add("hidden");
+        });
+      }
+      for (const eventTarget of document.querySelectorAll("[data-show-side-pane]")) {
+        if (showSidePaneTargets.has(eventTarget)) {
+          continue;
+        }
+        showSidePaneTargets.add(eventTarget);
+        eventTarget.addEventListener("click", function() {
+          sidePane.classList.remove("hidden");
+        });
+      }
+      for (const eventTarget of document.querySelectorAll("[data-go-back]")) {
+        if (goBackTargets.has(eventTarget)) {
+          continue;
+        }
+        goBackTargets.add(eventTarget);
+        if (eventTarget.tagName != "A") {
+          continue;
+        }
+        eventTarget.addEventListener("click", function(event) {
+          if (!(event instanceof PointerEvent)) {
+            return;
+          }
+          if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            history.back();
+          }
+        });
+      }
     }
-  });
-}
+  })(),
+];
 
-for (const dataGoBack of document.querySelectorAll("[data-go-back]")) {
-  if (dataGoBack.tagName != "A") {
-    continue;
+for (const fn of globalThis.initFuncs) {
+  if (typeof fn == "function") {
+    fn();
   }
-  dataGoBack.addEventListener("click", function(event) {
-    if (!(event instanceof PointerEvent)) {
-      return;
-    }
-    if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
-      event.preventDefault();
-      history.back();
-    }
-  });
 }
 
 function humanReadableFileSize(size: number) {

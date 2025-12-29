@@ -277,19 +277,15 @@
   })();
 
   // notebrew.ts
-  var sidePane = document.getElementById("side-pane");
-  if (!sidePane) {
-    throw new Error("#side-pane not found");
-  }
-  var notSidePane = document.getElementById("not-side-pane");
-  if (!notSidePane) {
-    throw new Error("#not-side-pane not found");
-  }
-  document.addEventListener("click", function(event) {
+  document.addEventListener("click", function hideSidePane(event) {
     if (window.matchMedia(
       "(min-width: 64rem)"
       /* tailwind lg breakpoint */
     ).matches) {
+      return;
+    }
+    const sidePane = document.getElementById("side-pane");
+    if (!sidePane) {
       return;
     }
     if (sidePane.classList.contains("hidden")) {
@@ -305,74 +301,62 @@
     }
     sidePane.classList.add("hidden");
   });
-  for (const dataHideSidePane of document.querySelectorAll("[data-hide-side-pane]")) {
-    dataHideSidePane.addEventListener("click", function() {
-      sidePane.classList.add("hidden");
-    });
-  }
-  for (const dataShowSidePane of document.querySelectorAll("[data-show-side-pane]")) {
-    dataShowSidePane.addEventListener("click", function() {
-      sidePane.classList.remove("hidden");
-    });
-  }
-  var hamburgerMenuBtn = document.getElementById("hamburger-menu-btn");
-  var hamburgerMenuIcon = document.getElementById("hamburger-menu-icon");
-  var menuPane = document.getElementById("menu-pane");
-  var notMenuPane = document.getElementById("not-menu-pane");
-  if (hamburgerMenuBtn && hamburgerMenuIcon && sidePane && notMenuPane) {
-    hamburgerMenuBtn.addEventListener("click", function() {
-      if (hamburgerMenuIcon.classList.contains("open")) {
-        hamburgerMenuIcon.classList.remove("open");
-        sidePane.classList.add("hidden");
-      } else {
-        hamburgerMenuIcon.classList.add("open");
-        sidePane.classList.remove("hidden");
-      }
-    });
-    notMenuPane.addEventListener("click", function() {
-      if (hamburgerMenuIcon.classList.contains("open")) {
-        hamburgerMenuIcon.classList.remove("open");
-        sidePane.classList.add("hidden");
-      }
-    });
-  }
-  for (const dataClickEventStopPropagation of document.querySelectorAll("[data-click-event-stop-propagation]")) {
-    dataClickEventStopPropagation.addEventListener("click", function(event) {
-      event.stopPropagation();
-    });
-  }
-  for (const dataDismissAlert of document.querySelectorAll("[data-dismiss-alert]")) {
-    dataDismissAlert.addEventListener("click", function() {
-      let parentElement = dataDismissAlert.parentElement;
-      while (parentElement != null) {
-        const role = parentElement.getAttribute("role");
-        if (role != "alert") {
-          parentElement = parentElement.parentElement;
-          continue;
+  globalThis.initFuncs = [
+    /* @__PURE__ */ (function() {
+      const hideSidePaneTargets = /* @__PURE__ */ new WeakSet();
+      const showSidePaneTargets = /* @__PURE__ */ new WeakSet();
+      const goBackTargets = /* @__PURE__ */ new WeakSet();
+      return function init() {
+        const sidePane = document.getElementById("side-pane");
+        if (!sidePane) {
+          throw new Error("#side-pane not found");
         }
-        parentElement.style.transition = "opacity 100ms linear";
-        parentElement.style.opacity = "0";
-        setTimeout(function() {
-          if (parentElement) {
-            parentElement.style.display = "none";
+        const notSidePane = document.getElementById("not-side-pane");
+        if (!notSidePane) {
+          throw new Error("#not-side-pane not found");
+        }
+        for (const eventTarget of document.querySelectorAll("[data-hide-side-pane]")) {
+          if (hideSidePaneTargets.has(eventTarget)) {
+            continue;
           }
-        }, 100);
-        return;
-      }
-    });
-  }
-  for (const dataGoBack of document.querySelectorAll("[data-go-back]")) {
-    if (dataGoBack.tagName != "A") {
-      continue;
+          hideSidePaneTargets.add(eventTarget);
+          eventTarget.addEventListener("click", function() {
+            sidePane.classList.add("hidden");
+          });
+        }
+        for (const eventTarget of document.querySelectorAll("[data-show-side-pane]")) {
+          if (showSidePaneTargets.has(eventTarget)) {
+            continue;
+          }
+          showSidePaneTargets.add(eventTarget);
+          eventTarget.addEventListener("click", function() {
+            sidePane.classList.remove("hidden");
+          });
+        }
+        for (const eventTarget of document.querySelectorAll("[data-go-back]")) {
+          if (goBackTargets.has(eventTarget)) {
+            continue;
+          }
+          goBackTargets.add(eventTarget);
+          if (eventTarget.tagName != "A") {
+            continue;
+          }
+          eventTarget.addEventListener("click", function(event) {
+            if (!(event instanceof PointerEvent)) {
+              return;
+            }
+            if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
+              event.preventDefault();
+              history.back();
+            }
+          });
+        }
+      };
+    })()
+  ];
+  for (const fn of globalThis.initFuncs) {
+    if (typeof fn == "function") {
+      fn();
     }
-    dataGoBack.addEventListener("click", function(event) {
-      if (!(event instanceof PointerEvent)) {
-        return;
-      }
-      if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
-        event.preventDefault();
-        history.back();
-      }
-    });
   }
 })();
