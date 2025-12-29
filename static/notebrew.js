@@ -2,10 +2,10 @@
   // static/basecoat.js
   (() => {
     const componentRegistry = {};
-    let observer = null;
-    const registerComponent = (name, selector, initFunction) => {
+    let observer2 = null;
+    const registerComponent = (name, selector2, initFunction) => {
       componentRegistry[name] = {
-        selector,
+        selector: selector2,
         init: initFunction
       };
     };
@@ -19,32 +19,32 @@
       }
     };
     const initAllComponents = () => {
-      Object.entries(componentRegistry).forEach(([name, { selector, init }]) => {
-        document.querySelectorAll(selector).forEach(init);
+      Object.entries(componentRegistry).forEach(([name, { selector: selector2, init }]) => {
+        document.querySelectorAll(selector2).forEach(init);
       });
     };
     const initNewComponents = (node) => {
       if (node.nodeType !== Node.ELEMENT_NODE) return;
-      Object.entries(componentRegistry).forEach(([name, { selector, init }]) => {
-        if (node.matches(selector)) {
+      Object.entries(componentRegistry).forEach(([name, { selector: selector2, init }]) => {
+        if (node.matches(selector2)) {
           init(node);
         }
-        node.querySelectorAll(selector).forEach(init);
+        node.querySelectorAll(selector2).forEach(init);
       });
     };
     const startObserver = () => {
-      if (observer) return;
-      observer = new MutationObserver((mutations) => {
+      if (observer2) return;
+      observer2 = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach(initNewComponents);
         });
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer2.observe(document.body, { childList: true, subtree: true });
     };
     const stopObserver = () => {
-      if (observer) {
-        observer.disconnect();
-        observer = null;
+      if (observer2) {
+        observer2.disconnect();
+        observer2 = null;
       }
     };
     const reinitComponent = (componentName) => {
@@ -60,7 +60,7 @@
       document.querySelectorAll(component.selector).forEach(component.init);
     };
     const reinitAll = () => {
-      Object.entries(componentRegistry).forEach(([name, { selector }]) => {
+      Object.entries(componentRegistry).forEach(([name, { selector: selector2 }]) => {
         const flag = `data-${name}-initialized`;
         document.querySelectorAll(`[${flag}]`).forEach((el) => {
           el.removeAttribute(flag);
@@ -276,8 +276,85 @@
     }
   })();
 
-  // notebrew.ts
-  document.addEventListener("click", function hideSidePane(event) {
+  // notebrew.mjs
+  var initFuncs = {
+    "data-hide-side-pane": function initHideSidePane(targetElement) {
+      targetElement.addEventListener("click", function hideSidePane() {
+        const sidePane = document.getElementById("side-pane");
+        if (!sidePane) {
+          return;
+        }
+        sidePane.classList.add("hidden");
+      });
+    },
+    "data-show-side-pane": function initShowSidePane(targetElement) {
+      targetElement.addEventListener("click", function showSidePane() {
+        const sidePane = document.getElementById("side-pane");
+        if (!sidePane) {
+          return;
+        }
+        sidePane.classList.remove("hidden");
+      });
+    },
+    "data-go-back": function initGoBack(targetElement) {
+      if (targetElement.tagName != "A") {
+        return;
+      }
+      targetElement.addEventListener("click", function goBack(event) {
+        if (!(event instanceof PointerEvent)) {
+          return;
+        }
+        if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
+          event.preventDefault();
+          history.back();
+        }
+      });
+    }
+  };
+  var attributeNames = Object.keys(initFuncs);
+  var selector = "";
+  for (let i = 0; i < attributeNames.length; i++) {
+    if (i > 0) {
+      selector += ", ";
+    }
+    selector += `[${attributeNames[i]}]`;
+  }
+  for (const targetElement of document.querySelectorAll(selector)) {
+    for (const attributeName of attributeNames) {
+      if (targetElement.hasAttribute(attributeName)) {
+        initFuncs[attributeName](targetElement);
+      }
+    }
+  }
+  var observer = new MutationObserver(function(mutationRecords) {
+    for (const mutationRecord of mutationRecords) {
+      if (mutationRecord.type != "childList") {
+        continue;
+      }
+      for (const addedElement of mutationRecord.addedNodes) {
+        if (!(addedElement instanceof Element)) {
+          continue;
+        }
+        for (const attributeName of attributeNames) {
+          if (addedElement.hasAttribute(attributeName)) {
+            initFuncs[attributeName](addedElement);
+          }
+        }
+        for (const targetElement of addedElement.querySelectorAll(selector)) {
+          for (const attributeName of attributeNames) {
+            if (targetElement.hasAttribute(attributeName)) {
+              initFuncs[attributeName](targetElement);
+            }
+          }
+        }
+      }
+    }
+  });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  document.addEventListener("click", function hideSidePaneOnClickOutside(event) {
     if (window.matchMedia(
       "(min-width: 64rem)"
       /* tailwind lg breakpoint */
@@ -301,62 +378,4 @@
     }
     sidePane.classList.add("hidden");
   });
-  globalThis.initFuncs = [
-    /* @__PURE__ */ (function() {
-      const hideSidePaneTargets = /* @__PURE__ */ new WeakSet();
-      const showSidePaneTargets = /* @__PURE__ */ new WeakSet();
-      const goBackTargets = /* @__PURE__ */ new WeakSet();
-      return function init() {
-        const sidePane = document.getElementById("side-pane");
-        if (!sidePane) {
-          throw new Error("#side-pane not found");
-        }
-        const notSidePane = document.getElementById("not-side-pane");
-        if (!notSidePane) {
-          throw new Error("#not-side-pane not found");
-        }
-        for (const eventTarget of document.querySelectorAll("[data-hide-side-pane]")) {
-          if (hideSidePaneTargets.has(eventTarget)) {
-            continue;
-          }
-          hideSidePaneTargets.add(eventTarget);
-          eventTarget.addEventListener("click", function hideSidePane2() {
-            sidePane.classList.add("hidden");
-          });
-        }
-        for (const eventTarget of document.querySelectorAll("[data-show-side-pane]")) {
-          if (showSidePaneTargets.has(eventTarget)) {
-            continue;
-          }
-          showSidePaneTargets.add(eventTarget);
-          eventTarget.addEventListener("click", function showSidePane() {
-            sidePane.classList.remove("hidden");
-          });
-        }
-        for (const eventTarget of document.querySelectorAll("[data-go-back]")) {
-          if (goBackTargets.has(eventTarget)) {
-            continue;
-          }
-          goBackTargets.add(eventTarget);
-          if (eventTarget.tagName != "A") {
-            continue;
-          }
-          eventTarget.addEventListener("click", function goBack(event) {
-            if (!(event instanceof PointerEvent)) {
-              return;
-            }
-            if (document.referrer && history.length > 2 && !event.ctrlKey && !event.metaKey) {
-              event.preventDefault();
-              history.back();
-            }
-          });
-        }
-      };
-    })()
-  ];
-  for (const fn of globalThis.initFuncs) {
-    if (typeof fn == "function") {
-      fn();
-    }
-  }
 })();
