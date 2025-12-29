@@ -206,6 +206,10 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		case "photos":
 			// nbrew.photos(w, r, contextData) // TODO
+			nbrew.NotFound(w, r)
+			return
+		case "blogs":
+			nbrew.NotFound(w, r)
 			return
 		default:
 			nbrew.NotFound(w, r)
