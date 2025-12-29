@@ -35,9 +35,10 @@ side-pane contains:
 - photos
 - blogs
 
+TODO: rename side-pane to sidebar
 TODO: side-pane has a fixed top (users and stuff) and bottom (storage used)
+    TODO: don't use flex, instead use position: fixed (following what chatgpt.com does) and add the necessary offsets to the top and bottom using css variables.
 TODO: ?render=side-pane will render the page and return only the item with the matching id (using server-side html parsing)
-    TODO: if we swap out the dom element with html returned by the server, we have to be able to re-register all event listeners. So all event listener registration must be stored in a global function that can be re-invoked at will. But we must also prevent duplicate event listener registrations, so all items with event listeners must be registered inside a weakset to ensure event listener registration function is idempotent (if it already exists in the weakset, skip adding the event listener)
 
 /cms/notes
 /cms/notes/:noteID
