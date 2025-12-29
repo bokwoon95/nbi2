@@ -35,6 +35,7 @@ side-pane contains:
 - photos
 - blogs
 
+TODO: esbuild: reconfigure outdir to outfile
 TODO: rename side-pane to sidebar
 TODO: side-pane has a fixed top (users and stuff) and bottom (storage used)
     TODO: don't use flex, instead use position: fixed (following what chatgpt.com does) and add the necessary offsets to the top and bottom using css variables.
