@@ -47,10 +47,10 @@ for (let i = 0; i < attributeNames.length; i++) {
   }
   selector += `[${attributeNames[i]}]`
 }
-for (const targetElement of document.querySelectorAll(selector)) {
+for (const element of document.querySelectorAll(selector)) {
   for (const attributeName of attributeNames) {
-    if (targetElement.hasAttribute(attributeName)) {
-      initFuncs[attributeName](targetElement);
+    if (element.hasAttribute(attributeName)) {
+      initFuncs[attributeName](element);
     }
   }
 }
@@ -59,19 +59,19 @@ const observer = new MutationObserver(function(mutationRecords) {
     if (mutationRecord.type != "childList") {
       continue;
     }
-    for (const addedElement of mutationRecord.addedNodes) {
-      if (!(addedElement instanceof Element)) {
+    for (const element of mutationRecord.addedNodes) {
+      if (!(element instanceof Element)) {
         continue;
       }
       for (const attributeName of attributeNames) {
-        if (addedElement.hasAttribute(attributeName)) {
-          initFuncs[attributeName](addedElement);
+        if (element.hasAttribute(attributeName)) {
+          initFuncs[attributeName](element);
         }
       }
-      for (const targetElement of addedElement.querySelectorAll(selector)) {
+      for (const element of element.querySelectorAll(selector)) {
         for (const attributeName of attributeNames) {
-          if (targetElement.hasAttribute(attributeName)) {
-            initFuncs[attributeName](targetElement);
+          if (element.hasAttribute(attributeName)) {
+            initFuncs[attributeName](element);
           }
         }
       }
