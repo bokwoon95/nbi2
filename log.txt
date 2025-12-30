@@ -34,7 +34,6 @@ sidebar contains:
 - photos
 - blogs
 
-TODO: add sufficient items to the sidebar so that we can induce scroll (and see how it interacts with the changes)
 TODO: sidebar has a fixed top (users and stuff) and bottom (storage used)
     TODO: don't use flex, instead use position: fixed (following what chatgpt.com does) and add the necessary offsets to the top and bottom using css variables.
 TODO: ?render=sidebar will render the page and return only the item with the matching id (using server-side html parsing)
