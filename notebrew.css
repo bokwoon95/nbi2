@@ -3,7 +3,7 @@
 @source "./embed";
 
 :root {
-  --side-pane-width: 16rem;
+  --sidebar-width: 16rem;
 }
 
 .link {
@@ -58,9 +58,9 @@ details[open] > .dropdown-chevron::before {
   margin-right: 0.25rem;
 }
 
-#side-pane {
+#sidebar {
   position: fixed;
-  width: var(--side-pane-width);
+  width: var(--sidebar-width);
   height: 100svh;
   height: 100vh;
   overflow: auto;
@@ -68,14 +68,14 @@ details[open] > .dropdown-chevron::before {
 }
 
 @media (min-width: 64rem) {
-  #side-pane {
+  #sidebar {
     box-shadow: none;
   }
-  #not-side-pane {
+  #not-sidebar {
     position: relative;
-    left: var(--side-pane-width);
-    width: calc(100dvw - var(--side-pane-width));
-    width: calc(100vw - var(--side-pane-width));
+    left: var(--sidebar-width);
+    width: calc(100dvw - var(--sidebar-width));
+    width: calc(100vw - var(--sidebar-width));
   }
 }
 
