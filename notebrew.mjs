@@ -49,8 +49,13 @@ for (let i = 0; i < attributeNames.length; i++) {
 }
 for (const targetElement of document.querySelectorAll(selector)) {
   for (const attributeName of attributeNames) {
-    if (targetElement.hasAttribute(attributeName)) {
-      initFuncs[attributeName](targetElement);
+    if (targetElement.hasAttribute(attributeName) && targetElement.getAttribute(attributeName) != "initialized") {
+      try {
+        initFuncs[attributeName](targetElement);
+      } catch (e) {
+        console.error(e);
+      }
+      targetElement.setAttribute(attributeName, "initialized");
     }
   }
 }
@@ -64,14 +69,24 @@ const observer = new MutationObserver(function(mutationRecords) {
         continue;
       }
       for (const attributeName of attributeNames) {
-        if (addedElement.hasAttribute(attributeName)) {
-          initFuncs[attributeName](addedElement);
+        if (addedElement.hasAttribute(attributeName) && addedElement.getAttribute(attributeName) != "initialized") {
+          try {
+            initFuncs[attributeName](addedElement);
+          } catch (e) {
+            console.error(e);
+          }
+          addedElement.setAttribute(attributeName, "initialized");
         }
       }
       for (const targetElement of addedElement.querySelectorAll(selector)) {
         for (const attributeName of attributeNames) {
-          if (targetElement.hasAttribute(attributeName)) {
-            initFuncs[attributeName](targetElement);
+          if (targetElement.hasAttribute(attributeName) && targetElement.getAttribute(attributeName) != "initialized") {
+            try {
+              initFuncs[attributeName](targetElement);
+            } catch (e) {
+              console.error(e);
+            }
+            targetElement.setAttribute(attributeName, "initialized");
           }
         }
       }
