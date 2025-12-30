@@ -35,7 +35,6 @@ side-pane contains:
 - photos
 - blogs
 
-TODO: esbuild: reconfigure outdir to outfile
 TODO: rename side-pane to sidebar
 TODO: side-pane has a fixed top (users and stuff) and bottom (storage used)
     TODO: don't use flex, instead use position: fixed (following what chatgpt.com does) and add the necessary offsets to the top and bottom using css variables.
@@ -57,7 +56,9 @@ what if we just displayed _all_ folders unconditionally?
 notes have names? no, folders have names. should folder names be included in the full text search? yes
 how should search be organized? search note text. notes can contain photos and videos. photos contain OCR-ed text that may be searched.
 
-wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --watch=always :: wgo -xdir . npx esbuild notebrew.mjs --bundle --outdir=static --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
+TODO: try wgo on macOS updated to 1.25 and see if you also get `exec: "notebrew": cannot run executable found relative to current directory`
+
+wgo -xdir . npx @tailwindcss/cli --input ./notebrew.css --output ./static/notebrew.min.css --watch=always :: wgo -xdir . npx esbuild ./notebrew.js --bundle --outfile=./static/notebrew.min.js --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
 
 /n/ => /cms/n/
 /p/CAfx7fLJ3YBDDvuwwEEPHa/ => /cms/p/CAfx7fLJ3YBDDvuwwEEPHa/Osaka_2025/?api

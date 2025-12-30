@@ -84,7 +84,7 @@ func (nbrew *Notebrew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		URLPath:    urlPath,
 		CDNDomain:  nbrew.CDNDomain,
 		DevMode:    devMode,
-		StylesCSS:  template.CSS(stylesCSS),
+		NotebrewCSS:  template.CSS(notebrewCSS),
 		NotebrewJS: template.JS(notebrewJS),
 	}
 	if urlPath, found := strings.CutPrefix(urlPath, "/cms/"); found {

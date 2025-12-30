@@ -4,10 +4,10 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <title>{{ block "title" $ }}Notebrew{{ end }}</title>
 {{ if $.ContextData.DevMode }}
-<link rel='stylesheet' href='/cms/static/styles.css'>
-<script type='module' src='/cms/static/notebrew.js'></script>
+<link rel='stylesheet' href='/cms/static/notebrew.min.css'>
+<script type='module' src='/cms/static/notebrew.min.js'></script>
 {{ else }}
-<style>{{ $.ContextData.StylesCSS }}</style>
+<style>{{ $.ContextData.NotebrewCSS }}</style>
 <script type='module'>{{ $.ContextData.NotebrewJS }}</script>
 {{ end }}
 {{ end }}

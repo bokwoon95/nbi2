@@ -1606,7 +1606,7 @@ type ContextData struct {
 	DisableReason string          `json:"disableReason"`
 	UserFlags     map[string]bool `json:"userFlags"`
 	DevMode       bool            `json:"-"`
-	StylesCSS     template.CSS    `json:"-"`
+	NotebrewCSS   template.CSS    `json:"-"`
 	NotebrewJS    template.JS     `json:"-"`
 	Referer       string          `json:"-"`
 	PathTail      string          `json:"-"`
@@ -1615,8 +1615,8 @@ type ContextData struct {
 func (v ContextData) GoString() string {
 	type ContextDataClone ContextData
 	clone := ContextDataClone(v)
-	if clone.StylesCSS != "" {
-		clone.StylesCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(clone.StylesCSS)))
+	if clone.NotebrewCSS != "" {
+		clone.NotebrewCSS = template.CSS(fmt.Sprintf("<redacted len=%d>", len(clone.NotebrewCSS)))
 	}
 	if clone.NotebrewJS != "" {
 		clone.NotebrewJS = template.JS(fmt.Sprintf("<redacted len=%d>", len(clone.NotebrewJS)))
@@ -1764,10 +1764,10 @@ func (nbrew *Notebrew) BadRequest(w http.ResponseWriter, r *http.Request, server
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Title":    "400 bad request",
 		"Headline": "400 bad request",
@@ -1829,10 +1829,10 @@ func (nbrew *Notebrew) NotAuthenticated(w http.ResponseWriter, r *http.Request) 
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Title":    "401 unauthorized",
 		"Headline": "401 unauthorized",
@@ -1893,10 +1893,10 @@ func (nbrew *Notebrew) NotAuthorized(w http.ResponseWriter, r *http.Request) {
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "403 forbidden",
@@ -1951,10 +1951,10 @@ func (nbrew *Notebrew) NotFound(w http.ResponseWriter, r *http.Request) {
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "404 not found",
@@ -2010,10 +2010,10 @@ func (nbrew *Notebrew) MethodNotAllowed(w http.ResponseWriter, r *http.Request) 
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "405 method not allowed",
@@ -2053,10 +2053,10 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 		encoder.SetEscapeHTML(false)
 		err := encoder.Encode(map[string]any{
 			"ContextData": ContextData{
-				DevMode:    devMode,
-				StylesCSS:  template.CSS(stylesCSS),
-				NotebrewJS: template.JS(notebrewJS),
-				Referer:    r.Referer(),
+				DevMode:     devMode,
+				NotebrewCSS: template.CSS(notebrewCSS),
+				NotebrewJS:  template.JS(notebrewJS),
+				Referer:     r.Referer(),
 			},
 			"error":   "UnsupportedMediaType",
 			"message": message,
@@ -2082,10 +2082,10 @@ func (nbrew *Notebrew) UnsupportedContentType(w http.ResponseWriter, r *http.Req
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  nbrew.GetReferer(r),
 		"Title":    "415 unsupported media type",
@@ -2199,10 +2199,10 @@ func (nbrew *Notebrew) InternalServerError(w http.ResponseWriter, r *http.Reques
 	}()
 	var data map[string]any
 	contextData := ContextData{
-		DevMode:    devMode,
-		StylesCSS:  template.CSS(stylesCSS),
-		NotebrewJS: template.JS(notebrewJS),
-		Referer:    r.Referer(),
+		DevMode:     devMode,
+		NotebrewCSS: template.CSS(notebrewCSS),
+		NotebrewJS:  template.JS(notebrewJS),
+		Referer:     r.Referer(),
 	}
 	if isDeadlineExceeded {
 		data = map[string]any{
@@ -2284,10 +2284,10 @@ func (nbrew *Notebrew) StorageLimitExceeded(w http.ResponseWriter, r *http.Reque
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  r.Referer(),
 		"Title":    "507 insufficient storage",
@@ -2340,10 +2340,10 @@ func (nbrew *Notebrew) AccountDisabled(w http.ResponseWriter, r *http.Request, d
 	}
 	err := tmpl.Execute(buf, map[string]any{
 		"ContextData": ContextData{
-			DevMode:    devMode,
-			StylesCSS:  template.CSS(stylesCSS),
-			NotebrewJS: template.JS(notebrewJS),
-			Referer:    r.Referer(),
+			DevMode:     devMode,
+			NotebrewCSS: template.CSS(notebrewCSS),
+			NotebrewJS:  template.JS(notebrewJS),
+			Referer:     r.Referer(),
 		},
 		"Referer":  r.Referer(),
 		"Title":    "403 Forbidden",
@@ -2455,14 +2455,14 @@ var (
 	// binary.
 	devMode = false
 
-	// stylesCSS is the contents of the styles.css file in the embed/
+	// notebrewCSS is the contents of the notebrew.min.css file in the static/
 	// directory.
-	stylesCSS string
+	notebrewCSS string
 
-	// stylesCSSHash is the sha256 hash of the stylesCSS contents.
-	stylesCSSHash string
+	// notebrewCSSHash is the sha256 hash of the notebrewCSS contents.
+	notebrewCSSHash string
 
-	// notebrewJSHash is the contents of the notebrew.js file in the embed/
+	// notebrewJSHash is the contents of the notebrew.min.js file in the static/
 	// directory.
 	notebrewJS string
 
@@ -2484,16 +2484,16 @@ var (
 
 func init() {
 	// styles.css
-	b, err := fs.ReadFile(embedFS, "static/styles.css")
+	b, err := fs.ReadFile(embedFS, "static/notebrew.min.css")
 	if err != nil {
 		panic(err)
 	}
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	hash := sha256.Sum256(b)
-	stylesCSS = string(b)
-	stylesCSSHash = "'sha256-" + base64.StdEncoding.EncodeToString(hash[:]) + "'"
+	notebrewCSS = string(b)
+	notebrewCSSHash = "'sha256-" + base64.StdEncoding.EncodeToString(hash[:]) + "'"
 	// notebrew.js
-	b, err = fs.ReadFile(embedFS, "static/notebrew.js")
+	b, err = fs.ReadFile(embedFS, "static/notebrew.min.js")
 	if err != nil {
 		panic(err)
 	}
