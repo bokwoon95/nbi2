@@ -37,6 +37,7 @@ sidebar contains:
 TODO: sidebar has a fixed top (users and stuff) and bottom (storage used)
     TODO: don't use flex, instead use position: fixed (following what chatgpt.com does) and add the necessary offsets to the top and bottom using css variables.
 TODO: ?render=sidebar will render the page and return only the item with the matching id (using server-side html parsing)
+TODO: dig into the dropdown menu and figure out how to make a tap outside any floating UI to only dismiss the floating UI and not everything e.g. if the open sidebar shows a dropdown menu, clicking outside the dropdown menu should only dismiss the dropdown menu and not also hide the open sidebar.
 
 /cms/notes
 /cms/notes/:noteID
