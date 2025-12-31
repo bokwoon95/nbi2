@@ -2,18 +2,13 @@ package nbi2
 
 import (
 	"bytes"
-	"crypto/rand"
-	"encoding/base32"
-	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"time"
-)
 
-// Crockford Base32 encoding.
-// 00000000000000000000000000
-var base32Encoding = base32.NewEncoding("0123456789abcdefghjkmnpqrstvwxyz").WithPadding(base32.NoPadding)
+	"github.com/google/uuid"
+	"github.com/mr-tron/base58"
+)
 
 // ID is a 16-byte UUID that is sortable by a timestamp component. The first 5
 // bytes of the ID are the timestamp component and the remaining 11 bytes are
@@ -33,15 +28,11 @@ type ID [16]byte
 
 // NewID creates a new ID.
 func NewID() ID {
-	var timestamp [8]byte
-	binary.BigEndian.PutUint64(timestamp[:], uint64(time.Now().Unix()))
-	var id ID
-	copy(id[:5], timestamp[len(timestamp)-5:])
-	_, err := rand.Read(id[5:])
+	uuid, err := uuid.NewV7()
 	if err != nil {
 		panic(err)
 	}
-	return id
+	return ID(uuid)
 }
 
 // ParseID parses a UUID string of the format
@@ -51,8 +42,8 @@ func ParseID(s string) (ID, error) {
 	switch len(s) {
 	case 0:
 		break
-	case 26:
-		b, err := base32Encoding.DecodeString(s)
+	case 21, 22:
+		b, err := base58.FastBase58Decoding(s)
 		if err != nil {
 			return ID{}, errors.New("invalid ID")
 		}
@@ -101,8 +92,8 @@ func (id ID) String() string {
 	return string(b[:])
 }
 
-func (id ID) Base32String() string {
-	return base32Encoding.EncodeToString(id[:])
+func (id ID) Base58String() string {
+	return base58.FastBase58Encoding(id[:])
 }
 
 // MarshalJSON converts an ID to a JSON string in the format

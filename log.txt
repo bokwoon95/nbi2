@@ -34,7 +34,6 @@ sidebar contains:
 - photos
 - blogs
 
-TODO: flesh out the fixed top and bottom
 TODO: remove ID type and just use uh, google/uuid v7. And use itchny/base58 for encoding URL slugs.
 
 /cms/notes

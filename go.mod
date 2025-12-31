@@ -41,6 +41,7 @@ require (
 	github.com/caddyserver/zerossl v0.1.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/itchyny/base58-go v0.2.2 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -49,6 +50,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mholt/acmez/v3 v3.1.3 // indirect
 	github.com/miekg/dns v1.1.68 // indirect
+	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/zeebo/blake3 v0.2.4 // indirect
