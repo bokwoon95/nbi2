@@ -566,6 +566,12 @@
       height: calc(var(--spacing) * 6);
     }
   }
+  .\[\&_svg\:not\(\[class\*\=\'size-\'\]\)\]\:size-6 {
+    & svg:not([class*='size-']) {
+      width: calc(var(--spacing) * 6);
+      height: calc(var(--spacing) * 6);
+    }
+  }
   .\[\&\>svg\]\:block {
     &>svg {
       display: block;

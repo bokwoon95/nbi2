@@ -1,9 +1,9 @@
 {{ define "title" }}{{ $.Title }}{{ end }}
 {{ template "preamble" $ }}
-<div id="not-menu-pane" class="p-3 pt-5">
+<main class="p-3 pt-5">
   <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300">
     <header class="flex max-w-sm flex-col items-center gap-3 text-center">
-      <div class="mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*="size-"])]:size-6">
+      <div class="mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6">
         {{ if hasPrefix $.Title "500" }}
           {{ template "tabler-mood-sad-dizzy" }}
         {{ else if hasPrefix $.Title "404" }}
@@ -35,4 +35,4 @@
     </details>
     {{ end }}
   </div>
-</div>
+</main>
