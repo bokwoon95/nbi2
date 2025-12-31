@@ -1,5 +1,5 @@
-import "./static/basecoat.js";
-import "./static/dropdown-menu-v2.js";
+import "./basecoat.js";
+import "./dropdown-menu-v2.js";
 
 /**
  * @type {Record<string, (element: Element) => void>}
