@@ -34,7 +34,17 @@ sidebar contains:
 - photos
 - blogs
 
-TODO: remove ID type and just use uh, google/uuid v7. And use itchny/base58 for encoding URL slugs.
+TODO: /cms/notes/ with various dummy notes put in place. We are only using list view a la Apple Notes.
+    TODO: How big to make the navbar? What buttons to put in it? Create Note
+    TODO: double... sidebars?
+        TODO: remember, the directory view has to be able to paginate somewhere. How?
+
+DESIGN REQUIREMENTS
+- filesystem-based (nested folders)
+- simple UI, more Apple than Evernote
+- we can exclude the typical double-sidebar view if we focus on packing as many notes as we can into the directory view. the directory view is essentially read-only, which simplifies many user interactions as compared to combining directory view and note view (both read and write)
+- do... nested folders really take up less space than a note in folder view though? actually no, directories can show nested stats like file count while notes will show like a single line of preview. it's fine. this means directories need t
+- show directories separately or together with files? together, having a UI to paginate directories and notes separately will be a pain in the ass. If the user doesn't want to obscure their folders with notes, organize better. If a user doesn't want to jump through so many nested steps, simply pin the relevant directory to the sidebar.
 
 /cms/notes
 /cms/notes/:noteID
