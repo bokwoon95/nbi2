@@ -30,7 +30,7 @@
         </div>
         <!-- <div class="size-8 shrink-0 [&>svg]:size">{{ template "tabler-settings" }}</div> -->
         <div class="dropdown-menu">
-          <button type="button" aria-haspopup="menu" aria-controls="demo-dropdown-menu-menu" aria-expanded="false" class="btn-outline" data-keep-mobile-sidebar-open>{{ template "tabler-settings" }}</button>
+          <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-outline" data-keep-mobile-sidebar-open>{{ template "tabler-settings" }}</button>
           <div data-popover aria-hidden="true" class="min-w-56">
             <div role="menu" aria-labelledby="demo-dropdown-menu-trigger">
               <div role="group" aria-labelledby="account-options">
@@ -68,9 +68,7 @@
     </header>
     <section class="scrollbar">
       <details role="group" aria-labelledby="notes" open>
-        <summary class="text-sm font-medium text-muted-foreground flex items-center">
-          <h3 id="notes" class="grow">Notes</h3>
-        </summary>
+        <summary><h3 id="notes">Notes</h3></summary>
         <ul>
           <li><a href="/cms/notes/">{{ template "tabler-notebook" }}Notes</a></li>
           <li><a href="/cms/notes/foo/" title="this goes to foo">{{ template "icon-tabler-file-text" }}foo</a></li>
@@ -79,9 +77,7 @@
         </ul>
       </details>
       <details role="group" aria-labelledby="photos" open>
-        <summary class="text-sm font-medium text-muted-foreground flex items-center">
-          <h3 id="photos" class="grow">Photos</h3>
-        </summary>
+        <summary><h3 id="photos">Photos</h3></summary>
         <ul>
           <li><a href="/cms/photos/">{{ template "icon-tabler-library-photo" }}Photos</a></li>
           <li><a href="/cms/photos/foo/">{{ template "icon-tabler-photo" }}foo</a></li>
@@ -90,15 +86,11 @@
         </ul>
       </details>
       <details role="group" aria-labelledby="blogs" open>
-        <summary class="text-sm font-medium text-muted-foreground flex items-center">
-          <h3 id="blogs" class="grow">Blogs</h3>
-        </summary>
+        <summary><h3 id="blogs">Blogs</h3></summary>
         <ul>
           <li>
             <details open>
-              <summary aria-controls="submenu-content-1-3-content">
-                bokwoon.com
-              </summary>
+              <summary>bokwoon.com</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon.com/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon.com/">Pages</a></li>
@@ -108,9 +100,7 @@
           </li>
           <li>
             <details open>
-              <summary>
-                @bokwoon
-              </summary>
+              <summary>@bokwoon</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon/">Pages</a></li>
@@ -120,9 +110,7 @@
           </li>
           <li>
             <details open>
-              <summary aria-controls="submenu-content-1-3-content">
-                @bokwoon
-              </summary>
+              <summary>@bokwoon</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon/">Pages</a></li>
@@ -132,9 +120,7 @@
           </li>
           <li>
             <details open>
-              <summary aria-controls="submenu-content-1-3-content">
-                @bokwoon
-              </summary>
+              <summary>@bokwoon</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon/">Pages</a></li>
@@ -144,9 +130,7 @@
           </li>
           <li>
             <details open>
-              <summary aria-controls="submenu-content-1-3-content">
-                @bokwoon
-              </summary>
+              <summary>@bokwoon</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon/">Pages</a></li>
@@ -156,9 +140,7 @@
           </li>
           <li>
             <details open>
-              <summary aria-controls="submenu-content-1-3-content">
-                @bokwoon
-              </summary>
+              <summary>@bokwoon</summary>
               <ul>
                 <li><a href="/cms/blogs/bokwoon/">Blog</a></li>
                 <li><a href="/cms/blogs/bokwoon/">Pages</a></li>
@@ -168,12 +150,14 @@
           </li>
         </ul>
       </details>
+      <div>
+        <div>2.1 GB / 6.0 GB</div>
+        <div class="bg-primary/20 relative h-2 w-full overflow-hidden rounded-full">
+          <div id="demo-progress" class="bg-primary h-full w-full flex-1 transition-all" style="width: 35%"></div>
+        </div>
+      </div>
     </section>
     <footer>
-      <div class="flex">
-        <div class="grow font-medium">☕️ Notebrew</div>
-        <button class="cursor-pointer hover:bg-gray-200 p-1" data-toggle-sidebar data-tooltip="Hide sidebar" data-side="bottom" data-align="end">{{ template "tabler-x" }}</button>
-      </div>
     </footer>
   </nav>
 </aside>

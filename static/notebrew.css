@@ -34,3 +34,7 @@ details[role="group"]:not([open]) > summary::before {
 /* background color */
 .bg-dark-cyan { background-color: #007d9c; }
 .hover\:bg-very-dark-cyan:hover { background-color: #005469; }
+
+meter {
+  -webkit-appearance: none; /* Reset appearance */
+}
