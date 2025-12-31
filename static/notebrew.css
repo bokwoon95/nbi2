@@ -3,75 +3,28 @@
 
 :root {
   --sidebar-width: 16rem;
+  --sidebar-mobile-width: 16rem;
 }
 
-#sidebar {
-  position: fixed;
-  width: var(--sidebar-width);
-  height: 100svh;
-  height: 100vh;
-  overflow: auto;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+/* Add the chevron to the h3. */
+details[role="group"] > summary::before {
+  content: ""; /* render the pseudo-element */
+  display: block; /* size the icon box */
+  width: calc(var(--spacing) * 3.5); /* match Basecoat size */
+  height: calc(var(--spacing) * 3.5); /* match Basecoat size */
+  /* margin-left: auto; /1* push chevron to the right edge of the h3 *1/ */
+  background-color: var(--color-primary); /* match Basecoat color */
+  mask-image: var(--chevron-down-icon); /* reuse Basecoat icon */
+  mask-size: 1rem; /* match Basecoat sizing */
+  mask-position: center; /* center the icon */
+  mask-repeat: no-repeat; /* prevent tiling */
+  transition-property: transform, translate, scale, rotate; /* match Basecoat motion */
+  transition-duration: var(--tw-duration, var(--default-transition-duration)); /* match Basecoat timing */
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function)); /* match Basecoat easing */
 }
-
-@media (min-width: 64rem) {
-  #sidebar {
-    box-shadow: none;
-  }
-  #not-sidebar {
-    position: relative;
-    left: var(--sidebar-width);
-    width: calc(100dvw - var(--sidebar-width));
-    width: calc(100vw - var(--sidebar-width));
-  }
-}
-
-.dropdown-chevron-after::after {
-  content: "";
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.25rem;
-  background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27currentColor%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20class%3D%27%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%20%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;
-  color: oklch(0.556 0 0);
-  pointer-events: none;
-  flex-shrink: 0;
-  transition-property: transform, translate, scale, rotate;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-details[open] > .dropdown-chevron-after::after {
-  transform: rotate(180deg);
-}
-
-.dropdown-chevron-before::before {
-  content: "";
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.25rem;
-  background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27currentColor%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20class%3D%27%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%20%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;
-  color: oklch(0.556 0 0);
-  pointer-events: none;
-  flex-shrink: 0;
-  transition-property: transform, translate, scale, rotate;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-details[open] > .dropdown-chevron-before::before {
-  transform: rotate(180deg);
-}
-
-.dropdown-chevron-spacer::before {
-  content: "";
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.25rem;
+/* Closed state: rotate right. */
+details[role="group"]:not([open]) > summary::before {
+  rotate: -90deg; /* right-pointing when closed */
 }
 
 .link {

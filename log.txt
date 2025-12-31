@@ -99,8 +99,7 @@ pinned items for notes appear im the sidebar accordion. pinned items for photos 
 
 all notes and photos and posts have a time map. and also uh, a name map? and a uhh storage map? 🤨
 
-› can you read node_modules\basecoat-css\dist\js\sidebar.js and node_modules\basecoat-css\dist\basecoat.css and explain how the following HTML snippet
-  manages to arrange the sidebar at the left hand side? Basically I don't understand how the .sidebar class manages to squeeze the sidebar to the side
+› can you read node_modules\basecoat-css\dist\js\sidebar.js and node_modules\basecoat-css\dist\basecoat.css and explain how the following HTML snippet manages to arrange the sidebar at the left hand side? Basically I don't understand how the .sidebar class manages to squeeze the sidebar to the side
 
   <aside class="sidebar" data-side="left" aria-hidden="false">
     <nav aria-label="Sidebar navigation">

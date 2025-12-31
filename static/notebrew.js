@@ -1,26 +1,14 @@
 import "./basecoat.js";
+import "./sidebar.js";
 import "./dropdown-menu-v2.js";
 
 /**
  * @type {Record<string, (element: Element) => void>}
  */
 const initFuncs = {
-  "data-hide-sidebar": function initHideSidebar(targetElement) {
-    targetElement.addEventListener("click", function hideSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      if (!sidebar) {
-        return;
-      }
-      sidebar.classList.add("hidden");
-    });
-  },
-  "data-show-sidebar": function initShowSidebar(targetElement) {
-    targetElement.addEventListener("click", function showSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      if (!sidebar) {
-        return;
-      }
-      sidebar.classList.remove("hidden");
+  "data-toggle-sidebar": function(targetElement) {
+    targetElement.addEventListener("click", function() {
+      document.dispatchEvent(new CustomEvent('basecoat:sidebar'));
     });
   },
   "data-go-back": function initGoBack(targetElement) {
@@ -98,27 +86,27 @@ observer.observe(document.body, {
   subtree: true,
 });
 
-document.addEventListener("click", function hideSidebarOnClickOutside(event) {
-  if (window.matchMedia("(min-width: 64rem)" /* tailwind lg breakpoint */).matches) {
-    return;
-  }
-  const sidebar = document.getElementById("sidebar");
-  if (!sidebar) {
-    return;
-  }
-  if (sidebar.classList.contains("hidden")) {
-    return;
-  }
-  for (let element = event.target; element instanceof Element; element = element.parentElement) {
-    if (element.id == "sidebar") {
-      return;
-    }
-    if (element.hasAttribute("data-show-sidebar")) {
-      return;
-    }
-  }
-  sidebar.classList.add("hidden");
-});
+// document.addEventListener("click", function hideSidebarOnClickOutside(event) {
+//   if (window.matchMedia("(min-width: 64rem)" /* tailwind lg breakpoint */).matches) {
+//     return;
+//   }
+//   const sidebar = document.getElementById("sidebar");
+//   if (!sidebar) {
+//     return;
+//   }
+//   if (sidebar.classList.contains("hidden")) {
+//     return;
+//   }
+//   for (let element = event.target; element instanceof Element; element = element.parentElement) {
+//     if (element.id == "sidebar") {
+//       return;
+//     }
+//     if (element.hasAttribute("data-show-sidebar")) {
+//       return;
+//     }
+//   }
+//   sidebar.classList.add("hidden");
+// });
 
 function humanReadableFileSize(size) {
   if (size < 0) {
