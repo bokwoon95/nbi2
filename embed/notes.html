@@ -5,12 +5,67 @@
   <button class="btn-icon-ghost" data-toggle-sidebar data-tooltip="Toggle sidebar" data-side="bottom" data-align="start">{{ template "icon-tabler-layout-sidebar" }}</button>
   <button class="btn-icon-ghost" data-toggle-sidebar data-tooltip="Create note" data-side="bottom" data-align="start">{{ template "icon-tabler-pencil-plus" }}</button>
 </header>
-<div class="grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 p-4">
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">1</div>
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">2</div>
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">3</div>
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">4</div>
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">5</div>
-  <div class="bg-[#ff9800] text-white p-4 text-center rounded">6</div>
-</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th><input type="checkbox"></th>
+      <th>Status</th>
+      <th>Method</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="font-medium">INV001</td>
+      <td>Checklist</td>
+      <td>item 1</td>
+      <td class="text-right">1970-Jan-01</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV002</td>
+      <td>Singapore places to eat</td>
+      <td>Old school delights</td>
+      <td class="text-right">1970-Jan-01</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV003</td>
+      <td>Things to learn</td>
+      <td>Dailies: workout, improving your pike stretch, how to massage (youtube tutorials), sleep early wake early</td>
+      <td class="text-right">1970-Jan-01</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV004</td>
+      <td>Paid</td>
+      <td>Paypal</td>
+      <td class="text-right">$450.00</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV005</td>
+      <td>Paid</td>
+      <td>Credit Card</td>
+      <td class="text-right">$550.00</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV006</td>
+      <td>Pending</td>
+      <td>Bank Transfer</td>
+      <td class="text-right">$200.00</td>
+    </tr>
+    <tr>
+      <td class="font-medium">INV007</td>
+      <td>Unpaid</td>
+      <td>Credit Card</td>
+      <td class="text-right">$300.00</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- <div class="grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 p-4"> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">1</div> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">2</div> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">3</div> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">4</div> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">5</div> -->
+<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">6</div> -->
+<!-- </div> -->
 {{ end }}

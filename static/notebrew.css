@@ -27,6 +27,19 @@ details[role="group"]:not([open]) > summary::before {
   rotate: -90deg; /* right-pointing when closed */
 }
 
+@media only screen and (max-width: 40em) {
+  thead th:not(:first-child) {
+    display: none;
+  }
+  td, th {
+    display: block;
+  }
+  td[data-th]:before {
+    content: attr(data-th);
+    float: left;
+  }
+}
+
 .link {
    @apply text-blue-600 hover:text-blue-800 hover:underline
 }
@@ -34,7 +47,3 @@ details[role="group"]:not([open]) > summary::before {
 /* background color */
 .bg-dark-cyan { background-color: #007d9c; }
 .hover\:bg-very-dark-cyan:hover { background-color: #005469; }
-
-meter {
-  -webkit-appearance: none; /* Reset appearance */
-}

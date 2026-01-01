@@ -34,6 +34,8 @@ sidebar contains:
 - photos
 - blogs
 
+TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) $size
+TODO: a button to preview a note inline? hmmm
 TODO: /cms/notes/ with various dummy notes put in place. We are only using list view a la Apple Notes.
     TODO: How big to make the navbar? What buttons to put in it? Create Note
     TODO: double... sidebars?
@@ -41,12 +43,16 @@ TODO: /cms/notes/ with various dummy notes put in place. We are only using list 
 
 DESIGN REQUIREMENTS
 - filesystem-based (nested folders)
+- million-file pagination
+- folders-first sorting, but the ability to toggle the behavior
+- no CRDT, plain old save button
+- URL-addressable UI
+- if possible, double sidebar UI for notes
+
 - simple UI, more Apple than Evernote
 - we can exclude the typical double-sidebar view if we focus on packing as many notes as we can into the directory view. the directory view is essentially read-only, which simplifies many user interactions as compared to combining directory view and note view (both read and write)
 - do... nested folders really take up less space than a note in folder view though? actually no, directories can show nested stats like file count while notes will show like a single line of preview. it's fine. this means directories need t
 - show directories separately or together with files? together, having a UI to paginate directories and notes separately will be a pain in the ass. If the user doesn't want to obscure their folders with notes, organize better. If a user doesn't want to jump through so many nested steps, simply pin the relevant directory to the sidebar.
-- UI has to be URL-addressable
-- sort by folders first, BUT still manage to paginate. How? Should folders be paginated separately?
 - Fine, we'll do a save button (syncs better with desktop workflows)
     - But we'll need to tackle the common pitfalls of having to save manually
 
