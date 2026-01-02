@@ -59,7 +59,7 @@ DESIGN REQUIREMENTS
     - But we'll need to tackle the common pitfalls of having to save manually
 
 navbar buttons
-- directory: toggleSidebar, createDirectory, createNote, search, sort, nextPage, previousPage
+- directory: toggleSidebar, create (createDirectory, createNote), ellipsis (pin, search, sort)
 - note: toggleSidebar, save
 
 /cms/notes
