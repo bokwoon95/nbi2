@@ -27,6 +27,10 @@ details[role="group"]:not([open]) > summary::before {
   rotate: -90deg; /* right-pointing when closed */
 }
 
+table td {
+  @apply max-w-full whitespace-normal break-words
+}
+
 @media only screen and (max-width: 40em) {
   thead th:not(:first-child) {
     display: none;

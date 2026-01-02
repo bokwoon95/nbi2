@@ -1,14 +1,49 @@
 {{ define "title" }}Notes{{ end }}
 {{ template "base.html" $ }}
 {{ define "content" }}
-<header class="sticky isolate z-10 border-b">
-  <button class="btn-icon-ghost" data-toggle-sidebar data-tooltip="Toggle sidebar" data-side="bottom" data-align="start">{{ template "icon-tabler-layout-sidebar" }}</button>
-  <button class="btn-icon-ghost" data-toggle-sidebar data-tooltip="Create note" data-side="bottom" data-align="start">{{ template "icon-tabler-pencil-plus" }}</button>
-</header>
+<nav class="sticky top-0 isolate z-10 border-b bg-background flex items-center">
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
+  <!--<button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Previous page" disabled>{{ template "icon-tabler-chevron-left" }}</button>-->
+  <!--<button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Next page">{{ template "icon-tabler-chevron-right" }}</button>-->
+</nav>
+<ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2">
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">Home</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">foo</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">bar</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">baz</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">qux</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <a href="#" class="hover:text-foreground transition-colors">Components</a>
+  </li>
+  <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+  <li class="inline-flex items-center gap-1.5">
+    <span class="text-foreground font-normal">Breadcrumb</span>
+  </li>
+</ol>
+
 <div>
   <table class="table">
     <tbody>
-      <tr>
+      <tr class="">
         <td class="font-medium">INV001</td>
         <td>Checklist</td>
         <td>item 1</td>

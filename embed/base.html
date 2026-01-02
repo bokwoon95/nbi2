@@ -21,7 +21,7 @@
           {{ template "icon-tabler-user" }}
           {{ if $.ContextData.Username }}{{ $.ContextData.Username }}{{ else }}<em>default user</em>{{ end }}
         </a>
-        <button class="btn-icon-ghost" data-toggle-sidebar data-tooltip="Hide sidebar" data-side="bottom" data-align="end">{{ template "tabler-x" }}</button>
+        <button class="btn-icon-ghost" data-toggle-sidebar title="Hide sidebar">{{ template "tabler-x" }}</button>
       </div>
     </header>
     <section class="scrollbar">
