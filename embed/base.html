@@ -165,8 +165,21 @@
 </aside>
 {{ end }}
 
-<main class="max-w-[100rem] min-h-dvh">
-  {{ block "content" $ }}
-  <h1>Content</h1>
-  {{ end }}
+<main>
+  <nav class="sticky top-0 inset-x-0 isolate z-10 border-b bg-background hidden sm:flex items-center">
+    {{ block "topbar" $ }}
+    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    {{ end }}
+  </nav>
+  <div class="mx-auto w-full max-w-7xl">
+    {{ block "content" $ }}
+    <h1>Content</h1>
+    {{ end }}
+  </div>
+  <div class="h-12"></div>
+  <nav class="fixed bottom-0 border-t bg-background flex justify-between sm:hidden items-center w-full">
+    {{ block "bottombar" $ }}
+    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    {{ end }}
+  </nav>
 </main>

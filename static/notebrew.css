@@ -28,16 +28,19 @@ details[role="group"]:not([open]) > summary::before {
 }
 
 table td {
-  @apply max-w-full whitespace-normal break-words
+  @apply max-w-full whitespace-normal break-words /* TODO: inline this */
 }
 
 @media only screen and (max-width: 40em) {
   thead th:not(:first-child) {
     display: none;
   }
-  td, th {
-    display: block;
+  tr {
+      display: grid;
   }
+  /* td, th { */
+  /*   display: grid; */
+  /* } */
   td[data-th]:before {
     content: attr(data-th);
     float: left;

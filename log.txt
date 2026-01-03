@@ -28,13 +28,30 @@ start_cmd.go
 status_cmd.go
 stop_cmd.go
 
-sidebar contains:
-- username
-- notes
-- photos
-- blogs
+CREATE TABLE note (
+    note_id UUID
+    ,title TEXT
+    ,content TEXT
+    ,date_edited DATETIME
+    ,date_created DATETIME
+    ,size BIGINT
+);
 
-TODO: add the table into a card on large, but remove the card on mobile
+note
+title
+preview
+content
+
+top navbar (toggleSidebar, createDirectory, createNote, sort, search, pin)
+breadcrumbs
+top pagination
+table
+bottom pagination
+bottom navbar (toggleSidebar, create (createDirectory, createNote), sort, search, pin)
+
+TODO: the top navbar
+TODO: the bottom navbar
+TODO: notes selection
 TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) $size
 TODO: a button to preview a note inline? hmmm
 TODO: /cms/notes/ with various dummy notes put in place. We are only using list view a la Apple Notes.

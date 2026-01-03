@@ -234,6 +234,9 @@
   .sticky {
     position: sticky;
   }
+  .inset-x-0 {
+    inset-inline: calc(var(--spacing) * 0);
+  }
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
@@ -343,14 +346,11 @@
   .h-full {
     height: 100%;
   }
-  .min-h-dvh {
-    min-height: 100dvh;
-  }
   .w-full {
     width: 100%;
   }
-  .max-w-\[100rem\] {
-    max-width: 100rem;
+  .max-w-7xl {
+    max-width: var(--container-7xl);
   }
   .max-w-md {
     max-width: var(--container-md);
@@ -474,9 +474,6 @@
   .text-center {
     text-align: center;
   }
-  .text-right {
-    text-align: right;
-  }
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
@@ -492,10 +489,6 @@
   .text-xs {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
-  }
-  .font-medium {
-    --tw-font-weight: var(--font-weight-medium);
-    font-weight: var(--font-weight-medium);
   }
   .font-normal {
     --tw-font-weight: var(--font-weight-normal);
@@ -613,11 +606,6 @@
       margin-inline: calc(var(--spacing) * 3);
     }
   }
-  .lg\:mx-8 {
-    @media (width >= 64rem) {
-      margin-inline: calc(var(--spacing) * 8);
-    }
-  }
   .lg\:my-1 {
     @media (width >= 64rem) {
       margin-block: calc(var(--spacing) * 1);
@@ -626,11 +614,6 @@
   .lg\:my-2 {
     @media (width >= 64rem) {
       margin-block: calc(var(--spacing) * 2);
-    }
-  }
-  .lg\:my-4 {
-    @media (width >= 64rem) {
-      margin-block: calc(var(--spacing) * 4);
     }
   }
   .lg\:rounded-sm {
@@ -3383,8 +3366,8 @@ table td {
   thead th:not(:first-child) {
     display: none;
   }
-  td, th {
-    display: block;
+  tr {
+    display: grid;
   }
   td[data-th]:before {
     content: attr(data-th);
