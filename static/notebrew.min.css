@@ -8,8 +8,6 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-600: oklch(57.7% 0.245 27.325);
-    --color-blue-600: oklch(54.6% 0.245 262.881);
-    --color-blue-800: oklch(42.4% 0.199 265.638);
     --color-neutral-300: oklch(87% 0 0);
     --color-neutral-800: oklch(26.9% 0 0);
     --color-black: #000;
@@ -3375,17 +3373,11 @@ table td {
   }
 }
 .link {
-  color: var(--color-blue-600);
-  &:hover {
-    @media (hover: hover) {
-      color: var(--color-blue-800);
-    }
-  }
-  &:hover {
-    @media (hover: hover) {
-      text-decoration-line: underline;
-    }
-  }
+  color: #007d9c;
+}
+.link:hover {
+  color: #005469;
+  text-decoration: underline;
 }
 .text-turq-dark {
   color: #007d9c;

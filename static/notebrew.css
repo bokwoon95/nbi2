@@ -48,7 +48,12 @@ table td {
 }
 
 .link {
-   @apply text-blue-600 hover:text-blue-800 hover:underline
+  color: #007d9c;
+}
+
+.link:hover {
+  color: #005469;
+  text-decoration: underline;
 }
 
 /* background color */
