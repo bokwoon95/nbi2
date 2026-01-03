@@ -11,13 +11,13 @@
 <script type="module">{{ $.ContextData.NotebrewJS }}</script>
 {{ end }}
 {{ end }}
-
+<body class="max-w-7xl mx-auto">
 {{ block "sidebar" $ }}
-<aside class="sidebar z-70" data-side="left" aria-hidden="false">
+<aside class="sidebar" data-side="left" aria-hidden="false">
   <nav aria-label="Sidebar navigation">
     <header>
       <div class="flex items-center">
-        <a href="/cms/settings/" class="btn-ghost justify-start grow">
+        <a href="/cms/login/" class="btn-ghost justify-start grow">
           {{ template "icon-tabler-user" }}
           {{ if $.ContextData.Username }}{{ $.ContextData.Username }}{{ else }}<em>default user</em>{{ end }}
         </a>
@@ -164,9 +164,9 @@
   </nav>
 </aside>
 {{ end }}
-
 <main>
   {{ block "content" $ }}
   <h1>Content</h1>
   {{ end }}
 </main>
+</body>
