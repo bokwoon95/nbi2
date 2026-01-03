@@ -1,16 +1,14 @@
 {{ define "title" }}Notes{{ end }}
 {{ template "base.html" $ }}
 {{ define "content" }}
-<nav class="sticky top-0 isolate z-10 border-b bg-background flex items-center">
+<nav class="sticky top-0 isolate z-10 border-b bg-background hidden sm:flex items-center">
   <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
   <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button>
   <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
   <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
   <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
-  <!--<button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Previous page" disabled>{{ template "icon-tabler-chevron-left" }}</button>-->
-  <!--<button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Next page">{{ template "icon-tabler-chevron-right" }}</button>-->
 </nav>
-<ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2">
+<ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2 m-0 lg:mx-3 lg:my-2">
   <li class="inline-flex items-center gap-1.5">
     <a href="#" class="hover:text-foreground transition-colors">Home</a>
   </li>
@@ -39,62 +37,70 @@
     <span class="text-foreground font-normal">Breadcrumb</span>
   </li>
 </ol>
-
-<div>
-  <table class="table">
-    <tbody>
-      <tr class="">
-        <td class="font-medium">INV001</td>
-        <td>Checklist</td>
-        <td>item 1</td>
-        <td class="text-right">1970-Jan-01</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV002</td>
-        <td>Singapore places to eat</td>
-        <td>Old school delights</td>
-        <td class="text-right">1970-Jan-01</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV003</td>
-        <td>Japan shopping list</td>
-        <td>tsutenkaku vegan options, try checking the hot and cold vending machines, uniqlo/GU shorts. Muji linen shorts?</td>
-        <td class="text-right">1970-Jan-01</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV004</td>
-        <td>Paid</td>
-        <td>Paypal</td>
-        <td class="text-right">$450.00</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV005</td>
-        <td>Paid</td>
-        <td>Credit Card</td>
-        <td class="text-right">$550.00</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV006</td>
-        <td>Pending</td>
-        <td>Bank Transfer</td>
-        <td class="text-right">$200.00</td>
-      </tr>
-      <tr>
-        <td class="font-medium">INV007</td>
-        <td>Unpaid</td>
-        <td>Credit Card</td>
-        <td class="text-right">$300.00</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="m-0 lg:mx-8 lg:my-4">
+  <div class="w-full flex justify-between my-2">
+    <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
+    <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+  </div>
+  <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
+    <table class="table">
+      <tbody>
+        <tr class="">
+          <td class="font-medium">INV001</td>
+          <td>Checklist</td>
+          <td>item 1</td>
+          <td class="text-right">1970-Jan-01</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV002</td>
+          <td>Singapore places to eat</td>
+          <td>Old school delights</td>
+          <td class="text-right">1970-Jan-01</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV003</td>
+          <td>Japan shopping list</td>
+          <td>tsutenkaku vegan options, try checking the hot and cold vending machines, uniqlo/GU shorts. Muji linen shorts?</td>
+          <td class="text-right">1970-Jan-01</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV004</td>
+          <td>Paid</td>
+          <td>Paypal</td>
+          <td class="text-right">$450.00</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV005</td>
+          <td>Paid</td>
+          <td>Credit Card</td>
+          <td class="text-right">$550.00</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV006</td>
+          <td>Pending</td>
+          <td>Bank Transfer</td>
+          <td class="text-right">$200.00</td>
+        </tr>
+        <tr>
+          <td class="font-medium">INV007</td>
+          <td>Unpaid</td>
+          <td>Credit Card</td>
+          <td class="text-right">$300.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="w-full flex justify-between my-2">
+    <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
+    <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+  </div>
 </div>
-
-<!-- <div class="grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 p-4"> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">1</div> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">2</div> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">3</div> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">4</div> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">5</div> -->
-<!--   <div class="bg-[#ff9800] text-white p-4 text-center rounded">6</div> -->
-<!-- </div> -->
+<div class="h-12"></div>
+<nav class="fixed bottom-0 border-t bg-background flex justify-between sm:hidden items-center w-full">
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
+  <button class="btn-icon-ghost size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
+</nav>
 {{ end }}

@@ -35,13 +35,10 @@ sidebar contains:
 - blogs
 
 TODO: add the table into a card on large, but remove the card on mobile
-TODO: add pagination to below and above the table
 TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) $size
 TODO: a button to preview a note inline? hmmm
 TODO: /cms/notes/ with various dummy notes put in place. We are only using list view a la Apple Notes.
     TODO: How big to make the navbar? What buttons to put in it? Create Note
-    TODO: double... sidebars?
-        TODO: remember, the directory view has to be able to paginate somewhere. How?
 
 DESIGN REQUIREMENTS
 - filesystem-based (nested folders)
@@ -99,6 +96,10 @@ references
 https://zapier.com/blog/best-note-taking-apps/
 
 https://evernote.com/blog/new-ui-2024
+
+table shenanigans
+https://stackoverflow.com/questions/25405105/break-a-table-row-into-multiple-line-responsive-layout
+https://stackoverflow.com/questions/32301206/how-to-fold-table-columns-into-rows-on-mobile-devices
 
 /cms/createnote/
 /cms/notes/:noteID
