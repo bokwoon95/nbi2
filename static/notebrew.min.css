@@ -527,6 +527,9 @@
   .text-red-600 {
     color: var(--color-red-600);
   }
+  .text-white {
+    color: var(--color-white);
+  }
   .lowercase {
     text-transform: lowercase;
   }
@@ -566,6 +569,13 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-foreground);
+      }
+    }
+  }
+  .hover\:text-white {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-white);
       }
     }
   }
