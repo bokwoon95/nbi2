@@ -11,7 +11,7 @@
 <script type="module">{{ $.ContextData.NotebrewJS }}</script>
 {{ end }}
 {{ end }}
-<body class="max-w-7xl mx-auto">
+
 {{ block "sidebar" $ }}
 <aside class="sidebar" data-side="left" aria-hidden="false">
   <nav aria-label="Sidebar navigation">
@@ -164,9 +164,9 @@
   </nav>
 </aside>
 {{ end }}
-<main>
+
+<main class="max-w-7xl">
   {{ block "content" $ }}
   <h1>Content</h1>
   {{ end }}
 </main>
-</body>
