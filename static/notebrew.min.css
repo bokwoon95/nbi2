@@ -438,9 +438,6 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
-  .bg-background {
-    background-color: var(--color-background);
-  }
   .bg-muted {
     background-color: var(--color-muted);
   }
@@ -569,13 +566,6 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-foreground);
-      }
-    }
-  }
-  .hover\:text-white {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-white);
       }
     }
   }
@@ -3397,10 +3387,13 @@ table td {
     }
   }
 }
-.bg-dark-cyan {
+.text-turq-dark {
+  color: #007d9c;
+}
+.bg-turq-dark {
   background-color: #007d9c;
 }
-.hover\:bg-very-dark-cyan:hover {
+.hover\:bg-turq-very-dark:hover {
   background-color: #005469;
 }
 @property --tw-rotate-x {
