@@ -31,7 +31,7 @@ table td {
   @apply max-w-full whitespace-normal break-words /* TODO: inline this */
 }
 
-@media only screen and (max-width: 40em) {
+@media (max-width: 40em) {
   thead th:not(:first-child) {
     display: none;
   }
@@ -44,6 +44,14 @@ table td {
   td[data-th]:before {
     content: attr(data-th);
     float: left;
+  }
+  .notes-table td {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      "checkbox title title"
+      "dateEdited preview preview";
   }
 }
 

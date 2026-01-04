@@ -49,8 +49,7 @@ table
 bottom pagination
 bottom navbar (toggleSidebar, create (createDirectory, createNote), sort, search, pin)
 
-TODO: the top navbar
-TODO: the bottom navbar
+TODO: get the sm table view grid-template-areas working
 TODO: notes selection
 TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) $size
 TODO: a button to preview a note inline? hmmm

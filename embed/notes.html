@@ -4,6 +4,7 @@
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button> <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
+<span class="grow"></span>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Pin">{{ template "icon-tabler-pin" }}</button>
 {{ end }}
@@ -50,13 +51,21 @@
     <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
   </div>
   <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
-    <table class="table">
+    <table class="table notes-table">
+      <thead>
+        <tr>
+          <th class="p-2"><input type="checkbox"></th>
+          <th>Title</th>
+          <th>Preview</th>
+          <th>Date Edited</th>
+        </tr>
+      </thead>
       <tbody>
         <tr>
-          <td><input type="checkbox"></td>
-          <td>Checklist</td>
-          <td>item 1</td>
-          <td>1970-Jan-01</td>
+          <td class="[grid-area:checkbox]"><input type="checkbox"></td>
+          <td class="[grid-area:title]">Checklist</td>
+          <td class="[grid-area:preview]">item 1</td>
+          <td class="[grid-area:dateEdited]">1970-Jan-01</td>
         </tr>
         <tr>
           <td><input type="checkbox"></td>

@@ -560,6 +560,18 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+  .\[grid-area\:checkbox\] {
+    grid-area: checkbox;
+  }
+  .\[grid-area\:dateEdited\] {
+    grid-area: dateEdited;
+  }
+  .\[grid-area\:preview\] {
+    grid-area: preview;
+  }
+  .\[grid-area\:title\] {
+    grid-area: title;
+  }
   .hover\:text-foreground {
     &:hover {
       @media (hover: hover) {
@@ -3360,7 +3372,7 @@ table td {
   overflow-wrap: break-word;
   white-space: normal;
 }
-@media only screen and (max-width: 40em) {
+@media (max-width: 40em) {
   thead th:not(:first-child) {
     display: none;
   }
@@ -3370,6 +3382,12 @@ table td {
   td[data-th]:before {
     content: attr(data-th);
     float: left;
+  }
+  .notes-table td {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "checkbox title title" "dateEdited preview preview";
   }
 }
 .link {
