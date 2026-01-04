@@ -113,6 +113,8 @@ https://zapier.com/blog/best-note-taking-apps/
 
 https://evernote.com/blog/new-ui-2024
 
+https://www.reddit.com/r/reactjs/comments/1ijcqbe/infinite_shadcn_datatable_improvements/
+
 table shenanigans
 https://stackoverflow.com/questions/25405105/break-a-table-row-into-multiple-line-responsive-layout
 https://stackoverflow.com/questions/32301206/how-to-fold-table-columns-into-rows-on-mobile-devices
