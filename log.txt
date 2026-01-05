@@ -49,6 +49,8 @@ table
 bottom pagination
 bottom navbar (toggleSidebar, create (createDirectory, createNote), sort, search, pin)
 
+when selected: selectUnselectAll, done
+
 TODO: get the sm table view grid-template-areas working
 TODO: notes selection
 TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) $size
