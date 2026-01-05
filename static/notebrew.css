@@ -31,28 +31,55 @@ table td {
   @apply max-w-full whitespace-normal break-words /* TODO: inline this */
 }
 
-@media (max-width: 40em) {
+@media (max-width: 40rem) {
   thead th:not(:first-child) {
     display: none;
   }
-  tr {
-      display: grid;
+  table, tbody, tr {
+    display: block;
+    width: 100%;
   }
+    tr {
+    display: block;
+    margin-bottom: 1rem; /* spacing */
+    border: 1px solid #ddd;
+    padding: .5rem;
+  }
+
+  tr td {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  /* Assign visual order */
+  tr td:nth-child(1) { /* checkbox */ order: 1; }
+  tr td:nth-child(2) { /* title */    order: 2; }
+  tr td:nth-child(4) { /* dateEdited */ order: 3; }
+  tr td:nth-child(3) { /* preview */ order: 4; }
+  /* Optional truncation */
+  tr td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /*tr {*/
+  /*    display: grid;*/
+  /*}*/
   /* td, th { */
   /*   display: grid; */
   /* } */
-  td[data-th]:before {
-    content: attr(data-th);
-    float: left;
-  }
-  .notes-table td {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-template-areas:
-      "checkbox title title"
-      "dateEdited preview preview";
-  }
+  /*td[data-th]:before {*/
+  /*  content: attr(data-th);*/
+  /*  float: left;*/
+  /*}*/
+  /*.notes-table tr {*/
+  /*  display: grid;*/
+  /*  grid-template-columns: 1fr;*/
+  /*  grid-template-rows: 1fr 1fr;*/
+  /*  grid-template-areas:*/
+  /*    "row1"*/
+  /*    "row2";*/
+  /*}*/
 }
 
 .link {
