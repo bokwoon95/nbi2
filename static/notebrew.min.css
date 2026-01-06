@@ -560,23 +560,11 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
-  .\[grid-area\:cb\] {
-    grid-area: cb;
-  }
-  .\[grid-area\:dateEdited\] {
-    grid-area: dateEdited;
-  }
-  .\[grid-area\:preview\] {
-    grid-area: preview;
-  }
   .\[grid-area\:row1\] {
     grid-area: row1;
   }
   .\[grid-area\:row2\] {
     grid-area: row2;
-  }
-  .\[grid-area\:title\] {
-    grid-area: title;
   }
   .hover\:text-foreground {
     &:hover {
@@ -3390,6 +3378,18 @@ table td {
     grid-template-columns: 3rem 5rem 1fr;
     grid-template-rows: 1fr 1fr;
     grid-template-areas: "cb title title" "dateEdited dateEdited preview";
+  }
+  .notes-table td:nth-child(1) {
+    grid-area: cb;
+  }
+  .notes-table td:nth-child(2) {
+    grid-area: title;
+  }
+  .notes-table td:nth-child(3) {
+    grid-area: preview;
+  }
+  .notes-table td:nth-child(4) {
+    grid-area: dateEdited;
   }
 }
 .link {

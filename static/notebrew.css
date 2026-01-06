@@ -53,6 +53,12 @@ table td {
       "cb title title"
       "dateEdited dateEdited preview";
   }
+  .notes-table td {
+  }
+  .notes-table td:nth-child(1) { grid-area: cb; }
+  .notes-table td:nth-child(2) { grid-area: title; }
+  .notes-table td:nth-child(3) { grid-area: preview; }
+  .notes-table td:nth-child(4) { grid-area: dateEdited; }
 }
 
 .link {
