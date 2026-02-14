@@ -8,6 +8,13 @@ import (
 )
 
 func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData ContextData) {
+	type Note struct {
+		Title       string    `json:"title"`
+		Preview     string    `json:"preview"`
+		Thumbnail   string    `json:"thumbnail"`
+		DateCreated time.Time `json:"dateCreated"`
+		DateEdited  time.Time `json:"dateEdited"`
+	}
 	type Request struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
@@ -15,15 +22,9 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 	}
 	type Response struct {
 		ContextData  ContextData    `json:"contextData"`
+		Notes        []Note         `json:"notes"`
 		FlashData    map[string]any `json:"-"`
 		TemplateData map[string]any `json:"-"`
-	}
-	type Note struct {
-		Title       string
-		Preview     string
-		Thumbnail   string
-		DateCreated time.Time
-		DateEdited  time.Time
 	}
 
 	switch r.Method {
@@ -62,6 +63,37 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 			return
 		}
 		response.ContextData = contextData
+		response.Notes = []Note{{
+			Title:       "Checklist",
+			Preview:     "item 1",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}, {
+			Title:       "Singapore places to eat",
+			Preview:     "Old school delights",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}, {
+			Title:       "Japan shopping list",
+			Preview:     "tsutenkaku vegan options, try checking the hot and cold vending machines, uniqlo/GU shorts. Muji linen shorts?",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}, {
+			Title:       "Paid",
+			Preview:     "Credit Card",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}, {
+			Title:       "Pending",
+			Preview:     "Bank Transfer",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}, {
+			Title:       "Unpaid",
+			Preview:     "Credit Card",
+			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
+		}}
 		writeResponse(w, r, response)
 	case "POST":
 	default:

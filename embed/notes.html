@@ -52,58 +52,14 @@
   </div>
   <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
     <table class="table notes-table">
-      <thead>
-        <tr>
-          <th class="p-2"><input type="checkbox"></th>
-          <th>Title</th>
-          <th>Preview</th>
-          <th>Date Edited</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="[grid-area:row1]"><input type="checkbox"></td>
-          <td class="[grid-area:row1]">Checklist</td>
-          <td class="[grid-area:row2]">item 1</td>
-          <td class="[grid-area:row2]">1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Singapore places to eat</td>
-          <td>Old school delights</td>
-          <td>1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Japan shopping list</td>
-          <td>tsutenkaku vegan options, try checking the hot and cold vending machines, uniqlo/GU shorts. Muji linen shorts?</td>
-          <td>1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Paid</td>
-          <td>Paypal</td>
-          <td>1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Paid</td>
-          <td>Credit Card</td>
-          <td>1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Pending</td>
-          <td>Bank Transfer</td>
-          <td>1970-Jan-01</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>Unpaid</td>
-          <td>Credit Card</td>
-          <td>1970-Jan-01</td>
-        </tr>
-      </tbody>
+      {{ range $note := $.Notes }}
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>{{ $note.Title }}</td>
+        <td>{{ $note.Preview }}</td>
+        <td>{{ $note.DateEdited.Format "2006-01-02" }}</td>
+      </tr>
+      {{ end }}
     </table>
   </div>
   <div class="w-full flex justify-between my-2">
