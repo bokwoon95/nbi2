@@ -95,6 +95,17 @@ how should search be organized? search note text. notes can contain photos and v
 
 wgo -xdir . npx @tailwindcss/cli --input ./static/notebrew.css --output ./static/notebrew.min.css --watch=always :: wgo -xdir . npx esbuild ./static/notebrew.js --bundle --outfile=./static/notebrew.min.js --watch=forever :: wgo -verbose -file .go go install -tags dev ./notebrew :: notebrew
 
+title
+preview
+thumbnail
+date
+
+Desktop
+[thumbnail [Title]
+          ][date] [Preview]
+
+Mobile
+
 /n/ => /cms/n/
 /p/CAfx7fLJ3YBDDvuwwEEPHa/ => /cms/p/CAfx7fLJ3YBDDvuwwEEPHa/Osaka_2025/?api
 /b/CAfx7fLJ3YBDDvuwwEEPHa/bokwoon/pages => /cms/b/CAfx7fLJ3YBDDvuwwEEPHa/bokwoon/pages
