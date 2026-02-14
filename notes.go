@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData ContextData) {
@@ -16,6 +17,13 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 		ContextData  ContextData    `json:"contextData"`
 		FlashData    map[string]any `json:"-"`
 		TemplateData map[string]any `json:"-"`
+	}
+	type Note struct {
+		Title       string
+		Preview     string
+		Thumbnail   string
+		DateCreated time.Time
+		DateEdited  time.Time
 	}
 
 	switch r.Method {
@@ -36,12 +44,12 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 				}
 				return
 			}
-			tmpl := templateMap["notes2.html"]
+			tmpl := templateMap["notes.html"]
 			if devMode {
-				tmpl = template.New("notes2.html")
+				tmpl = template.New("notes.html")
 				tmpl.Funcs(funcMap)
 				template.Must(tmpl.ParseFS(runtimeFS, baseTemplatePaths...))
-				template.Must(tmpl.ParseFS(runtimeFS, "embed/notes2.html"))
+				template.Must(tmpl.ParseFS(runtimeFS, "embed/notes.html"))
 			}
 			w.Header().Set("Content-Security-Policy", nbrew.ContentSecurityPolicy)
 			nbrew.ExecuteTemplate(w, r, tmpl, &response)

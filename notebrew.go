@@ -1201,7 +1201,7 @@ func (nbrew *Notebrew) GetLogger(ctx context.Context) *slog.Logger {
 }
 
 // SetFlashSession writes a value into the user's flash session.
-func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, flashSetter string, value any) error {
+func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, name string, value any) error {
 	buf := bufPool.Get().(*bytes.Buffer)
 	defer func() {
 		if buf.Cap() <= maxPoolableBufferCapacity {
@@ -1230,10 +1230,10 @@ func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, f
 	copy(flashTokenHash[8:], checksum[:])
 	_, err = sq.Exec(r.Context(), nbrew.DB, sq.Query{
 		Dialect: nbrew.Dialect,
-		Format:  "INSERT INTO flash (flash_token_hash, flash_setter, data) VALUES ({flashTokenHash}, {flashSetter}, {data})",
+		Format:  "INSERT INTO flash (flash_token_hash, name, data) VALUES ({flashTokenHash}, {name}, {data})",
 		Values: []any{
 			sq.BytesParam("flashTokenHash", flashTokenHash[:]),
-			sq.StringParam("flashSetter", flashSetter),
+			sq.StringParam("name", name),
 			sq.StringParam("data", strings.TrimSpace(buf.String())),
 		},
 	})
@@ -1251,10 +1251,15 @@ func (nbrew *Notebrew) SetFlashSession(w http.ResponseWriter, r *http.Request, f
 	return nil
 }
 
-// GetFlashSession retrieves a value from the user's flash session, unmarshals
-// it into the valuePtr and then deletes the session. It returns a boolean
-// result indicating if a flash session was retrieved.
-func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, flashGetter string, responsePtr any, flashDataPtr *map[string]any) (status int, err error) {
+// GetFlashSession retrieves a value from the user's flash session and either
+// unmarshals it into responsePtr (if the name matches) or the flashDataPtr (if
+// the name doesn't match). The name should be a label that uniquely identifies
+// the request handler calling GetFlashSession, so that GetFlashSession knows
+// whether to unmarshal into responsePtr or flashDataPtr. The return status int
+// is either -1 if no flash session was found, 0 if a flash session was found
+// but for a different name, or 1 if a flash session was found for the same
+// name.
+func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, name string, responsePtr any, flashDataPtr *map[string]any) (status int, err error) {
 	cookie, _ := r.Cookie("flash")
 	if cookie == nil {
 		return -1, nil
@@ -1280,23 +1285,24 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, f
 	checksum := blake2b.Sum256(flashToken[8:])
 	copy(flashTokenHash[:8], flashToken[:8])
 	copy(flashTokenHash[8:], checksum[:])
-	var flashSetter string
-	var data []byte
+	type Flash struct {
+		Name string
+		Data []byte
+	}
+	var flash Flash
 	switch nbrew.Dialect {
 	case "sqlite", "postgres":
-		result, err := sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+		flash, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
 			Dialect: nbrew.Dialect,
 			Format:  "DELETE FROM flash WHERE flash_token_hash = {flashTokenHash} RETURNING {*}",
 			Values: []any{
 				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
 			},
-		}, func(row *sq.Row) (result struct {
-			FlashSetter string
-			Data        []byte
-		}) {
-			result.FlashSetter = row.String("flash_setter")
-			result.Data = row.Bytes(nil, "data")
-			return result
+		}, func(row *sq.Row) Flash {
+			return Flash{
+				Name: row.String("name"),
+				Data: row.Bytes(nil, "data"),
+			}
 		})
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -1304,22 +1310,18 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, f
 			}
 			return -1, stacktrace.New(err)
 		}
-		flashSetter = result.FlashSetter
-		data = result.Data
 	default:
-		result, err := sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
+		flash, err = sq.FetchOne(r.Context(), nbrew.DB, sq.Query{
 			Dialect: nbrew.Dialect,
 			Format:  "SELECT {*} FROM flash WHERE flash_token_hash = {flashTokenHash}",
 			Values: []any{
 				sq.BytesParam("flashTokenHash", flashTokenHash[:]),
 			},
-		}, func(row *sq.Row) (result struct {
-			FlashSetter string
-			Data        []byte
-		}) {
-			result.FlashSetter = row.String("name")
-			result.Data = row.Bytes(nil, "data")
-			return result
+		}, func(row *sq.Row) Flash {
+			return Flash{
+				Name: row.String("name"),
+				Data: row.Bytes(nil, "data"),
+			}
 		})
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -1337,17 +1339,15 @@ func (nbrew *Notebrew) GetFlashSession(w http.ResponseWriter, r *http.Request, f
 		if err != nil {
 			return -1, stacktrace.New(err)
 		}
-		flashSetter = result.FlashSetter
-		data = result.Data
 	}
-	if flashSetter == flashGetter {
-		err := json.Unmarshal(data, responsePtr)
+	if flash.Name == name {
+		err := json.Unmarshal(flash.Data, responsePtr)
 		if err != nil {
 			return 1, stacktrace.New(err)
 		}
 		return 1, nil
 	}
-	err = json.Unmarshal(data, flashDataPtr)
+	err = json.Unmarshal(flash.Data, flashDataPtr)
 	if err != nil {
 		return 0, stacktrace.New(err)
 	}

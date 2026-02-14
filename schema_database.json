@@ -116,7 +116,7 @@
         "primarykey": true
       },
       {
-        "column": "flash_setter",
+        "column": "name",
         "type": {
           "default": "VARCHAR(500)"
         }
