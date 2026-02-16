@@ -26,6 +26,8 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 		FlashData    map[string]any `json:"-"`
 		TemplateData map[string]any `json:"-"`
 	}
+	// {{- if eq (index $.PostRedirectGet "from") "applytheme" }}
+	// {{- if eq (index $.FlashData "name") "applytheme" }}
 
 	switch r.Method {
 	case "GET", "HEAD":

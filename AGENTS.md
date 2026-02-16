@@ -19,13 +19,13 @@ All routing is defined in serve\_http.go. The router is consumed in notebrew/mai
 All HTML pages are located in embed/, and all include base.html/icons.html and the templates within. Refer to how the `templateMap` global variable in the nbi2 package is initialized in the init() function.
 
 ## CSS
-@tailwindcss/cli --input ./notebrew.css --output ./static/styles.css --watch=always
+npx @tailwindcss/cli --input ./static/notebrew.css --output ./static/notebrew.min.css --watch=always
 
-The source CSS file is notebrew.css, but the actual CSS file in effect is static/styles.css.
+The source CSS file is static/notebrew.css, but the actual CSS file in effect is static/notebrew.min.css.
 
 BasecoatUI components are used heavily. You can find its source in node\_modules.
 
 ## JavaScript
-esbuild notebrew.ts --bundle --outdir=static --watch=forever
+npx esbuild ./static/notebrew.js --bundle --outfile=./static/notebrew.min.js --watch=forever
 
 You can find JavaScript source files in node\_modules.

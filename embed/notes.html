@@ -50,6 +50,22 @@
     <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
     <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
   </div>
+  <ul class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm divide-y text-sm">
+    {{ range $note := $.Notes }}
+    <li class="flex">
+      <label class="flex justify-center items-center p-2"><input type="checkbox"></label>
+      <div>
+        {{ if $note.Thumbnail }}
+        <img src='{{ $note.Thumbnail }}' class='h-16 w-16 object-cover' loading='lazy'>
+        {{ end }}
+      </div>
+      <div class="flex-grow-1 p-2">
+        <div><a href="" class="link">{{ $note.Title }}</a></div>
+        <div><span class="text-muted-foreground">{{ $note.DateEdited.Format "2006-01-02" }}</span> {{ $note.Preview }}</div>
+      </div>
+    </li>
+    {{ end }}
+  </ul>
   <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
     <table class="table notes-table">
       {{ range $note := $.Notes }}
