@@ -68,11 +68,13 @@ func (nbrew *Notebrew) notes(w http.ResponseWriter, r *http.Request, contextData
 		response.Notes = []Note{{
 			Title:       "Checklist",
 			Preview:     "item 1",
+			Thumbnail:   "/cms/static/Azul.jpg",
 			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
 			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
 		}, {
 			Title:       "Singapore places to eat",
 			Preview:     "Old school delights",
+			Thumbnail:   "/cms/static/Azul.jpg",
 			DateCreated: time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
 			DateEdited:  time.Date(1970, time.January, 01, 0, 0, 0, 0, time.UTC),
 		}, {

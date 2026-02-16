@@ -54,7 +54,7 @@
     {{ range $note := $.Notes }}
     <li class="flex">
       <label class="flex justify-center items-center p-2"><input type="checkbox"></label>
-      <div>
+      <div class="flex justify-center items-center p-2">
         {{ if $note.Thumbnail }}
         <img src='{{ $note.Thumbnail }}' class='h-16 w-16 object-cover' loading='lazy'>
         {{ end }}
