@@ -11,9 +11,9 @@
 {{ define "bottombar" }}
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Pin">{{ template "icon-tabler-pin" }}</button>
+<!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button> -->
+<!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button> -->
+<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="">{{ template "tabler-dots-icons" }}</button>
 {{ end }}
 {{ define "content" }}
 <ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2 m-0 lg:mx-3 lg:my-2">
@@ -50,7 +50,7 @@
     <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
     <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
   </div>
-  <ul class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm divide-y text-sm">
+  <ul id="notes" class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm divide-y text-sm">
     {{ range $note := $.Notes }}
     <li class="flex">
       <label class="flex justify-center items-center p-2 hidden"><input type="checkbox"></label>

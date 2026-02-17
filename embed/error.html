@@ -1,7 +1,7 @@
 {{ define "title" }}{{ $.Title }}{{ end }}
 {{ template "preamble" $ }}
-<main class="p-3 pt-5">
-  <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg p-6 text-center text-balance md:p-12 text-neutral-800 dark:text-neutral-300">
+<main class="pt-12 p-1">
+  <div class="flex min-w-0 w-full flex-1 flex-col items-center justify-center gap-6 rounded-lg text-balance md:p-12 text-neutral-800 dark:text-neutral-300">
     <header class="flex max-w-sm flex-col items-center gap-3 text-center">
       <div class="mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6">
         {{ if hasPrefix $.Title "500" }}
@@ -19,19 +19,21 @@
     <div class="text-center link"><a href="{{ $.Referer }}" data-go-back>&larr; Go back</a></div>
     {{ end }}
     {{ if $.Details }}
-    <details class="flex max-w-md flex-col items-center gap-3">
-      <summary style="display: list-item">
+    <details role="group" class="flex w-full flex-col items-center gap-3 px-2">
+      <summary class="flex items-center gap-1 p-2">
         details
       </summary>
-      <pre class="whitespace-normal">{{ $.Details }}</pre>
-      {{ if $.Callers }}
-      <strong>stack trace:</strong>
-      <ul>
-        {{ range $caller := $.Callers }}
-        <li>{{ $caller }}</li>
+      <section class="min-w-0 w-full self-stretch overflow-scroll">
+        <div class="break-all px-2">{{ $.Details }}</div>
+        {{ if $.Callers }}
+        <strong class="px-2">stack trace:</strong>
+        <ul class="break-all px-2">
+          {{ range $caller := $.Callers }}
+          <li>{{ $caller }}</li>
+          {{ end }}
+        </ul>
         {{ end }}
-      </ul>
-      {{ end }}
+      </section>
     </details>
     {{ end }}
   </div>
