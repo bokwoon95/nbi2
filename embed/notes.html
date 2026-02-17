@@ -13,36 +13,86 @@
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
 <div class="dropdown-menu">
   <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1">{{ template "tabler-dots-icon" }}</button>
-  <!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="">{{ template "tabler-dots-icon" }}</button> -->
   <div data-popover aria-hidden="true" class="min-w-56">
     <div role="menu">
       <div role="group">
-        <div role="heading">Misc</div>
         <div role="menuitem">
-          Profile
-          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+          {{ template "icon-tabler-checkbox" }}
+          Select Notes
         </div>
         <div role="menuitem">
-          Billing
-          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘B</span>
+          <span>{{ template "icon-tabler-pin" }}</span>
+          <span hidden>{{ template "icon-tabler-pin-filled" }}</span>
+          Pin
         </div>
         <div role="menuitem">
-          Settings
-          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘S</span>
-        </div>
-        <div role="menuitem">
-          Keyboard shortcuts
-          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘K</span>
+          {{ template "icon-tabler-search" }}
+          Search
         </div>
       </div>
-      <hr role="separator" />
-      <div role="menuitem">GitHub</div>
-      <div role="menuitem">Support</div>
-      <div role="menuitem" aria-disabled="true">API</div>
-      <hr role="separator" />
-      <div role="menuitem">
-        Logout
-        <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+      <hr role="separator">
+      <div role="group">
+        <div role="heading">Sort</div>
+        <div role="menuitem" aria-checked="true" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="false" focusable="false"></div>
+          </div>
+          Date Edited
+        </div>
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Date Created
+        </div>
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Title
+        </div>
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Size
+        </div>
+      </div>
+      <hr role="separator">
+      <div role="group">
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Ascending
+        </div>
+        <div role="menuitem" aria-checked="true" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Descending
+        </div>
+      </div>
+      <hr role="separator">
+      <div role="group">
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Limit 20
+        </div>
+        <div role="menuitem" aria-checked="false" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Limit 200
+        </div>
+        <div role="menuitem" aria-checked="true" class="group">
+          <div class="size-4 flex items-center justify-center">
+            <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          </div>
+          Limit 1000
+        </div>
       </div>
     </div>
   </div>

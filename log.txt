@@ -37,10 +37,30 @@ CREATE TABLE note (
     ,size BIGINT
 );
 
-note
-title
-preview
-content
+topbar
+- toggle sidebar
+- create folder
+- create note
+- sort
+- search
+- pin
+- select
+bottombar
+- toggle sidebar
+- create
+    - create folder
+    - create note
+- more
+    - select
+    - sort
+        date edited
+        date created
+        title
+        size
+        ascending
+        descending
+    - search
+    - pin
 
 top navbar (toggleSidebar, createDirectory, createNote, sort, search, pin)
 breadcrumbs
