@@ -11,9 +11,42 @@
 {{ define "bottombar" }}
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
-<!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button> -->
-<!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button> -->
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="">{{ template "tabler-dots-icon" }}</button>
+<div class="dropdown-menu">
+  <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1">{{ template "tabler-dots-icon" }}</button>
+  <!-- <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="">{{ template "tabler-dots-icon" }}</button> -->
+  <div data-popover aria-hidden="true" class="min-w-56">
+    <div role="menu">
+      <div role="group">
+        <div role="heading">Misc</div>
+        <div role="menuitem">
+          Profile
+          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+        </div>
+        <div role="menuitem">
+          Billing
+          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘B</span>
+        </div>
+        <div role="menuitem">
+          Settings
+          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘S</span>
+        </div>
+        <div role="menuitem">
+          Keyboard shortcuts
+          <span class="text-muted-foreground ml-auto text-xs tracking-widest">⌘K</span>
+        </div>
+      </div>
+      <hr role="separator" />
+      <div role="menuitem">GitHub</div>
+      <div role="menuitem">Support</div>
+      <div role="menuitem" aria-disabled="true">API</div>
+      <hr role="separator" />
+      <div role="menuitem">
+        Logout
+        <span class="text-muted-foreground ml-auto text-xs tracking-widest">⇧⌘P</span>
+      </div>
+    </div>
+  </div>
+</div>
 {{ end }}
 {{ define "content" }}
 <ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2 m-0 lg:mx-3 lg:my-2">

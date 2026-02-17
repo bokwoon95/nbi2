@@ -1,6 +1,6 @@
 import "./basecoat.js";
 import "./sidebar.js";
-import "./dropdown-menu-v2.js";
+import "./dropdown-menu-v3.js";
 
 for (const element of document.querySelectorAll("[data-toggle-sidebar]")) {
   element.addEventListener("click", function() {
