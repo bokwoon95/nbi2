@@ -10,7 +10,23 @@
 {{ end }}
 {{ define "bottombar" }}
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
+<div class="dropdown-menu">
+  <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
+  <div data-popover aria-hidden="true" class="min-w-56">
+    <div role="menu">
+      <div role="group">
+        <div role="menuitem">
+          {{ template "icon-tabler-folder-plus" }}
+          Create folder
+        </div>
+        <div role="menuitem">
+          {{ template "icon-tabler-plus" }}
+          Create note
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="dropdown-menu">
   <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1">{{ template "tabler-dots-icon" }}</button>
   <div data-popover aria-hidden="true" class="min-w-56">
@@ -21,9 +37,12 @@
           Select Notes
         </div>
         <div role="menuitem">
-          <span>{{ template "icon-tabler-pin" }}</span>
-          <span hidden>{{ template "icon-tabler-pin-filled" }}</span>
+          {{ template "icon-tabler-pin" }}
           Pin
+        </div>
+        <div role="menuitem" hidden>
+          {{ template "icon-tabler-pin-filled" }}
+          Unpin
         </div>
         <div role="menuitem">
           {{ template "icon-tabler-search" }}
