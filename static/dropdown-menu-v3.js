@@ -1,5 +1,4 @@
 (() => {
-  const dropdownMenuV3Debug = new URLSearchParams(window.location.search).get('dropdownDebug') === '1';
   const initDropdownMenu = (dropdownMenuComponent) => {
     const trigger = dropdownMenuComponent.querySelector(':scope > button');
     const popover = dropdownMenuComponent.querySelector(':scope > [data-popover]');
@@ -37,57 +36,6 @@
       if (top < minTop) top = minTop;
       popover.style.left = `${Math.round(left)}px`;
       popover.style.top = `${Math.round(top)}px`;
-      if (dropdownMenuV3Debug) {
-        const popRect = popover.getBoundingClientRect();
-        console.log('[dropdown-menu-v3:updatePosition]', {
-          timestamp: Date.now(),
-          triggerRect: {
-            left: rect.left,
-            top: rect.top,
-            right: rect.right,
-            bottom: rect.bottom,
-            width: rect.width,
-            height: rect.height
-          },
-          popoverRect: {
-            left: popRect.left,
-            top: popRect.top,
-            right: popRect.right,
-            bottom: popRect.bottom,
-            width: popRect.width,
-            height: popRect.height
-          },
-          computed: {
-            left,
-            top,
-            width,
-            height,
-            minLeft,
-            minTop,
-            maxLeft,
-            maxTop
-          },
-          visualViewport: visualViewport ? {
-            width: visualViewport.width,
-            height: visualViewport.height,
-            offsetLeft: visualViewport.offsetLeft,
-            offsetTop: visualViewport.offsetTop,
-            pageLeft: visualViewport.pageLeft,
-            pageTop: visualViewport.pageTop,
-            scale: visualViewport.scale
-          } : null,
-          documentElement: {
-            clientWidth: document.documentElement.clientWidth,
-            clientHeight: document.documentElement.clientHeight
-          },
-          windowMetrics: {
-            innerWidth: window.innerWidth,
-            innerHeight: window.innerHeight,
-            scrollX: window.scrollX,
-            scrollY: window.scrollY
-          }
-        });
-      }
     };
     const startAutoPosition = () => {
       if (!supportsManualPopover) return;
@@ -130,12 +78,6 @@
       
       stopAutoPosition();
       setActiveItem(-1);
-      if (dropdownMenuV3Debug) {
-        console.log('[dropdown-menu-v3:closePopover]', {
-          timestamp: Date.now(),
-          focusOnTrigger
-        });
-      }
     };
 
     const openPopover = (initialSelection = false) => {
@@ -149,15 +91,6 @@
         popover.showPopover();
         updatePosition();
         startAutoPosition();
-        if (dropdownMenuV3Debug) {
-          console.log('[dropdown-menu-v3:openPopover]', {
-            timestamp: Date.now(),
-            initialSelection,
-            supportsManualPopover,
-            triggerExpanded: trigger.getAttribute('aria-expanded'),
-            popoverHidden: popover.getAttribute('aria-hidden')
-          });
-        }
       }
       menuItems = Array.from(menu.querySelectorAll('[role^="menuitem"]')).filter(item => 
         !item.hasAttribute('disabled') && 
@@ -186,35 +119,6 @@
         trigger.removeAttribute('aria-activedescendant');
       }
     };
-
-    if (dropdownMenuV3Debug && supportsManualPopover && window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (trigger.getAttribute('aria-expanded') !== 'true') return;
-        console.log('[dropdown-menu-v3:visualViewport.resize]', {
-          timestamp: Date.now(),
-          width: window.visualViewport.width,
-          height: window.visualViewport.height,
-          offsetLeft: window.visualViewport.offsetLeft,
-          offsetTop: window.visualViewport.offsetTop,
-          pageLeft: window.visualViewport.pageLeft,
-          pageTop: window.visualViewport.pageTop,
-          scale: window.visualViewport.scale
-        });
-      });
-      window.visualViewport.addEventListener('scroll', () => {
-        if (trigger.getAttribute('aria-expanded') !== 'true') return;
-        console.log('[dropdown-menu-v3:visualViewport.scroll]', {
-          timestamp: Date.now(),
-          width: window.visualViewport.width,
-          height: window.visualViewport.height,
-          offsetLeft: window.visualViewport.offsetLeft,
-          offsetTop: window.visualViewport.offsetTop,
-          pageLeft: window.visualViewport.pageLeft,
-          pageTop: window.visualViewport.pageTop,
-          scale: window.visualViewport.scale
-        });
-      });
-    }
 
     trigger.addEventListener('click', () => {
       const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
