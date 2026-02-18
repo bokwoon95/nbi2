@@ -1,7 +1,10 @@
 {{ define "title" }}Notes{{ end }}
+{{ define "head" }}
+<script src="/cms/static/notes.js"></script>
+{{ end }}
 {{ template "base.html" $ }}
 {{ define "topbar" }}
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button> <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
 <span class="grow"></span>
@@ -9,7 +12,7 @@
 <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Pin">{{ template "icon-tabler-pin" }}</button>
 {{ end }}
 {{ define "bottombar" }}
-<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+<button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
 <div class="dropdown-menu">
   <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
   <div data-popover aria-hidden="true" class="min-w-56">
@@ -32,7 +35,7 @@
   <div data-popover aria-hidden="true" class="min-w-56">
     <div role="menu">
       <div role="group">
-        <div role="menuitem">
+        <div role="menuitem" data-event="ActivateSelect">
           {{ template "icon-tabler-checkbox" }}
           Select Notes
         </div>

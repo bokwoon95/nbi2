@@ -10,6 +10,7 @@
 <style>{{ $.ContextData.NotebrewCSS }}</style>
 <script type="module">{{ $.ContextData.NotebrewJS }}</script>
 {{ end }}
+{{ block "head" $ }}{{ end }}
 {{ end }}
 
 {{ block "sidebar" $ }}
@@ -21,7 +22,7 @@
           {{ template "icon-tabler-user" }}
           {{ if $.ContextData.Username }}{{ $.ContextData.Username }}{{ else }}<em>default user</em>{{ end }}
         </a>
-        <button type="button" class="btn-icon-ghost" data-toggle-sidebar title="Hide sidebar">{{ template "tabler-x" }}</button>
+        <button type="button" class="btn-icon-ghost" data-click-event="basecoat:sidebar" title="Hide sidebar">{{ template "tabler-x" }}</button>
       </div>
     </header>
     <section class="scrollbar">
@@ -168,7 +169,7 @@
 <main>
   <nav class="sticky top-0 inset-x-0 isolate z-10 border-b bg-turq-dark hidden sm:flex items-center">
     {{ block "topbar" $ }}
-    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
     {{ end }}
   </nav>
   <div class="mx-auto w-full max-w-7xl">
@@ -179,7 +180,7 @@
   <div class="h-12"></div>
   <nav class="fixed bottom-0 border-t bg-turq-dark text-white flex justify-between sm:hidden items-center w-full">
     {{ block "bottombar" $ }}
-    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-toggle-sidebar title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    <button class="btn-icon-ghost size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
     {{ end }}
   </nav>
 </main>
