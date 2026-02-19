@@ -3,192 +3,194 @@
 <script src="/cms/static/notes.js"></script>
 {{ template "sidebar" $ }}
 
-<nav class="sticky top-0 inset-x-0 isolate z-10 border-b bg-turq-dark hidden sm:flex items-center">
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button> <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
-  <span class="grow"></span>
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Pin">{{ template "icon-tabler-pin" }}</button>
-</nav>
+<main>
+  <nav class="sticky top-0 inset-x-0 isolate z-10 border-b bg-turq-dark hidden sm:flex items-center">
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create folder">{{ template "icon-tabler-folder-plus" }}</button> <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create note">{{ template "icon-tabler-plus" }}</button>
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Sort">{{ template "icon-tabler-sort-descending" }}</button>
+    <span class="grow"></span>
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Search">{{ template "icon-tabler-search" }}</button>
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Pin">{{ template "icon-tabler-pin" }}</button>
+  </nav>
 
-<div class="mx-auto w-full max-w-7xl">
-  <ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2 m-0 lg:mx-3 lg:my-2">
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">Home</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">foo</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">bar</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">baz</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">qux</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <a href="#" class="hover:text-foreground transition-colors">Components</a>
-    </li>
-    <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
-    <li class="inline-flex items-center gap-1.5">
-      <span class="text-foreground font-normal">Breadcrumb</span>
-    </li>
-  </ol>
-  <div class="m-0 lg:mx-3 lg:my-2">
-    <div class="w-full flex justify-between my-2">
-      <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
-      <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
-    </div>
-    <ul id="notes" class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm divide-y text-sm">
-      {{ range $note := $.Notes }}
-      <li class="flex">
-        <label class="flex justify-center items-center p-2 hidden"><input type="checkbox"></label>
-        <div class="flex justify-center items-center p-2">
-          {{ if $note.Thumbnail }}
-          <img src='{{ $note.Thumbnail }}' class='h-16 w-16 object-cover' loading='lazy'>
-          {{ end }}
-        </div>
-        <div class="flex-grow-1 p-2">
-          <div><a href="" class="link">{{ $note.Title }}</a></div>
-          <div><span class="text-muted-foreground">{{ $note.DateEdited.Format "2006-01-02" }}</span> {{ $note.Preview }}</div>
-        </div>
+  <div class="mx-auto w-full max-w-7xl">
+    <ol class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 p-2 m-0 lg:mx-3 lg:my-2">
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">Home</a>
       </li>
-      {{ end }}
-    </ul>
-    <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
-      <table class="table notes-table">
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">foo</a>
+      </li>
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">bar</a>
+      </li>
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">baz</a>
+      </li>
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">qux</a>
+      </li>
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <a href="#" class="hover:text-foreground transition-colors">Components</a>
+      </li>
+      <li>{{ template "icon-basecoat-breadcrumb-separator" }}</li>
+      <li class="inline-flex items-center gap-1.5">
+        <span class="text-foreground font-normal">Breadcrumb</span>
+      </li>
+    </ol>
+    <div class="m-0 lg:mx-3 lg:my-2">
+      <div class="w-full flex justify-between my-2">
+        <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
+        <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </div>
+      <ul id="notes" class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm divide-y text-sm">
         {{ range $note := $.Notes }}
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>{{ $note.Title }}</td>
-          <td>{{ $note.Preview }}</td>
-          <td>{{ $note.DateEdited.Format "2006-01-02" }}</td>
-        </tr>
+        <li class="flex">
+          <label class="flex justify-center items-center p-2 hidden"><input type="checkbox"></label>
+          <div class="flex justify-center items-center p-2">
+            {{ if $note.Thumbnail }}
+            <img src='{{ $note.Thumbnail }}' class='h-16 w-16 object-cover' loading='lazy'>
+            {{ end }}
+          </div>
+          <div class="flex-grow-1 p-2">
+            <div><a href="" class="link">{{ $note.Title }}</a></div>
+            <div><span class="text-muted-foreground">{{ $note.DateEdited.Format "2006-01-02" }}</span> {{ $note.Preview }}</div>
+          </div>
+        </li>
         {{ end }}
-      </table>
-    </div>
-    <div class="w-full flex justify-between my-2">
-      <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
-      <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </ul>
+      <div class="border rounded-none lg:rounded-sm shadow-none lg:shadow-sm">
+        <table class="table notes-table">
+          {{ range $note := $.Notes }}
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>{{ $note.Title }}</td>
+            <td>{{ $note.Preview }}</td>
+            <td>{{ $note.DateEdited.Format "2006-01-02" }}</td>
+          </tr>
+          {{ end }}
+        </table>
+      </div>
+      <div class="w-full flex justify-between my-2">
+        <a href="#" class="btn-ghost"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
+        <a href="#" class="btn-ghost">Next <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="h-12"></div>
-<nav class="fixed bottom-0 border-t bg-turq-dark text-white flex justify-between sm:hidden items-center w-full">
-  <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
-  <div class="dropdown-menu">
-    <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
-    <div data-popover aria-hidden="true" class="min-w-56">
-      <div role="menu">
-        <div role="group">
-          <div role="menuitem">
-            {{ template "icon-tabler-folder-plus" }}
-            Create folder
-          </div>
-          <div role="menuitem">
-            {{ template "icon-tabler-plus" }}
-            Create note
+  <div class="h-12"></div>
+  <nav class="fixed bottom-0 border-t bg-turq-dark text-white flex justify-between sm:hidden items-center w-full">
+    <button class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" data-click-event="basecoat:sidebar" title="Toggle sidebar">{{ template "icon-tabler-layout-sidebar" }}</button>
+    <div class="dropdown-menu">
+      <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1" title="Create">{{ template "icon-tabler-plus" }}</button>
+      <div data-popover aria-hidden="true" class="min-w-56">
+        <div role="menu">
+          <div role="group">
+            <div role="menuitem">
+              {{ template "icon-tabler-folder-plus" }}
+              Create folder
+            </div>
+            <div role="menuitem">
+              {{ template "icon-tabler-plus" }}
+              Create note
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="dropdown-menu">
-    <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1">{{ template "tabler-dots-icon" }}</button>
-    <div data-popover aria-hidden="true" class="min-w-56">
-      <div role="menu">
-        <div role="group">
-          <div role="menuitem" data-click-event="notebrew:activateselect">
-            {{ template "icon-tabler-checkbox" }}
-            Select Notes
-          </div>
-          <div role="menuitem">
-            {{ template "icon-tabler-pin" }}
-            Pin
-          </div>
-          <div role="menuitem" hidden>
-            {{ template "icon-tabler-pin-filled" }}
-            Unpin
-          </div>
-          <div role="menuitem">
-            {{ template "icon-tabler-search" }}
-            Search
-          </div>
-        </div>
-        <hr role="separator">
-        <div role="group">
-          <div role="heading">Sort</div>
-          <div role="menuitem" aria-checked="true" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="false" focusable="false"></div>
+    <div class="dropdown-menu">
+      <button type="button" aria-haspopup="menu" aria-expanded="false" class="btn-icon-ghost text-white hover:bg-turq-very-dark size-11 mx-2 lg:my-1">{{ template "tabler-dots-icon" }}</button>
+      <div data-popover aria-hidden="true" class="min-w-56">
+        <div role="menu">
+          <div role="group">
+            <div role="menuitem" data-click-event="notebrew:activateselect">
+              {{ template "icon-tabler-checkbox" }}
+              Select Notes
             </div>
-            Date Edited
-          </div>
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+            <div role="menuitem">
+              {{ template "icon-tabler-pin" }}
+              Pin
             </div>
-            Date Created
-          </div>
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+            <div role="menuitem" hidden>
+              {{ template "icon-tabler-pin-filled" }}
+              Unpin
             </div>
-            Title
-          </div>
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+            <div role="menuitem">
+              {{ template "icon-tabler-search" }}
+              Search
             </div>
-            Size
           </div>
-        </div>
-        <hr role="separator">
-        <div role="group">
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          <hr role="separator">
+          <div role="group">
+            <div role="heading">Sort</div>
+            <div role="menuitem" aria-checked="true" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="false" focusable="false"></div>
+              </div>
+              Date Edited
             </div>
-            Ascending
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Date Created
+            </div>
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Title
+            </div>
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Size
+            </div>
           </div>
-          <div role="menuitem" aria-checked="true" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          <hr role="separator">
+          <div role="group">
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Ascending
             </div>
-            Descending
+            <div role="menuitem" aria-checked="true" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Descending
+            </div>
           </div>
-        </div>
-        <hr role="separator">
-        <div role="group">
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+          <hr role="separator">
+          <div role="group">
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Limit 20
             </div>
-            Limit 20
-          </div>
-          <div role="menuitem" aria-checked="false" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+            <div role="menuitem" aria-checked="false" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Limit 200
             </div>
-            Limit 200
-          </div>
-          <div role="menuitem" aria-checked="true" class="group">
-            <div class="size-4 flex items-center justify-center">
-              <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+            <div role="menuitem" aria-checked="true" class="group">
+              <div class="size-4 flex items-center justify-center">
+                <div class="size-2 rounded-full bg-foreground invisible group-aria-checked:visible" aria-hidden="true" focusable="false"></div>
+              </div>
+              Limit 1000
             </div>
-            Limit 1000
           </div>
         </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</main>
