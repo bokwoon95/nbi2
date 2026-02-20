@@ -77,6 +77,7 @@ TODO: file explorer columns: $title $preview $creationDate (edited $editedDate) 
 TODO: a button to preview a note inline? hmmm
 TODO: /cms/notes/ with various dummy notes put in place. We are only using list view a la Apple Notes.
     TODO: How big to make the navbar? What buttons to put in it? Create Note
+TODO: implement a universal clipboard! It must be easy for people to copy links on the web into notebrew via an browser extension, then they should be able to retrieve the same link on mobile via the mobile app. This lets me bypass a lot of stupid xhs shenanigans.
 
 DESIGN REQUIREMENTS
 - filesystem-based (nested folders)
